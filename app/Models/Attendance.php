@@ -25,7 +25,7 @@ class Attendance extends Model
 
     public function scopeFilter($query, $request)
     {
-        $query->when($request->item_name ?? false, fn($query, $item_name) => $query
-            ->where('item_name','like',"%$item_name%"));
+        $query->when($request->username ?? false, fn($query, $username) => $query
+            ->where('username','like',"%$username%"));
     }
 }
