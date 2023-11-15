@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Notification\NotificationFilterRequest;
+use App\Http\Requests\Api\Notification\NotificationRequest;
 use App\Http\Resources\Api\Notification\NotificationResource;
 use App\Models\Notification;
 use App\Trait\Authorizable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -17,7 +18,7 @@ class NotificationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(NotificationFilterRequest $request): AnonymousResourceCollection
+    public function index(NotificationRequest $request): AnonymousResourceCollection
     {
         $data = Notification::with('createdBy')
             ->latest()
@@ -30,9 +31,9 @@ class NotificationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(NotificationRequest $request):JsonResponse
     {
-        //
+        
     }
 
     /**
@@ -46,7 +47,7 @@ class NotificationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(NotificationRequest $request, string $id)
     {
         //
     }

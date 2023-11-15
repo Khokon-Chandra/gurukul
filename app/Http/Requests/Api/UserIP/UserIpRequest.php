@@ -7,10 +7,18 @@ use App\Http\Requests\BaseFormRequest;
 class UserIpRequest extends BaseFormRequest
 {
     protected array $routeRequest = [
-        'api/v1/user-ip|post' => 'storeMethodRule',
-        'api/v1/user-ip|put' => 'updateMethodRule',
-        'api/v1/user-ip|patch' => 'updateMethodRule',
-        'api/v1/user-ips|put' => 'multipleUpdateMethodRule',
+        'api/v1/user-ip|post' => [
+            'rules' => 'storeMethodRule'
+        ],
+        'api/v1/user-ip|put' => [
+            'rules' => 'updateMethodRule',
+        ],
+        'api/v1/user-ip|patch' => [
+            'rules' => 'updateMethodRule',
+        ],
+        'api/v1/user-ips|put' => [
+            'rules' => 'multipleUpdateMethodRule'
+        ],
     ];
 
     public function storeMethodRule(): void
