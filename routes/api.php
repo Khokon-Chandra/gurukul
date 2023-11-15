@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\CashflowController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
@@ -38,6 +39,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
         Route::apiResource('cashflows', CashflowController::class);
         Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMany'])->name('cashflows.delete_many');
+        Route::apiResource('notifications',NotificationController::class);
     });
 
 
