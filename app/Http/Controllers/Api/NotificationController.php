@@ -9,7 +9,6 @@ use App\Http\Resources\Api\Notification\NotificationResource;
 use App\Models\Notification;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class NotificationController extends Controller
@@ -33,7 +32,22 @@ class NotificationController extends Controller
      */
     public function store(NotificationRequest $request):JsonResponse
     {
-        
+        try{
+
+            $notification = Notification::create($request->validated());
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Notification created successfully',
+                'data'    => new NotificationResource($notification),
+            ],200);
+
+        }catch(\Exception $error){
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage()
+            ],500);
+        }
     }
 
     /**

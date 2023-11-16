@@ -15,15 +15,12 @@ class NotificationRequest extends BaseFormRequest
         ],
         'api/v1/notifications|post'  => [
             'rules'                => 'storeMethodRule',
-            'prepareForValidation' => 'storePrepareForValidation',
         ],
         'api/v1/notifications|put'   => [
             'rules'                => 'updateMethodRule',
-            'prepareForValidation' => 'updatePrepareForValidation',
         ],
         'api/v1/notifications|patch' => [
             'rules'                => 'updateMethodRule',
-            'prepareForValidation' => 'updatePrepareForValidation',
         ],
     ];
 
@@ -43,8 +40,8 @@ class NotificationRequest extends BaseFormRequest
     {
         $this->rules = [
             'subject' => 'required|min:1|max:255|string',
-            'date'    => 'required|date',
-            'time'    => 'required|time',
+            'date'    => 'required|date|date_format:Y-m-d',
+            'time'    => 'required|date_format:H:i',
         ];
     }
 
