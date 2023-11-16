@@ -103,6 +103,10 @@ class NotificationRequest extends BaseFormRequest
         $idString = $this->route('notification');
         $idArray  = explode(',',$idString);
 
+        if(is_array($idArray)){
+            $idArray = array_map(fn($id) => trim($id),$idArray);
+        }
+
         $this->prepareForValidationRules = [
             'ids' => $idArray
         ];
