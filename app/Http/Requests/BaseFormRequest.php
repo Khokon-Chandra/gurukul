@@ -14,6 +14,8 @@ abstract class BaseFormRequest extends FormRequest
 
     protected array $rules = [];
 
+    protected array $prepareForValidationRules = [];
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -32,7 +34,7 @@ abstract class BaseFormRequest extends FormRequest
         $route = $this->getPath();
         $method = $this->getRequestMethod();
 
-        $requestRuleMethod = $this->routeRequest["$route|$method"] ?? 'default';
+        $requestRuleMethod = $this->routeRequest["$route|$method"]['rules'] ?? 'default';
 
         if (method_exists($this, $requestRuleMethod)) {
             $this->{$requestRuleMethod}();
@@ -56,5 +58,19 @@ abstract class BaseFormRequest extends FormRequest
         }
 
         return strtolower($method);
+    }
+
+
+    protected function prepareForValidation(): void
+    {
+        $route = $this->getPath();
+        $method = $this->getRequestMethod(); 
+        $prepareForValidationMethod = $this->routeRequest["$route|$method"]['prepareForValidation'] ?? 'default';
+
+        if (method_exists($this, $prepareForValidationMethod)) {
+            $this->{$prepareForValidationMethod}();
+        }
+
+        $this->merge($this->prepareForValidationRules);
     }
 }
