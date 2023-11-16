@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 abstract class BaseFormRequest extends FormRequest
 {
@@ -13,6 +14,8 @@ abstract class BaseFormRequest extends FormRequest
     protected array $routeRequest = [];
 
     protected array $rules = [];
+
+    protected array $prepareForValidationRules = [];
 
     /**
      * Determine if the user is authorized to make this request.
@@ -32,7 +35,7 @@ abstract class BaseFormRequest extends FormRequest
         $route = $this->getPath();
         $method = $this->getRequestMethod();
 
-        $requestRuleMethod = $this->routeRequest["$route|$method"] ?? 'default';
+        $requestRuleMethod = $this->routeRequest["$route|$method"]['rules'] ?? 'default';
 
         if (method_exists($this, $requestRuleMethod)) {
             $this->{$requestRuleMethod}();
@@ -43,7 +46,7 @@ abstract class BaseFormRequest extends FormRequest
 
     public function getPath(): string
     {
-        return $this->path();
+        return $this->route()->uri();
     }
 
     public function getRequestMethod(): string
@@ -56,5 +59,19 @@ abstract class BaseFormRequest extends FormRequest
         }
 
         return strtolower($method);
+    }
+
+
+    protected function prepareForValidation(): void
+    {
+        $route = $this->getPath();
+        $method = $this->getRequestMethod(); 
+        $prepareForValidationMethod = $this->routeRequest["$route|$method"]['prepareForValidation'] ?? 'default';
+
+        if (method_exists($this, $prepareForValidationMethod)) {
+            $this->{$prepareForValidationMethod}();
+        }
+
+        $this->merge($this->prepareForValidationRules);
     }
 }
