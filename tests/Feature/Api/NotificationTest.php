@@ -50,7 +50,6 @@ class NotificationTest extends FeatureBaseCase
         ]);
 
         $response->assertStatus(200);
-        
         $response->assertJsonStructure([
             'status',
             'message',
@@ -81,7 +80,6 @@ class NotificationTest extends FeatureBaseCase
         ]);
 
         $response->assertStatus(200);
-        
         $response->assertJsonStructure([
             'status',
             'message',
@@ -93,6 +91,26 @@ class NotificationTest extends FeatureBaseCase
                 'created_by' => [],
                 'created_at'
             ]
+        ]);
+    }
+
+
+    public function testDeleteMultipleNotificationById()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username', 'administrator')->first();
+
+        $notifications = Notification::take(5)->pluck('id')->toArray();
+        $notifications = implode(',',$notifications);
+
+        $response = $this->actingAs($user)->deleteJson(route('service.notifications.destroy', $notifications));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'status',
+            'message'
         ]);
     }
 
@@ -133,7 +151,7 @@ class NotificationTest extends FeatureBaseCase
 
         $notification = Notification::factory()->createQuietly();
 
-        $response = $this->actingAs($user)->putJson(route('service.notifications.update',$notification->id), $credentials);
+        $response = $this->actingAs($user)->putJson(route('service.notifications.update', $notification->id), $credentials);
 
         $response->assertJsonValidationErrors($errorKeys);
 

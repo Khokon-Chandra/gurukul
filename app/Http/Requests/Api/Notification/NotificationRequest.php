@@ -21,6 +21,10 @@ class NotificationRequest extends BaseFormRequest
         'api/v1/notifications/{notification}|patch' => [
             'rules'                => 'updateMethodRule',
         ],
+        'api/v1/notifications/{notification}|delete' => [
+            'rules'                => 'deleteMethodRule',
+            'prepareForValidation' => 'deletePrepareForValidation',
+        ],
     ];
 
 
@@ -54,6 +58,19 @@ class NotificationRequest extends BaseFormRequest
     }
 
 
+    public function deleteMethodRule(): void
+    {
+        $this->rules = [
+            'ids' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'ids.*' => 'exists:notifications,id'
+        ];
+    }
+
+
     public function indexPrepareForValidation(): void
     {
         $dateRange = null;
@@ -77,6 +94,21 @@ class NotificationRequest extends BaseFormRequest
 
         $this->prepareForValidationRules = [
             'searchable_date_range' => $dateRange
+        ];
+    }
+
+
+    public function deletePrepareForValidation(): void
+    {
+        $idString = $this->route('notification');
+        $idArray  = explode(',',$idString);
+
+        if(is_array($idArray)){
+            $idArray = array_map(fn($id) => trim($id),$idArray);
+        }
+
+        $this->prepareForValidationRules = [
+            'ids' => $idArray
         ];
     }
 }
