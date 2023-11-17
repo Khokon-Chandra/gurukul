@@ -4,7 +4,6 @@ namespace App\Http\Requests\Api\Notification;
 
 use App\Http\Requests\BaseFormRequest;
 use Carbon\Carbon;
-use Illuminate\Foundation\Http\FormRequest;
 
 class NotificationRequest extends BaseFormRequest
 {
@@ -16,10 +15,10 @@ class NotificationRequest extends BaseFormRequest
         'api/v1/notifications|post'  => [
             'rules'                => 'storeMethodRule',
         ],
-        'api/v1/notifications|put'   => [
+        'api/v1/notifications/{notification}|put'   => [
             'rules'                => 'updateMethodRule',
         ],
-        'api/v1/notifications|patch' => [
+        'api/v1/notifications/{notification}|patch' => [
             'rules'                => 'updateMethodRule',
         ],
     ];
@@ -49,8 +48,8 @@ class NotificationRequest extends BaseFormRequest
     {
         $this->rules = [
             'subject' => 'required|min:1|max:255|string',
-            'date'    => 'required|date',
-            'time'    => 'required|time',
+            'date'    => 'required|date|date_format:Y-m-d',
+            'time'    => 'required|date_format:H:i',
         ];
     }
 

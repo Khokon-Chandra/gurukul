@@ -10,6 +10,7 @@ use App\Models\Notification;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -61,9 +62,24 @@ class NotificationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(NotificationRequest $request, string $id)
+    public function update(NotificationRequest $request, Notification $notification): JsonResponse
     {
-        //
+        try{
+
+            $notification->update($request->validated());
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Notification updated successfully',
+                'data'    => new NotificationResource($notification),
+            ],200);
+
+        }catch(\Exception $error){
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage()
+            ],500);
+        }
     }
 
     /**

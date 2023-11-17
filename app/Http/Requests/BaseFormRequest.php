@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 abstract class BaseFormRequest extends FormRequest
 {
@@ -45,7 +46,7 @@ abstract class BaseFormRequest extends FormRequest
 
     public function getPath(): string
     {
-        return $this->path();
+        return $this->route()->uri();
     }
 
     public function getRequestMethod(): string
