@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -17,22 +20,13 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return response()->json([
-            'status' => 'success',
-            'data'   => User::with('roles')->get(),
-        ], 200);
+        $users = User::latest()->filter($request)->paginate(AppConstant::PAGINATION);
+        return UserResource::collection($users);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
+   
     /**
      * Store a newly created resource in storage.
      */
@@ -92,21 +86,7 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+   
 
     /**
      * Update user.

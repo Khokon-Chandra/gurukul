@@ -35,16 +35,25 @@ class UserTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            "status",
-            "data"
+            "data" => [
+                '*' => [
+                    'id',
+                    'name',
+                    'username',
+                    'type',
+                    'email',
+                    'last_login_ip',
+                    'active',
+                    'created_at',
+                ]
+            ],
+            'meta' => [
+
+            ],
+            'links' => [
+                
+            ],
         ]);
-
-        $response->assertJson([
-            'status' => true,
-            'data' => true
-        ]);
-
-
     }
 
     /**
@@ -60,8 +69,8 @@ class UserTest extends TestCase
             ])
             ->createQuietly();
 
-            $role = Role::create(['name' => 'Writer',]);
-            $role->permissions()->sync([1,2,3]);
+        $role = Role::create(['name' => 'Writer',]);
+        $role->permissions()->sync([1, 2, 3]);
 
 
         $response = $this->actingAs($user)->postJson('/api/v1/user', [
@@ -108,8 +117,8 @@ class UserTest extends TestCase
             ])
             ->createQuietly();
 
-            $role = Role::create(['name' => 'Writer',]);
-            $role->permissions()->sync([1,2,3]);
+        $role = Role::create(['name' => 'Writer',]);
+        $role->permissions()->sync([1, 2, 3]);
 
 
         $response = $this->actingAs($user)->putJson('/api/v1/user/1', [
@@ -165,7 +174,7 @@ class UserTest extends TestCase
             ->createQuietly();
 
         $role = Role::create(['name' => 'Writer',]);
-        $role->permissions()->sync([1,2,3]);
+        $role->permissions()->sync([1, 2, 3]);
 
         User::create([
             'username' => "test_user1",
@@ -199,6 +208,4 @@ class UserTest extends TestCase
             'data' => false
         ]);
     }
-
-
 }
