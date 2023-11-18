@@ -49,4 +49,13 @@ Route::group(['middleware' => ['auth:api']], function () {
      */
     Route::name('member.')->group(function () {
     });
+
+
+    /**
+     * User Routes
+     */
+
+    Route::name('user.')->group(function () {
+        Route::post('change-password', [UserController::class, 'changePassword'])->name('change.password');
+    });
 });

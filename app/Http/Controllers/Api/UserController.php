@@ -205,4 +205,38 @@ class UserController extends Controller
             throw ValidationException::withMessages([$e->getMessage()]);
         }
     }
+
+    public function changePassword(Request $request){
+
+       $this->validate( $request, [
+          'password' => ['string', 'min:8', 'confirmed']
+       ]);
+
+       $user = Auth::user();
+       $user->password = Hash::make($request->password);
+       $user->save();
+
+        activity("Password Updated")
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->withProperties([
+                'ip' => Auth::user()->last_login_ip,
+                'activity' => "Password updated successfully",
+            ])
+            ->log(":causer.name updated Password");
+
+
+       return response()->json([
+           'status' => "successful",
+           'message' => "Password Update Successful",
+           'data' => $user,
+           'permissions' => $this->permissions($user->id)
+       ]);
+    }
+
+    protected function permissions($userId)
+    {
+        $permissionsUser = User::with('permissions')->find($userId);
+        return $permissionsUser->permissions->toArray();
+    }
 }
