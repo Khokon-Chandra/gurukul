@@ -28,7 +28,7 @@ class AuthController extends Controller
         if (!$user->active) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Username has been deactivated!.',
+                'message' => 'Username has been deactivate!.',
             ], 400);
         }
 
