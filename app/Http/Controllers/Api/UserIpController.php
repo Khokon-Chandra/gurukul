@@ -25,7 +25,7 @@ class UserIpController extends Controller
 
     public function index(): AnonymousResourceCollection
     {
-        $UserIps = UserIp::paginate(AppConstant::PAGINATION);
+        $UserIps = UserIp::latest()->paginate(AppConstant::PAGINATION);
 
         return UserIpResource::collection($UserIps);
     }
