@@ -31,9 +31,9 @@ class NotificationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(NotificationRequest $request):JsonResponse
+    public function store(NotificationRequest $request): JsonResponse
     {
-        try{
+        try {
 
             $notification = Notification::create($request->validated());
 
@@ -41,13 +41,12 @@ class NotificationController extends Controller
                 'status'  => 'success',
                 'message' => 'Notification created successfully',
                 'data'    => new NotificationResource($notification),
-            ],200);
-
-        }catch(\Exception $error){
+            ], 200);
+        } catch (\Exception $error) {
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
-            ],500);
+            ], 500);
         }
     }
 
@@ -64,7 +63,7 @@ class NotificationController extends Controller
      */
     public function update(NotificationRequest $request, Notification $notification): JsonResponse
     {
-        try{
+        try {
 
             $notification->update($request->validated());
 
@@ -72,21 +71,31 @@ class NotificationController extends Controller
                 'status'  => 'success',
                 'message' => 'Notification updated successfully',
                 'data'    => new NotificationResource($notification),
-            ],200);
-
-        }catch(\Exception $error){
+            ], 200);
+        } catch (\Exception $error) {
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
-            ],500);
+            ], 500);
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(NotificationRequest $request, string $id): JsonResponse
     {
-        //
+        try {
+            Notification::whereIn('id', $request->ids)->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Notifications are deleted successfully'
+            ], 200);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage()
+            ], 500);
+        }
     }
 }
