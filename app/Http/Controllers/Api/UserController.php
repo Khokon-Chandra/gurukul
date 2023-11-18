@@ -209,7 +209,7 @@ class UserController extends Controller
     public function changePassword(Request $request){
 
        $this->validate( $request, [
-          'password' => ['string', 'min:8', 'confirmed']
+          'password' => 'required|string|min:8|confirmed'
        ]);
 
        $user = Auth::user();
