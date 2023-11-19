@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Cashflow>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Notification>
  */
-class CashflowFactory extends Factory
+class NotificationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,9 +17,9 @@ class CashflowFactory extends Factory
     public function definition(): array
     {
         return [
-            'item_name' => $this->faker->sentence(),
-            'item_price' => rand(1000,99999),
-            'upload' => $this->faker->imageUrl()
+            'subject' => $this->faker->sentence(),
+            'date'    => $this->faker->date(),
+            'time'    => $this->faker->time(),
         ];
     }
 }

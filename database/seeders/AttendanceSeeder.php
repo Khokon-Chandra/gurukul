@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cashflow;
+use App\Models\Attendance;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class CashflowSeeder extends Seeder
+class AttendanceSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Cashflow::factory(30)->create();
+        Attendance::factory(30)->create();
     }
 }

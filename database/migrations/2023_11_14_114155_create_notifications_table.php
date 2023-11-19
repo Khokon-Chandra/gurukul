@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cashflows', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->string('item_name',255)->index();
-            $table->float('item_price');
-            $table->text('upload');
+            $table->string('subject',255)->index('notification_subject_index');
+            $table->date('date')->index('notification_date_index');
+            $table->time('time')->index('notification_time_index');
             $table->foreignId('created_by')->nullable();
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cashflows');
+        Schema::dropIfExists('notifications');
     }
 };

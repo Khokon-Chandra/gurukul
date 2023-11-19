@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Attendance extends Model
@@ -27,5 +28,11 @@ class Attendance extends Model
     {
         $query->when($request->username ?? false, fn($query, $username) => $query
             ->where('username','like',"%$username%"));
+    }
+
+
+    public function createdBy() : BelongsTo
+    {
+        return $this->belongsTo(User::class,'created_by','id');
     }
 }

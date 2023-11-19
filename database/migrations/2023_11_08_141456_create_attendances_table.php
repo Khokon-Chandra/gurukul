@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->string('username')->index();
-            $table->string('clock')->index();
-            $table->string('date')->index();
+            $table->time('clock')->index();
+            $table->date('date')->index();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();
             $table->unsignedBigInteger('deleted_by')->nullable()->index();
-            $table->string('deleted_at')->nullable()->index();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

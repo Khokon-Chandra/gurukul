@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             PermissionRoleSeeder::class,
             AnnouncementSeeder::class,
             CashflowSeeder::class,
+            NotificationSeeder::class,
+            AttendanceSeeder::class
         ]);
 
     }

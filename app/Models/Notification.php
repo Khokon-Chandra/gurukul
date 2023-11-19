@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class Cashflow extends Model
+class Notification extends Model
 {
     use HasFactory,
         SoftDeletes;
@@ -29,8 +29,10 @@ class Cashflow extends Model
 
     public function scopeFilter($query, $request)
     {
-        $query->when($request->item_name ?? false, fn($query, $item_name) => $query
-            ->where('item_name','like',"%$item_name%"));
+        $query->when($request->subject ?? false, fn($query, $subject) => $query
+            ->where('subject','like',"%$subject%"))
+            ->when($request->searchable_date_range ?? false, fn($query, $dates) => $query
+            ->whereBetween('created_at', $dates));
     }
 
 
@@ -38,4 +40,6 @@ class Cashflow extends Model
     {
         return $this->belongsTo(User::class,'created_by','id');
     }
+
+
 }
