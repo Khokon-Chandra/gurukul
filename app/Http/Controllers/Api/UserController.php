@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionResource;
+use App\Http\Resources\Api\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -229,8 +231,8 @@ class UserController extends Controller
        return response()->json([
            'status' => "successful",
            'message' => "Password Update Successful",
-           'data' => $user,
-           'permissions' => $this->permissions($user->id)
+           'data' => new UserResource($user),
+           'permissions' => new PermissionResource($user->permissions)
        ]);
     }
 
@@ -239,4 +241,5 @@ class UserController extends Controller
         $permissionsUser = User::with('permissions')->find($userId);
         return $permissionsUser->permissions->toArray();
     }
+
 }

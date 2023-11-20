@@ -56,6 +56,6 @@ Route::group(['middleware' => ['auth:api']], function () {
      */
 
     Route::name('user.')->group(function () {
-        Route::post('change-password', [UserController::class, 'changePassword'])->name('change.password');
+        Route::patch('change-password', [UserController::class, 'changePassword'])->name('change.password');
     });
 });

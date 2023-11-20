@@ -19,4 +19,5 @@ class UserPermission extends Permission
     {
         return $this->hasMany(UserPermission::class,'parent_id','id');
     }
+
 }
