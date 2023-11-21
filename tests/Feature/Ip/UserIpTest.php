@@ -61,6 +61,77 @@ class UserIpTest extends FeatureBaseCase
 
     }
 
+    public function testThatUserCanSearchOnTheIpAddressField(): void{
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $ip1 = UserIp::create([
+            'ip_address' => '103.15.245.75',
+            'description' => 'testing Ip',
+            'whitelisted' => 1,
+            'created_by' => 2,
+        ]);
+
+       $ip2 = UserIp::create([
+            'ip_address' => '109.15.245.75',
+            'description' => 'testing Ip',
+            'whitelisted' => 1,
+            'created_by' => 2,
+        ]);
+
+        $ip3 = UserIp::create([
+            'ip_address' => '107.15.245.75',
+            'description' => 'testing Ip',
+            'whitelisted' => 1,
+            'created_by' => 2,
+        ]);
+
+
+        $user->assignRole(Role::where('name', 'Administrator')->first());
+
+        $response = $this->actingAs($user)->getJson('/api/v1/user-ip?search=103');
+
+
+        $response->assertStatus(200);
+
+        //assert that 3 ip addresses were created
+        $this->assertCount(3, UserIp::all());
+
+        //assert that search returned the right value
+        $response->assertSeeInOrder(['103.15.245.75']);
+
+        //assert that search did not return the wrong value
+        $response->assertDontSee( [
+            '107.15.245.75',
+            '109.15.245.75',
+        ]);
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'ip1',
+                    'ip2',
+                    'ip3',
+                    'ip4',
+                    'ip_address',
+                    'whitelisted',
+                    'description',
+                    'created_at',
+                ]
+            ],
+            'links',
+            'meta'
+        ]);
+
+
+    }
+
     /**
      * User Ip Creation
      */

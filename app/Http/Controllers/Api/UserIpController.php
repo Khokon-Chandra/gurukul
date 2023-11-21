@@ -23,9 +23,18 @@ class UserIpController extends Controller
 {
     use Authorizable;
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $UserIps = UserIp::latest()->paginate(AppConstant::PAGINATION);
+
+        $query = UserIp::latest();
+
+        if($request->filled('search')){
+            $query->where('ip_address', 'LIKE', "%$request->search%");
+        }
+
+
+//      $UserIps = UserIp::latest()->paginate(AppConstant::PAGINATION);
+        $UserIps = $query->paginate(AppConstant::PAGINATION);
 
         return UserIpResource::collection($UserIps);
     }
