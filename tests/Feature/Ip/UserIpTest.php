@@ -70,32 +70,24 @@ class UserIpTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-        $ip1 = UserIp::create([
-            'ip_address' => '103.15.245.75',
-            'description' => 'testing Ip',
-            'whitelisted' => 1,
-            'created_by' => 2,
-        ]);
-
-       $ip2 = UserIp::create([
-            'ip_address' => '109.15.245.75',
-            'description' => 'testing Ip',
-            'whitelisted' => 1,
-            'created_by' => 2,
-        ]);
-
-        $ip3 = UserIp::create([
-            'ip_address' => '107.15.245.75',
-            'description' => 'testing Ip',
-            'whitelisted' => 1,
-            'created_by' => 2,
-        ]);
-
+        UserIp::factory(3)
+            ->sequence(...[
+                [
+                    'ip_address' => '103.15.245.75',
+                ],
+                [
+                    'ip_address' => '109.15.245.75',
+                ],
+                [
+                    'ip_address' => '107.15.245.75',
+                ],
+            ])
+            ->create();
 
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
-        $response = $this->actingAs($user)->getJson('/api/v1/user-ip?search=103');
-
+        $response = $this->actingAs($user)
+            ->getJson('/api/v1/user-ip?search=103');
 
         $response->assertStatus(200);
 

@@ -29,11 +29,9 @@ class UserIpController extends Controller
         $query = UserIp::latest();
 
         if($request->filled('search')){
-            $query->where('ip_address', 'LIKE', "%$request->search%");
+            $query->where('ip_address', 'LIKE', "%{$request->search}%");
         }
 
-
-//      $UserIps = UserIp::latest()->paginate(AppConstant::PAGINATION);
         $UserIps = $query->paginate(AppConstant::PAGINATION);
 
         return UserIpResource::collection($UserIps);
