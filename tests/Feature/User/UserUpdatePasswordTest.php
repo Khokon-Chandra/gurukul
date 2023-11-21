@@ -27,9 +27,6 @@ class UserUpdatePasswordTest extends TestCase
     public function testThatUserCanUpdatePassword(): void
     {
 
-//
-
-
         $response = $this->actingAs($this->user)->patchJson(route('user.change.password'), [
             'password' => "Password#222",
             'password_confirmation' => "Password#222"

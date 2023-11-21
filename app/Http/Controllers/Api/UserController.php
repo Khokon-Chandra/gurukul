@@ -232,14 +232,14 @@ class UserController extends Controller
            'status' => "successful",
            'message' => "Password Update Successful",
            'data' => new UserResource($user),
-           'permissions' => new PermissionResource($user->permissions)
+           'permissions' => new PermissionResource($this->permissions($user->id))
        ]);
     }
 
     protected function permissions($userId)
     {
         $permissionsUser = User::with('permissions')->find($userId);
-        return $permissionsUser->permissions->toArray();
+        return $permissionsUser->permissions;
     }
 
 }
