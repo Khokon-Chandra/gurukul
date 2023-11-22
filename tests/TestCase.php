@@ -12,21 +12,17 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication, RefreshDatabase;
     public $user;
-    public $role;
 
     public function setUp():void {
         parent::setUp();
-
-        $this->role = Role::create(['name' => 'Writer',]);
 
         $this->user =  User::factory()
             ->state([
                 'active' => true
             ])
             ->createQuietly();
-        $this->user->assignRole('Writer');
-        $permission = Permission::create(['name' => 'edit articles']);
-        $this->role->givePermissionTo('edit articles');
+
+        $this->user->assignRole(Role::where('name', 'Administrator')->first());
 
 
     }

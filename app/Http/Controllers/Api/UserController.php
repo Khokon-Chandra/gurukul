@@ -228,11 +228,12 @@ class UserController extends Controller
             ->log(":causer.name updated Password");
 
 
+
        return response()->json([
            'status' => "successful",
            'message' => "Password Update Successful",
            'data' => new UserResource($user),
-           'permissions' => new PermissionResource($this->permissions($user->id))
+           'permissions' => PermissionResource::collection($this->permissions($user->id))
        ]);
     }
 
