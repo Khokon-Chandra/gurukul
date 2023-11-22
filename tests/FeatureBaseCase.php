@@ -2,11 +2,14 @@
 
 namespace Tests;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 
 abstract class FeatureBaseCase extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, RefreshDatabase;
 
     /**
      * @var String
@@ -15,10 +18,20 @@ abstract class FeatureBaseCase extends TestCase
 
     protected $headers = [];
 
+    public $user;
+
     public function setUp(): void
     {
         parent::setUp();
 
         $this->app->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $this->user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $this->user->assignRole(Role::where('name', 'Administrator')->first());
     }
 }

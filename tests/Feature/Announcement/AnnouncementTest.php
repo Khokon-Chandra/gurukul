@@ -6,8 +6,10 @@ use App\Events\AnnouncementEvent;
 use App\Listeners\AnnouncementListener;
 use App\Models\Announcement;
 use App\Models\User;
+use App\Models\UserIp;
 use Database\Factories\UserFactory;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Spatie\Permission\Models\Role;
 use Tests\FeatureBaseCase;
 use Illuminate\Support\Facades\Event;
 
@@ -207,5 +209,52 @@ class AnnouncementTest extends FeatureBaseCase
         $response = $this->actingAs($user)->postJson(route('service.announcements.store'), $payload);
 
         Event::assertDispatched(AnnouncementEvent::class);
+    }
+
+    public function testThatAnnouncementStatusCanBeUpdated(): void {
+
+        $announcementId = 1;
+
+        Announcement::factory(3)
+            ->sequence(...[
+                [
+                    'status' => false,
+                ],
+                [
+                    'status' => true,
+                ],
+                [
+                    'status' => true,
+                ],
+            ])->create();
+
+
+        $this->assertDatabaseCount('announcements', 3);
+
+
+        $response = $this->actingAs($this->user)->patchJson(route('service.announcement.status.update'), [
+            'announcement_id' =>    $announcementId,
+        ]);
+
+        $response->assertStatus(200);
+
+        $updatedAnnouncement = Announcement::find($announcementId);
+        $allOtherAnnouncements = Announcement::where('id', '!=', $announcementId)->get();
+
+
+        $this->assertEquals(true,   $updatedAnnouncement->status);
+
+        foreach ($allOtherAnnouncements as $otherAnnouncement){
+            $this->assertEquals(false, $otherAnnouncement->status);
+        }
+
+
+        $response->assertJsonStructure([
+            "status",
+            "message",
+            "data"
+        ]);
+
+
     }
 }
