@@ -24,7 +24,8 @@ class UserSeeder extends Seeder
             'password' => '$2y$10$Okwifu2E/SJ9XlWJEr658ep.acTxxAKj5/9dQgoOTCuCgXygA9AQ.',
             'email_verified_at' => now(),
         ]);
-        $user->permissions()->sync(Permission::pluck('id')->toArray());
+
+        $user->assignRole('Administrator');
 
         User::factory(10)->create();
 

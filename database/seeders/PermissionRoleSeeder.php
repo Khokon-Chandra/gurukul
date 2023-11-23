@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role as ModelsRole;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -14,12 +15,11 @@ class PermissionRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::first();
-
-        if (!$role) {
-            $role = Role::create(['name' => 'Administrator']);
-        }
+        
+        $role = Role::create(['name' => 'Administrator']);
 
         $role->syncPermissions(Permission::get()->pluck('id')->toArray());
+
+        ModelsRole::factory(20)->create();
     }
 }

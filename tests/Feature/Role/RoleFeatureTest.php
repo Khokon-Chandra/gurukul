@@ -184,7 +184,7 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user     = User::where('username', 'administrator')->first();
+        $user     = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('admin.roles.store'), $credentials);
 
