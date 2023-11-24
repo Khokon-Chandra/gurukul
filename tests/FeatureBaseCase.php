@@ -19,6 +19,7 @@ abstract class FeatureBaseCase extends TestCase
     {
         parent::setUp();
 
-        $this->app->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->app->make(\Spatie\Permission\PermissionRegistrar::class)
+            ->forgetCachedPermissions();
     }
 }
