@@ -31,7 +31,7 @@ class UserController extends Controller
         return UserResource::collection($users);
     }
 
-   
+
     /**
      * Store a newly created resource in storage.
      */
@@ -91,7 +91,7 @@ class UserController extends Controller
         ]);
     }
 
-   
+
 
     /**
      * Update user.
@@ -222,7 +222,7 @@ class UserController extends Controller
 
     protected function permissions($userId)
     {
-        $permissionsUser = User::with('permissions')->find($userId);
+        $permissionsUser = User::with('permissions')->find($userId);git
         return $permissionsUser->permissions;
     }
 
