@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\RoleResource;
 use App\Trait\Authorizable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,12 +18,12 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json([
-            'status' => 'success',
-            'data'   => Role::all(),
-        ], 200);
+        $data = Role::latest()
+        ->when($request->name ?? false, fn($query, $name) => $query->where('name','like',$name))
+        ->paginate(AppConstant::PAGINATION);
+        return RoleResource::collection($data);
     }
 
 
