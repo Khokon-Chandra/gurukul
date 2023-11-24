@@ -11,6 +11,7 @@ use Spatie\Permission\Models\Role;
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication, RefreshDatabase;
+<<<<<<< HEAD
     public $user;
 
     public function setUp():void {
@@ -26,4 +27,6 @@ abstract class TestCase extends BaseTestCase
 
 
     }
+=======
+>>>>>>> f0d1bdc44b03289ee5c3290bf752ff7d0c9894ea
 }

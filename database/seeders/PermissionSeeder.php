@@ -2,11 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Route;
-use Spatie\Permission\Models\Permission;
+
+//use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
+/**
+ * @todo Refactor all this to match the module permissions in agent
+ * @stephen!
+ */
 class PermissionSeeder extends Seeder
 {
 
@@ -46,6 +52,18 @@ class PermissionSeeder extends Seeder
 
 
         $this->insertPermission();
+
+        $permissions = [
+            [
+                'module_name' => 'user.access.user.change-password',
+                'name' => 'user.access.user.change-password',
+                'display_name' => 'User Can Change Password',
+            ]
+        ];
+
+        Permission::factory(count($permissions))
+            ->sequence(...$permissions)
+            ->create();
     }
 
 

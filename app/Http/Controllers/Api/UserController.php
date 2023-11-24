@@ -4,13 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
-<<<<<<< HEAD
-use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\UserResource;
-=======
-use App\Http\Resources\Api\User\UserResource;
->>>>>>> 45b36c39784a3041aafc6af8eb3360e50e36555b
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
@@ -150,6 +146,7 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @throws ValidationException
      */
     public function destroy($ids)
     {
@@ -191,21 +188,27 @@ class UserController extends Controller
         }
     }
 
-    public function changePassword(Request $request){
+    /**
+     * @throws ValidationException
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
 
-       $this->validate( $request, [
-          'password' => 'required|string|min:8|confirmed'
+       $this->validate($request, [
+          'password' => ['required', 'string', 'min:8', 'confirmed']
        ]);
 
        $user = Auth::user();
-       $user->password = Hash::make($request->password);
-       $user->save();
+
+       $user->update([
+           'password' => Hash::make($request->password)
+       ]);
 
         activity("Password Updated")
-            ->causedBy(auth()->user())
+            ->causedBy($user)
             ->performedOn($user)
             ->withProperties([
-                'ip' => Auth::user()->last_login_ip,
+                'ip' => $user->last_login_ip,
                 'activity' => "Password updated successfully",
             ])
             ->log(":causer.name updated Password");
@@ -214,16 +217,8 @@ class UserController extends Controller
 
        return response()->json([
            'status' => "successful",
-           'message' => "Password Update Successful",
-           'data' => new UserResource($user),
-           'permissions' => PermissionResource::collection($this->permissions($user->id))
-       ]);
-    }
 
-    protected function permissions($userId)
-    {
-        $permissionsUser = User::with('permissions')->find($userId);git
-        return $permissionsUser->permissions;
+       ]);
     }
 
 }
