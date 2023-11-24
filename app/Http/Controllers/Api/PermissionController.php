@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionResource;
 use App\Models\UserPermission;
 use App\Trait\Authorizable;
 use Illuminate\Http\Request;
@@ -19,32 +20,9 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        $data = UserPermission::whereNull('parent_id')->get();
+        $data = UserPermission::whereNull('parent_id')->latest()->get();
 
-        $dataset = [];
-
-        $data->each(function($module) use(&$dataset){
-            foreach($module->children as $child){
-
-                if($child->children){
-                   foreach($child->children as $value){
-                    $dataset[$module->name][$child->name][] = [
-                        'id' => $value->id,
-                        'parent_id' => $child->id,
-                        'module_id' => $module->id,
-                        'name'      => $value->display_name ?? $value->name,
-                        'created_at' => $value->created_at->format('d-M-Y H:i:s')
-                    ];
-                   }
-                }
-
-            }
-        });
-
-
-        return response()->json([
-            'data' => $dataset
-        ], 200);
+        return PermissionResource::collection($data);
     }
 
     /**

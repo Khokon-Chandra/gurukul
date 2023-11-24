@@ -6,6 +6,7 @@ use App\Constants\AppConstant;
 use App\Events\AnnouncementEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UpdateAnnouncementRequest;
+use App\Http\Resources\Api\AnnouncementResource;
 use App\Models\Announcement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,9 +24,12 @@ class AnnouncementController extends Controller
 
     public function index(Request $request)
     {
+
+        $announcements  = Announcement::latest()->filter($request)->paginate(20);
+
         return response()->json([
             'status' => 'success',
-            'data' => Announcement::latest()->filter($request)->paginate(20),
+            'data' =>  $announcements, //use resource
         ], 200);
     }
 
@@ -68,7 +72,7 @@ class AnnouncementController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Announcement Created!!',
-                'data' => $announcement,
+                'data' => $announcement, //use resource here
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
@@ -116,7 +120,7 @@ class AnnouncementController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Announcement Updated!!',
-                'data' => $this->updatedInstance
+                'data' => $this->updatedInstance //use Resource
             ], 200);
 
         } catch (\Exception $error) {
@@ -215,7 +219,7 @@ class AnnouncementController extends Controller
                         'target' => "$announcement->message",
                     ])
                     ->log(":causer.name deleted Announcement $announcement->message.");
-            });
+            }); //fix this
 
 
             $announcements->delete();

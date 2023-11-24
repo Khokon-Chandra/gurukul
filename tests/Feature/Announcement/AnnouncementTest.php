@@ -252,9 +252,38 @@ class AnnouncementTest extends FeatureBaseCase
         $response->assertJsonStructure([
             "status",
             "message",
-            "data"
+            "data" => [
+                "current_page",
+                'data' => [
+                   '*' => [
+                       "id",
+                       "number",
+                       "message",
+                       "status",
+                       "created_by",
+                       "created_at",
+                       "updated_at",
+                   ],
+                ],
+                "first_page_url",
+                "from",
+                "last_page",
+                "last_page_url",
+                "links" => [
+                    '*' => [
+                        "url",
+                        "label",
+                        "active",
+                    ],
+                ],
+                "next_page_url",
+                "path",
+                "per_page",
+                "prev_page_url",
+                "to",
+                "total"
+            ],
         ]);
-
 
     }
 }
