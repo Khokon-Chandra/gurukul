@@ -3,19 +3,20 @@
 namespace Tests\Feature\User;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
-use Tests\TestCase;
+use Spatie\Permission\Models\Role;
+use Tests\FeatureBaseCase;
 
-class UserUpdatePasswordTest extends TestCase
+class UserUpdatePasswordTest extends FeatureBaseCase
 {
     /**
      * test that only auth user can update password
      */
     public function testThatOnlyAuthenticatedUserCanChangePassword(): void
     {
-        $response = $this->postJson(route('user.change.password'));
+        $this->artisan('migrate:fresh --seed');
+
+        $response = $this->putJson(route('user.change.password'));
         $response->assertStatus(401);
     }
 
@@ -25,19 +26,25 @@ class UserUpdatePasswordTest extends TestCase
      */
     public function testThatUserCanUpdatePassword(): void
     {
-        $response = $this->actingAs($this->user)->postJson(route('user.change.password'), [
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        $response = $this->actingAs($user)
+            ->putJson(route('user.change.password'), [
             'password' => "Password#222",
             'password_confirmation' => "Password#222"
         ]);
 
-        $this->assertTrue(Hash::check('Password#222', $this->user->password));
-        $this->assertFalse(Hash::check('password', $this->user->password));
+        $user = $user->refresh();
+        $this->assertTrue(Hash::check('Password#222', $user->password));
+        $this->assertFalse(Hash::check('password', $user->password));
 
         $response->assertOk();
-        $response->assertJsonStructure([
-            "status",
-            "message",
-            "data"
+        $response->assertJson([
+            'status' => 'successful',
         ]);
     }
 }
