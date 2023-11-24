@@ -40,7 +40,6 @@ class UserTest extends TestCase
                     'id',
                     'name',
                     'username',
-                    'type',
                     'email',
                     'last_login_ip',
                     'active',
@@ -51,7 +50,7 @@ class UserTest extends TestCase
 
             ],
             'links' => [
-                
+
             ],
         ]);
     }
