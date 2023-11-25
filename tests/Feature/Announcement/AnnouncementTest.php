@@ -72,35 +72,40 @@ class AnnouncementTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'status',
             'data' => [
-                'current_page',
-                'data' => [
+                "data" => [
                     '*' => [
                         'id',
+                        'number',
                         'message',
                         'status',
+                        'created_by',
                         'created_at',
                         'updated_at'
                     ]
                 ],
-                'first_page_url',
-                'from',
-                'last_page',
-                'last_page_url',
                 'links' => [
-                    '*' => [
-                        'url',
-                        'label',
-                        'active'
-                    ]
+                    'first',
+                    'last',
+                    'prev',
+                    'next'
                 ],
-                'next_page_url',
-                'path',
-                'per_page',
-                'prev_page_url',
-                'to',
-                'total',
-            ],
-
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'links' => [
+                        '*' => [
+                            'url',
+                            'label',
+                            'active'
+                        ]
+                    ],
+                    'path',
+                    'per_page',
+                    'to',
+                    'total'
+                ]
+            ]
         ]);
     }
 
@@ -213,9 +218,17 @@ class AnnouncementTest extends FeatureBaseCase
 
     public function testThatAnnouncementStatusCanBeUpdated(): void {
 
+        $this->artisan('migrate:fresh ');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
         $announcementId = 1;
 
-        Announcement::factory(3)
+        $CreateAnnouncements = Announcement::factory(3)
             ->sequence(...[
                 [
                     'status' => false,
@@ -226,13 +239,13 @@ class AnnouncementTest extends FeatureBaseCase
                 [
                     'status' => true,
                 ],
-            ])->create();
+            ])->createQuietly();
 
 
         $this->assertDatabaseCount('announcements', 3);
 
 
-        $response = $this->actingAs($this->user)->patchJson(route('service.announcement.status.update'), [
+        $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [
             'announcement_id' =>    $announcementId,
         ]);
 
@@ -250,39 +263,42 @@ class AnnouncementTest extends FeatureBaseCase
 
 
         $response->assertJsonStructure([
-            "status",
-            "message",
-            "data" => [
-                "current_page",
-                'data' => [
-                   '*' => [
-                       "id",
-                       "number",
-                       "message",
-                       "status",
-                       "created_by",
-                       "created_at",
-                       "updated_at",
-                   ],
-                ],
-                "first_page_url",
-                "from",
-                "last_page",
-                "last_page_url",
-                "links" => [
+            'status',
+            'data' => [
+                "data" => [
                     '*' => [
-                        "url",
-                        "label",
-                        "active",
-                    ],
+                        'id',
+                        'number',
+                        'message',
+                        'status',
+                        'created_by',
+                        'created_at',
+                        'updated_at'
+                    ]
                 ],
-                "next_page_url",
-                "path",
-                "per_page",
-                "prev_page_url",
-                "to",
-                "total"
-            ],
+                'links' => [
+                    'first',
+                    'last',
+                    'prev',
+                    'next'
+                ],
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'links' => [
+                        '*' => [
+                            'url',
+                            'label',
+                            'active'
+                        ]
+                    ],
+                    'path',
+                    'per_page',
+                    'to',
+                    'total'
+                ]
+            ]
         ]);
 
     }

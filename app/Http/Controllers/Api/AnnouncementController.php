@@ -29,7 +29,7 @@ class AnnouncementController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' =>  $announcements, //use resource
+            'data' =>  AnnouncementResource::collection($announcements)->response()->getData(true)
         ], 200);
     }
 
@@ -39,10 +39,8 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-
             'message' => ["required", "string", "max:255"],
             'status' => ["required", "boolean"]
-
         ]);
 
         DB::beginTransaction();
@@ -73,7 +71,7 @@ class AnnouncementController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Announcement Created!!',
-                'data' => $announcement, //use resource here
+                'data' => new AnnouncementResource($announcement), //use resource here
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
@@ -121,7 +119,7 @@ class AnnouncementController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Announcement Updated!!',
-                'data' => $this->updatedInstance //use Resource
+                'data' => AnnouncementResource::collection($this->updatedInstance) //use Resource
             ], 200);
 
         } catch (\Exception $error) {
@@ -178,7 +176,7 @@ class AnnouncementController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Announcement status Updated Successfully',
-                'data' => Announcement::paginate(AppConstant::PAGINATION)
+                'data' => AnnouncementResource::collection(Announcement::paginate(AppConstant::PAGINATION))->response()->getData(true)
             ], 200);
 
 
@@ -201,35 +199,36 @@ class AnnouncementController extends Controller
     public function destroy(Request $request)
     {
         $request->validate([
-            'announcements' => 'required|array|min:1',
-            'announcements.*' => 'exists:announcements,id'
+            'announcements' => ['required', 'array', 'min:1'],
+            'announcements.*' => ['exists:announcements,id']
         ]);
 
         DB::beginTransaction();
         try {
 
-            $announcements = Announcement::whereIn('id', $request->announcements);
+            $announcements = Announcement::whereIn('id', $request->announcements)->get();
 
-            $announcements->get()->each(function ($announcement) {
-                activity("Announcement deleted")
-                    ->causedBy(auth()->user())
-                    ->performedOn($announcement)
-                    ->withProperties([
-                        'ip' => Auth::user()->last_login_ip,
-                        'activity' => "Announcement deleted successfully",
-                        'target' => "$announcement->message",
-                    ])
-                    ->log(":causer.name deleted Announcement $announcement->message.");
-            }); //fix this
+            foreach($announcements as $announcement){
+                $announcement->delete();
+            }
+
+            activity("Announcement deleted")
+                ->causedBy(auth()->user())
+                ->performedOn($announcement)
+                ->withProperties([
+                    'ip' => Auth::user()->last_login_ip,
+                    'activity' => "Announcement deleted successfully",
+                    'target' => "$announcement->message",
+                ])
+                ->log(":causer.name deleted multiple Announcements $announcement->message.");
 
 
-            $announcements->delete();
 
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Successfully Announcement Deleted!!',
+                'message' => 'Announcements Deleted Successfully',
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
