@@ -6,6 +6,7 @@ use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
@@ -145,6 +146,7 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @throws ValidationException
      */
     public function destroy($ids)
     {
@@ -184,5 +186,37 @@ class UserController extends Controller
         } catch (\Exception$e) {
             throw ValidationException::withMessages([$e->getMessage()]);
         }
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+
+       $this->validate($request, [
+          'password' => ['required', 'string', 'min:8', 'confirmed']
+       ]);
+
+       $user = Auth::user();
+
+       $user->update([
+           'password' => Hash::make($request->password)
+       ]);
+
+        activity("Password Updated")
+            ->causedBy($user)
+            ->performedOn($user)
+            ->withProperties([
+                'ip' => $user->last_login_ip,
+                'activity' => "Password updated successfully",
+            ])
+            ->log(":causer.name updated Password");
+
+
+       return response()->json([
+           'status' => "successful",
+           'message' => "Password Update Successful"
+       ]);
     }
 }

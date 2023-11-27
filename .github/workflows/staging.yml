@@ -15,6 +15,7 @@ jobs:
         with:
           ref: staging
 
+
       - name: Deploy CikaNation-Api
         uses: appleboy/ssh-action@master
         with:

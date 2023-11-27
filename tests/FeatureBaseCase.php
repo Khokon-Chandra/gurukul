@@ -24,14 +24,10 @@ abstract class FeatureBaseCase extends TestCase
     {
         parent::setUp();
 
+
         $this->app->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-        $this->user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
 
-        $this->user->assignRole(Role::where('name', 'Administrator')->first());
+
     }
 }
