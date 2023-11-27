@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download');
         Route::apiResource('user', UserController::class);
+        Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])->name('download.activity')->middleware('permission:user.access.user.export-activity');
         Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
     });
 

@@ -58,6 +58,12 @@ class PermissionSeeder extends Seeder
                 'module_name' => 'user.access.user.change-password',
                 'name' => 'user.access.user.change-password',
                 'display_name' => 'User Can Change Password',
+            ],
+            [
+                'module_name' => 'user.access.user.export-activity',
+                'name' => 'user.access.user.export-activity',
+                'display_name' => 'User Can Export Activity in Excel Format',
+
             ]
         ];
 
