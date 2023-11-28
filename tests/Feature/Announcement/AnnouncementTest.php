@@ -302,4 +302,58 @@ class AnnouncementTest extends FeatureBaseCase
         ]);
 
     }
+
+    public function testThatUserCanGetAnnouncementData(): void
+    {
+        $this->artisan('migrate:fresh');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $announcementId = 1;
+
+        $CreateAnnouncements = Announcement::factory(3)
+            ->sequence(...[
+                [
+                    'id' =>  $announcementId,
+                    'message' => "testing message",
+                    'status' => false,
+                    'number' => 1234567
+                ],
+                [
+                    'status' => true,
+                ],
+                [
+                    'status' => true,
+                ],
+            ])->createQuietly();
+
+
+        $this->assertDatabaseCount('announcements', 3);
+
+        $response = $this->actingAs($user)->getJson(route('service.get.announcement.data', ['announcement_id' => $announcementId]));
+
+
+        $response->assertOk();
+
+        $response->assertSeeInOrder(['1234567', 'testing message']);
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'id',
+                'number',
+                'message',
+                'status',
+                'created_by',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
+
+
+    }
 }

@@ -91,13 +91,13 @@ class UserIpTest extends FeatureBaseCase
 
         $response->assertStatus(200);
 
-        //assert that 3 ip addresses were created
+
         $this->assertCount(3, UserIp::all());
 
-        //assert that search returned the right value
+
         $response->assertSeeInOrder(['103.15.245.75']);
 
-        //assert that search did not return the wrong value
+
         $response->assertDontSee( [
             '107.15.245.75',
             '109.15.245.75',

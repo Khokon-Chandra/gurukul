@@ -239,5 +239,21 @@ class AnnouncementController extends Controller
         }
     }
 
+    public function getData(Request $request): JsonResponse
+    {
+
+        $request->validate([
+            'announcement_id' => ['required']
+        ]);
+
+        $announcement = Announcement::findOrFail($request->announcement_id);
+
+        return response()->json([
+            'status' => 'success',
+            'data' =>  new AnnouncementResource($announcement)
+        ], 200);
+
+    }
+
 
 }
