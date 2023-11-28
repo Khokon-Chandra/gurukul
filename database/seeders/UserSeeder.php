@@ -3,10 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -21,13 +20,11 @@ class UserSeeder extends Seeder
             'name'     => 'Administrator',
             'username' => 'administrator',
             'email'    => 'test@example.com',
-            'password' => '$2y$10$Okwifu2E/SJ9XlWJEr658ep.acTxxAKj5/9dQgoOTCuCgXygA9AQ.',
+            'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
 
         $user->assignRole('Administrator');
-
-        User::factory(10)->create();
 
     }
 }
