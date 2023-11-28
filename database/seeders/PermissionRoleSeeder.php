@@ -20,6 +20,5 @@ class PermissionRoleSeeder extends Seeder
 
         $role->syncPermissions(Permission::get()->pluck('id')->toArray());
 
-        ModelsRole::factory(20)->create();
     }
 }
