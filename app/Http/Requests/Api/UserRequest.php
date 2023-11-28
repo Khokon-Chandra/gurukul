@@ -12,7 +12,6 @@ class UserRequest extends BaseFormRequest
     protected array $routeRequest = [
         'api/v1/user/{user}|put' => [
             'rules' => 'storeMethodRule',
-            // 'prepareForValidation' => 'storePrepareForValidation'
         ],
        
     ];
