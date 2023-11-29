@@ -224,11 +224,12 @@ class AnnouncementTest extends FeatureBaseCase
             ->create()
             ->assignRole(Role::first());
 
-        $announcementId = 1;
+        $announcementId = 103;
 
         $CreateAnnouncements = Announcement::factory(3)
             ->sequence(...[
                 [
+                    'id' => 103,
                     'status' => false,
                 ],
                 [
