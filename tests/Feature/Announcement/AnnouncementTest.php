@@ -313,33 +313,33 @@ class AnnouncementTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-        $announcementId = 1;
+
 
         $CreateAnnouncements = Announcement::factory(3)
             ->sequence(...[
                 [
-                    'id' =>  $announcementId,
-                    'message' => "testing message",
                     'status' => false,
-                    'number' => 1234567
                 ],
                 [
+                    "number" => 1234567,
                     'status' => true,
+                    'message' => "Active",
+
                 ],
                 [
-                    'status' => true,
+                    'status' => false,
                 ],
             ])->createQuietly();
 
 
         $this->assertDatabaseCount('announcements', 3);
 
-        $response = $this->actingAs($user)->getJson(route('service.get.announcement.data', ['announcement_id' => $announcementId]));
+        $response = $this->actingAs($user)->getJson(route('service.get.announcement.data'));
 
 
         $response->assertOk();
 
-        $response->assertSeeInOrder(['1234567', 'testing message']);
+        $response->assertSeeInOrder(['1234567', 'Active']);
 
         $response->assertJsonStructure([
             'status',
