@@ -64,6 +64,12 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.export-activity',
                 'display_name' => 'User Can Export Activity in Excel Format',
 
+            ],
+            [
+                'module_name' => 'user.access.user.view-announcement-data',
+                'name' => 'user.access.user.view-announcement-data',
+                'display_name' => 'User Can View Announcement Data',
+
             ]
         ];
 

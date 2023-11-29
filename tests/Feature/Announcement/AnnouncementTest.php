@@ -305,41 +305,18 @@ class AnnouncementTest extends FeatureBaseCase
 
     public function testThatUserCanGetAnnouncementData(): void
     {
-        $this->artisan('migrate:fresh');
+        $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
+            ->create()->assignRole(Role::first());
 
-
-
-        $CreateAnnouncements = Announcement::factory(3)
-            ->sequence(...[
-                [
-                    'status' => false,
-                ],
-                [
-                    "number" => 1234567,
-                    'status' => true,
-                    'message' => "Active",
-
-                ],
-                [
-                    'status' => false,
-                ],
-            ])->createQuietly();
-
-
-        $this->assertDatabaseCount('announcements', 3);
+        $ActiveAnnouncement = Announcement::where('status', true)->first();
 
         $response = $this->actingAs($user)->getJson(route('service.get.announcement.data'));
 
-
         $response->assertOk();
 
-        $response->assertSeeInOrder(['1234567', 'Active']);
+        $response->assertSeeInOrder([$ActiveAnnouncement->number,  $ActiveAnnouncement->message]);
 
         $response->assertJsonStructure([
             'status',
