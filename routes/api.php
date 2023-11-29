@@ -37,7 +37,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
         Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
         Route::put('announcements', [AnnouncementController::class, 'update'])->name('announcements.update');
-        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateAnAnnouncementStatus'])->name('announcement.status.update');
+        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateAnAnnouncementStatus'])->name('announcement.status.update')->middleware('permission:user.access.user.change-announcement-status');
         Route::delete('announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
         Route::apiResource('cashflows', CashflowController::class);
         Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMany'])->name('cashflows.delete_many');

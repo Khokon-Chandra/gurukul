@@ -64,7 +64,14 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.export-activity',
                 'display_name' => 'User Can Export Activity in Excel Format',
 
+            ],
+            [
+                'module_name' => 'user.access.user.change-announcement-status',
+                'name' => 'user.access.user.change-announcement-status',
+                'display_name' => 'User Can Update Announcement Status',
+
             ]
+
         ];
 
         Permission::factory(count($permissions))
