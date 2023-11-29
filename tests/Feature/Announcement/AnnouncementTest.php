@@ -218,13 +218,10 @@ class AnnouncementTest extends FeatureBaseCase
 
     public function testThatAnnouncementStatusCanBeUpdated(): void {
 
-        $this->artisan('migrate:fresh ');
+        $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
+        $user = User::factory()->create()
+            ->assignRole(Role::first());
 
         $announcementId = 1;
 
@@ -242,7 +239,7 @@ class AnnouncementTest extends FeatureBaseCase
             ])->createQuietly();
 
 
-        $this->assertDatabaseCount('announcements', 3);
+        $this->assertDatabaseCount('announcements', 103);
 
 
         $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [

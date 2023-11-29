@@ -58,7 +58,13 @@ class PermissionSeeder extends Seeder
                 'module_name' => 'user.access.user.change-password',
                 'name' => 'user.access.user.change-password',
                 'display_name' => 'User Can Change Password',
-            ]
+            ],
+            [
+                'module_name' => 'user.access.user.update-announcement-status',
+                'name' => 'user.access.user.update-announcement-status',
+                'display_name' => 'User Can Update Announcement Status',
+            ],
+
         ];
 
         Permission::factory(count($permissions))
