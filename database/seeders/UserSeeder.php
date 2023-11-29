@@ -23,7 +23,8 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
-        $user->permissions()->sync(Permission::pluck('id')->toArray());
+
+        $user->assignRole('Administrator');
 
     }
 }
