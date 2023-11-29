@@ -45,6 +45,11 @@ class UserTest extends TestCase
                     'last_login_ip',
                     'active',
                     'created_at',
+                    'role' => [
+                        'id',
+                        'name',
+                        'created_at',
+                    ]
                 ]
             ],
             'meta' => [

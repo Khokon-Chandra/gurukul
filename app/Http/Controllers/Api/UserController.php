@@ -23,7 +23,7 @@ class UserController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $users = User::latest()->filter($request)->paginate(AppConstant::PAGINATION);
+        $users = User::with('roles')->latest()->filter($request)->paginate(AppConstant::PAGINATION);
         return UserResource::collection($users);
     }
 
