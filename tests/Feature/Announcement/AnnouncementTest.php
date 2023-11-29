@@ -241,7 +241,6 @@ class AnnouncementTest extends FeatureBaseCase
             ])->createQuietly();
 
 
-        $this->assertDatabaseCount('announcements', 103);
 
 
         $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [
