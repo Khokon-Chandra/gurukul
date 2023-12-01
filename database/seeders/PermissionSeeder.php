@@ -70,7 +70,14 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.view-announcement-data',
                 'display_name' => 'User Can View Announcement Data',
 
+            ],
+            [
+                'module_name' => 'user.access.user.update-announcement-status',
+                'name' => 'user.access.user.update-announcement-status',
+                'display_name' => 'User Can Update Announcement Status',
+
             ]
+
         ];
 
         Permission::factory(count($permissions))

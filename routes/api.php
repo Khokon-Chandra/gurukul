@@ -37,7 +37,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
         Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
         Route::put('announcements', [AnnouncementController::class, 'update'])->name('announcements.update');
-        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateAnAnnouncementStatus'])->name('announcement.status.update');
+        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateAnAnnouncementStatus'])->name('announcement.status.update')->middleware('permission:user.access.user.update-announcement-status');
         Route::delete('announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
         Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('get.announcement.data')->middleware('permission:user.access.user.view-announcement-data');
         Route::apiResource('cashflows', CashflowController::class);
