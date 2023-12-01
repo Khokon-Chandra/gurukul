@@ -34,12 +34,12 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-
-            'username' => 'required|string|unique:users|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|string|min:8|confirmed',
-            'roles' => 'required',
+            'department_id' => 'required|exists:departments,id',
+            'username'      => 'required|string|unique:users|max:255',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:users|max:255',
+            'password'      => 'required|string|min:8|confirmed',
+            'roles'         => 'required',
         ]);
 
         $roles = $request->roles ?? [];
@@ -52,6 +52,7 @@ class UserController extends Controller
 
 
         $input = $request->only([
+            'department_id',
             'name',
             'username',
             'email',
@@ -95,10 +96,11 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $this->validate($request, [
-            'username' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'roles' => 'required',
+            'department_id' => 'required|exists:departments,id',
+            'username'      => 'required|string|max:255',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|max:255',
+            'roles'         => 'required',
         ]);
 
         if (count($request->roles) > 0) {
@@ -113,6 +115,7 @@ class UserController extends Controller
         $user = User::find($id);
         if ($user) {
             $input = $request->only([
+                'department_id',
                 'name',
                 'username',
                 'email',
