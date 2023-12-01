@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\Chat\ChatResource;
 use App\Models\Chat;
@@ -16,7 +17,12 @@ class ChatController extends Controller
 
     public function index()
     {
-        //
+       $chats = Chat::latest()->paginate(AppConstant::PAGINATION);
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => ChatResource::collection($chats)->response()->getData(true)
+        ], 200);
     }
 
     public function store(Request $request): JsonResponse

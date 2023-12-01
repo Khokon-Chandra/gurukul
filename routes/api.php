@@ -49,7 +49,7 @@ Route::group(['middleware' => ['auth:api']], function () {
      */
 
     Route::name('user.')->group(function () {
-        
+
         Route::apiResource('chats', ChatController::class)
             ->middleware('permission:user.access.user.chat-agent');
 

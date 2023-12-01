@@ -22,9 +22,59 @@ class ChatTest extends FeatureBaseCase
         $response->assertStatus(401);
     }
 
-//    public function test_that_only_authorized_user_can_see_chat_list(): void {
-//
-//    }
+    public function test_that_only_authorized_user_can_see_chat_list(): void {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        $response = $this->actingAs($user)->getJson(route('user.chats.index'));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'data' => [
+                    '*' => [
+                        'id',
+                        'subject',
+                        'receiver',
+                        'date',
+                        'time',
+                        'created_at',
+                        'updated_at'
+
+                    ]
+                ],
+                'links' =>[
+                    'first',
+                    'last',
+                    'prev',
+                    'next'
+                ],
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'links' => [
+                        '*' => [
+                            'url',
+                            'label',
+                            'active'
+                        ]
+                    ],
+                    'path',
+                    'per_page',
+                    'to',
+                    'total'
+                ]
+            ]
+
+        ]);
+
+    }
 
 
     public function test_that_only_authorized_user_can_create_chat(): void
