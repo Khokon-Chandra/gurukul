@@ -6,9 +6,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
-use Tests\TestCase;
+use Tests\FeatureBaseCase;
 
-class UserTest extends TestCase
+class UserTest extends FeatureBaseCase
 {
     /**
      * User List.
