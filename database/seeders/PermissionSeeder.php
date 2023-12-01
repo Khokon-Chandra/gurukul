@@ -58,7 +58,13 @@ class PermissionSeeder extends Seeder
                 'module_name' => 'user.access.user.change-password',
                 'name' => 'user.access.user.change-password',
                 'display_name' => 'User Can Change Password',
-            ]
+            ],
+            [
+                'module_name' => 'user.access.user.chat-agent',
+                'name' => 'user.access.user.chat-agent',
+                'display_name' => 'User Can Create Chat',
+            ],
+
         ];
 
         Permission::factory(count($permissions))
