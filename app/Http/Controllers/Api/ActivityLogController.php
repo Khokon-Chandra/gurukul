@@ -47,19 +47,19 @@ class ActivityLogController extends Controller
         $dateRange = $request->dateRange ? explode('to',$request->dateRange) : false;
 
         return $query->when($request->description ?? false, function ($query, $description) {
-            $query->where('description', 'like', "%$description%");
+            $query->where('description', 'like', "%{$description}%");
         })
 
             ->when($request->log_name ?? false, function ($query, $logName) {
-                $query->where('log_name', 'like', "%$logName%");
+                $query->where('log_name', 'like', "%{$logName}%");
             })
 
             ->when($request->activity ?? false, function ($query, $activity) {
-                $query->where('activity_log.properties->activity', 'like', "%$activity%");
+                $query->where('activity_log.properties->activity', 'like', "%{$activity}%");
             })
 
             ->when($request->target ?? false, function ($query, $target) {
-                $query->where('activity_log.properties->target', 'like', "%$target%");
+                $query->where('activity_log.properties->target', 'like', "%{$target}%");
             })
 
 
@@ -75,6 +75,17 @@ class ActivityLogController extends Controller
 
                 $query->whereBetween('created_at', $this->parseDate(...$dateRange));
             });
+    }
+
+    public function exportActivity(Request $request)
+    {
+
+        $query = Activity::latest();
+
+        $activities = $this->filter($query, $request)
+            ->get();
+
+        return ActivityResource::collection($activities);
     }
 
 

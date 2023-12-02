@@ -184,7 +184,7 @@ class AnnouncementTest extends FeatureBaseCase
     /**
      * Event attached to listener
      */
-    public function testListenerIsAttachedToEvent()
+    public function testListenerIsAttachedToEvent(): void
     {
         Event::fake();
         Event::assertListening(
@@ -220,14 +220,20 @@ class AnnouncementTest extends FeatureBaseCase
 
         $this->artisan('migrate:fresh --seed');
 
+<<<<<<< HEAD
         $user = User::factory()->create()
+=======
+        $user = User::factory()
+            ->create()
+>>>>>>> 5560f0e12a367f5f9bbdcc151f458ce058bf5d98
             ->assignRole(Role::first());
 
-        $announcementId = 1;
+        $announcementId = 103;
 
         $CreateAnnouncements = Announcement::factory(3)
             ->sequence(...[
                 [
+                    'id' => 103,
                     'status' => false,
                 ],
                 [
@@ -239,7 +245,10 @@ class AnnouncementTest extends FeatureBaseCase
             ])->createQuietly();
 
 
+<<<<<<< HEAD
         $this->assertDatabaseCount('announcements', 103);
+=======
+>>>>>>> 5560f0e12a367f5f9bbdcc151f458ce058bf5d98
 
 
         $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [
