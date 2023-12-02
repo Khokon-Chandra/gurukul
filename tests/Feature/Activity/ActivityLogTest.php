@@ -3,6 +3,7 @@
 namespace Tests\Feature\Activity;
 
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Tests\FeatureBaseCase;
 
 class ActivityLogTest extends FeatureBaseCase
@@ -128,5 +129,32 @@ class ActivityLogTest extends FeatureBaseCase
                 ],
             ]
         ]);
+    }
+
+    public function testUserCanDownloadActivityInExcelFormat(){
+        $this->artisan("migrate:fresh --seed");
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        $response = $this->actingAs($user)->getJson(route('admin.download.activity'));
+
+        $response->assertOk();
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'log_name',
+                    'description',
+                    'target',
+                    'activity',
+                    'ip',
+                    'created_at',
+                ],
+            ]
+        ]);
+
     }
 }
