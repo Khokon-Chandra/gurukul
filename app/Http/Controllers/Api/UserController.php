@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UserRequest;
 use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
@@ -22,11 +25,11 @@ class UserController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $users = User::latest()->filter($request)->paginate(AppConstant::PAGINATION);
+        $users = User::with('roles')->latest()->filter($request)->paginate(AppConstant::PAGINATION);
         return UserResource::collection($users);
     }
 
-   
+
     /**
      * Store a newly created resource in storage.
      */
@@ -86,78 +89,57 @@ class UserController extends Controller
         ]);
     }
 
-   
+
 
     /**
      * Update user.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, User $user)
     {
-        $this->validate($request, [
-            'username' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'roles' => 'required',
+        $user->update([
+            'name'       => $request->name,
+            'username'   => $request->username,
+            'email'      => $request->email,
+            'timezone'   => $request->timezone,
+            'updated_by' => Auth::id()
         ]);
 
-        if (count($request->roles) > 0) {
-            $roles = Role::whereIn('id', $request->roles)->get()->pluck('id')->toArray();
-            $unMatchedRolesId = array_diff($request->roles, $roles);
+        $user->roles()->sync([$request->role]);
 
-            if (count($unMatchedRolesId) > 0) {
-                throw ValidationException::withMessages(["There is No Permission with Id(s) [" . implode(', ', $unMatchedRolesId)]);
-            }
-        }
+        # log activity
+        activity('update_user')->causedBy(Auth::id())
+            ->performedOn($user)
+            ->withProperties([
+                'ip'       => Auth::user()->last_login_ip,
+                'target'   => $request->usernname,
+                'activity' => 'Update user successfully',
+            ])
+            ->log('Update user successfully');
 
-        $user = User::find($id);
-        if ($user) {
-            $input = $request->only([
-                'name',
-                'username',
-                'email',
-            ]);
-            $input['updated_by'] = Auth::user()->id;
-            $input['roles'] = $request->roles ?? $user->roles->toArray();
-
-            $user->update($input);
-            $user->roles()->sync($input['roles'] ?? []);
-
-            $user->load('roles');
-            # log activity
-            activity('update_user')->causedBy(Auth::user()->id)
-                ->performedOn($user)
-                ->withProperties([
-                    'ip' => Auth::user()->last_login_ip,
-                    'target' => $request->name,
-                    'activity' => 'Update user successfully',
-                ])
-                ->log('Update user successfully');
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'User Updated Successfully',
-                'data' => $user,
-            ]);
-        }
-
-        throw ValidationException::withMessages(['User Not Found!']);
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'User Updated Successfully',
+            'data'    => new UserResource($user),
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
+     * @throws ValidationException
      */
     public function destroy($ids)
     {
         try {
-            $ids = explode(',',$ids);
+            $ids = explode(',', $ids);
 
-            foreach ($ids as $id_check){
+            foreach ($ids as $id_check) {
                 $user = User::find($id_check);
                 if (!$user) {
                     throw ValidationException::withMessages(["With Id $id_check Not Found, Please Send Valid data"]);
-            }}
+                }
+            }
 
-            foreach ($ids as $id){
+            foreach ($ids as $id) {
                 $user = User::find($id);
                 $user->update([
                     'deleted_by' => Auth::user()->id,
@@ -181,8 +163,40 @@ class UserController extends Controller
                 'message' => 'User Successfully Deleted',
                 'data' => null,
             ]);
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             throw ValidationException::withMessages([$e->getMessage()]);
         }
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+
+        $this->validate($request, [
+            'password' => ['required', 'string', 'min:8', 'confirmed']
+        ]);
+
+        $user = Auth::user();
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        activity("Password Updated")
+            ->causedBy($user)
+            ->performedOn($user)
+            ->withProperties([
+                'ip' => $user->last_login_ip,
+                'activity' => "Password updated successfully",
+            ])
+            ->log(":causer.name updated Password");
+
+
+        return response()->json([
+            'status' => "successful",
+            'message' => "Password Update Successful"
+        ]);
     }
 }
