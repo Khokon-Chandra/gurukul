@@ -341,7 +341,7 @@ class UserIpTest extends FeatureBaseCase
     }
 
 
-    public function test_that_ip_address_list_can_be_sorted_in_ascending_order(): void
+    public function testThatIpAddressListCanBeSortedInAscendingOrder(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -398,7 +398,7 @@ class UserIpTest extends FeatureBaseCase
 
     }
 
-    public function test_that_ip_address_list_can_be_sorted_in_descending_order(): void
+    public function testThatIpAddressListCanBeSortedInDescendingOrder(): void
     {
         $this->artisan('migrate:fresh --seed');
 
