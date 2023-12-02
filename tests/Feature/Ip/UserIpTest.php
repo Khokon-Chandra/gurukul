@@ -24,12 +24,12 @@ class UserIpTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-            UserIp::create([
-                'ip_address' => '103.15.245.75',
-                'description' => 'testing Ip',
-                'whitelisted' => 1,
-                'created_by' => 2,
-            ]);
+        UserIp::create([
+            'ip_address' => '103.15.245.75',
+            'description' => 'testing Ip',
+            'whitelisted' => 1,
+            'created_by' => 2,
+        ]);
 
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
@@ -60,7 +60,8 @@ class UserIpTest extends FeatureBaseCase
 
     }
 
-    public function testThatUserCanSearchOnTheIpAddressField(): void{
+    public function testThatUserCanSearchOnTheIpAddressField(): void
+    {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()
@@ -86,18 +87,18 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         $response = $this->actingAs($user)
-            ->getJson('/api/v1/user-ip?search=103');
+            ->getJson(route('admin.user-ip.index', ['search' => '103']));
 
         $response->assertStatus(200);
 
-        //assert that 3 ip addresses were created
+
         $this->assertCount(3, UserIp::all());
 
-        //assert that search returned the right value
+
         $response->assertSeeInOrder(['103.15.245.75']);
 
-        //assert that search did not return the wrong value
-        $response->assertDontSee( [
+
+        $response->assertDontSee([
             '107.15.245.75',
             '109.15.245.75',
         ]);
@@ -140,12 +141,12 @@ class UserIpTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)
             ->postJson('/api/v1/user-ip', [
-            'number1' => 103,
-            'number2' => 15,
-            'number3' => 245,
-            'number4' => 75,
-            'description' => 'testing description',
-        ]);
+                'number1' => 103,
+                'number2' => 15,
+                'number3' => 245,
+                'number4' => 75,
+                'description' => 'testing description',
+            ]);
 
 
         $response->assertStatus(200);
@@ -174,121 +175,120 @@ class UserIpTest extends FeatureBaseCase
         ]);
     }
 
-   /**
-    * User Ip Update
-    */
-   public function testUserIpUpdate()
-   {
-       $this->artisan('migrate:fresh --seed');
+    /**
+     * User Ip Update
+     */
+    public function testUserIpUpdate()
+    {
+        $this->artisan('migrate:fresh --seed');
 
-       $user = User::factory()
-           ->state([
-               'active' => true
-           ])
-           ->createQuietly();
-
-
-       $user->assignRole(Role::where('name', 'Administrator')->first());
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
 
 
-       $userIp = UserIp::factory()->create();
+        $user->assignRole(Role::where('name', 'Administrator')->first());
 
 
-       $response = $this->actingAs($user)->putJson('/api/v1/user-ip/'.$userIp->id.'', [
-           'number1' => 103,
-           'number2' => 15,
-           'number3' => 245,
-           'number4' => 75,
-           'whitelisted' => 1,
-           'description' => 'testing updated descriptoin',
-       ]);
-
-       $response->assertStatus(200);
-       $response->assertJsonStructure([
-           "status",
-           "message",
-           "data" => [
-               "id",
-               "ip_address",
-               "description",
-               "whitelisted",
-               "created_by",
-               "updated_by",
-               "deleted_by",
-               "deleted_at",
-               "created_at",
-               "updated_at",
-           ]
-       ]);
-
-       $response->assertJson([
-           'status' => true,
-           'message' => true,
-           'data' => true
-       ]);
-   }
-
-   /**
-    * Users Ip Update Multiple
-    */
-   public function testUserIpUpdateMultiple()
-   {
-       $this->artisan('migrate:fresh --seed');
-
-       $user = User::factory()
-           ->state([
-               'active' => true
-           ])
-           ->createQuietly();
-
-           $user->assignRole(Role::where('name', 'Administrator')->first());
-
-           UserIp::factory(2)->create();
-
-           $data = [
-               "items" => [
-                   [
-                       "id" => 1,
-                       "item" => [
-                           "number1" => "103",
-                           "number2" => "15",
-                           "number3" => "245",
-                           "number4" => "80",
-                           "whitelisted" => 1,
-                           "description" => "testing Ip Updated"
-                       ]
-                   ],
-                   [
-                       "id" => 2,
-                       "item" => [
-                           "number1" => "103",
-                           "number2" => "15",
-                           "number3" => "245",
-                           "number4" => "90",
-                           "whitelisted" => 1,
-                           "description" => "testing Ip Updated"
-                       ]
-                   ]
-               ]
-           ];
+        $userIp = UserIp::factory()->create();
 
 
-       $response = $this->actingAs($user)->putJson('/api/v1/user-ips',$data);
+        $response = $this->actingAs($user)->putJson('/api/v1/user-ip/' . $userIp->id . '', [
+            'number1' => 103,
+            'number2' => 15,
+            'number3' => 245,
+            'number4' => 75,
+            'whitelisted' => 1,
+            'description' => 'testing updated descriptoin',
+        ]);
 
-       $response->assertStatus(200);
-       $response->assertJsonStructure([
-           "status",
-           "message",
-           "data"
-       ]);
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            "status",
+            "message",
+            "data" => [
+                "id",
+                "ip_address",
+                "description",
+                "whitelisted",
+                "created_by",
+                "updated_by",
+                "deleted_by",
+                "deleted_at",
+                "created_at",
+                "updated_at",
+            ]
+        ]);
 
-       $response->assertJson([
-           'status' => true,
-           'message' => true,
-           'data' => true
-       ]);
-   }
+        $response->assertJson([
+            'status' => true,
+            'message' => true,
+            'data' => true
+        ]);
+    }
 
+    /**
+     * Users Ip Update Multiple
+     */
+    public function testUserIpUpdateMultiple()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $user->assignRole(Role::where('name', 'Administrator')->first());
+
+        UserIp::factory(2)->create();
+
+        $data = [
+            "items" => [
+                [
+                    "id" => 1,
+                    "item" => [
+                        "number1" => "103",
+                        "number2" => "15",
+                        "number3" => "245",
+                        "number4" => "80",
+                        "whitelisted" => 1,
+                        "description" => "testing Ip Updated"
+                    ]
+                ],
+                [
+                    "id" => 2,
+                    "item" => [
+                        "number1" => "103",
+                        "number2" => "15",
+                        "number3" => "245",
+                        "number4" => "90",
+                        "whitelisted" => 1,
+                        "description" => "testing Ip Updated"
+                    ]
+                ]
+            ]
+        ];
+
+
+        $response = $this->actingAs($user)->putJson('/api/v1/user-ips', $data);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            "status",
+            "message",
+            "data"
+        ]);
+
+        $response->assertJson([
+            'status' => true,
+            'message' => true,
+            'data' => true
+        ]);
+    }
 
 
     /**
@@ -338,4 +338,119 @@ class UserIpTest extends FeatureBaseCase
             'data' => false
         ]);
     }
+
+
+    public function testThatIpAddressListCanBeSortedInAscendingOrder(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()->create()->assignRole(Role::first());
+
+        $data = UserIp::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 1,
+                    'ip_address' => '103.15.245.75',
+                ],
+                [
+                    'id' => 2,
+                    'ip_address' => '109.15.245.75',
+                ],
+                [
+                    'id' => 3,
+                    'ip_address' => '107.15.245.75',
+                ],
+            ])
+            ->create();
+
+
+        $response = $this->actingAs($user)
+            ->getJson(route('admin.user-ip.index', ['filter' => 'asc']));
+
+        $response->assertStatus(200);
+
+
+        $this->assertCount(3, UserIp::all());
+
+
+        $response->assertSeeInOrder(['103.15.245.75', '109.15.245.75', '107.15.245.75']);
+
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'ip1',
+                    'ip2',
+                    'ip3',
+                    'ip4',
+                    'ip_address',
+                    'whitelisted',
+                    'description',
+                    'created_at',
+                ]
+            ],
+            'links',
+            'meta'
+        ]);
+
+
+    }
+
+    public function testThatIpAddressListCanBeSortedInDescendingOrder(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()->create()->assignRole(Role::first());
+
+        $datas = UserIp::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 1,
+                    'ip_address' => '103.15.245.75',
+                ],
+                [
+                    'id' => 2,
+                    'ip_address' => '109.15.245.75',
+                ],
+                [
+                    'id' => 3,
+                    'ip_address' => '107.15.245.75',
+                ],
+            ])
+            ->create();
+
+
+        $response = $this->actingAs($user)
+            ->getJson(route('admin.user-ip.index', ['filter' => 'desc']));
+
+        $response->assertStatus(200);
+
+
+        $this->assertCount(3, UserIp::all());
+
+
+        $response->assertSeeInOrder(['107.15.245.75', '109.15.245.75', '103.15.245.75']);
+
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'ip1',
+                    'ip2',
+                    'ip3',
+                    'ip4',
+                    'ip_address',
+                    'whitelisted',
+                    'description',
+                    'created_at',
+                ]
+            ],
+            'links',
+            'meta'
+        ]);
+
+    }
+
 }
