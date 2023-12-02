@@ -78,7 +78,6 @@ class PermissionSeeder extends Seeder
 
             ],
             [
-
                 'module_name' => 'user.access.user.perform-ip-tasks',
                 'name' => 'user.access.user.perform-ip-tasks',
                 'display_name' => 'Perform User Ip Related Tasks',
