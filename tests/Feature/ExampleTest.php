@@ -7,7 +7,6 @@ use Tests\FeatureBaseCase;
 
 class ExampleTest extends FeatureBaseCase
 {
-    use RefreshDatabase;
     /**
      * A basic test example.
      */
