@@ -14,7 +14,7 @@ class ChatTest extends FeatureBaseCase
 {
 
 
-    public function test_that_unauthorized_user_cannot_create_chat(): void
+    public function testThatUnauthorizedUsersCannotCreateChat(): void
     {
 
         $response = $this->postJson(route('user.chats.store'));
@@ -22,7 +22,7 @@ class ChatTest extends FeatureBaseCase
         $response->assertStatus(401);
     }
 
-    public function test_that_only_authorized_user_can_see_chat_list(): void {
+    public function testThatOnlyAuthorizedUsersCanSeeChatList(): void {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()
@@ -77,7 +77,7 @@ class ChatTest extends FeatureBaseCase
     }
 
 
-    public function test_that_only_authorized_user_can_create_chat(): void
+    public function testThatOnlyAuthorizedUsersCanCreateChat(): void
     {
         $this->artisan('migrate:fresh --seed');
 
