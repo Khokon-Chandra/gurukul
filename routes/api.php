@@ -18,9 +18,9 @@ Route::group(['middleware' => ['auth:api']], function () {
      * Admin module routes
      */
     Route::name('admin.')->group(function () {
-        Route::apiResource('user-ip', UserIpController::class);
+        Route::apiResource('user-ip', UserIpController::class)->middleware('permission:user.access.user.perform-ip-tasks');
         Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
-            ->name('user-ip.multi_update');
+            ->name('user-ip.multi_update')->middleware('permission:user.access.user.perform-ip-tasks');
         Route::apiResource('roles', RoleController::class);
         Route::get('logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download');
