@@ -68,6 +68,7 @@ class UserTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
+        $this->withoutExceptionHandling();
         $user = User::factory()
             ->state([
                 'active' => true
@@ -75,6 +76,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly();
 
         $role = Role::create(['name' => 'Writer',]);
+
         $role->permissions()->sync([1, 2, 3]);
 
 
@@ -85,7 +87,7 @@ class UserTest extends FeatureBaseCase
             'email' => "testuser@mail.com",
             'password' => "password",
             'password_confirmation' => 'password',
-            'roles' => [1],
+            'role' => 1,
         ]);
 
         $response->assertStatus(200);
@@ -124,6 +126,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly();
 
         $role = Role::create(['name' => 'Writer',]);
+
         $role->permissions()->sync([1, 2, 3]);
 
 
@@ -132,7 +135,7 @@ class UserTest extends FeatureBaseCase
             'username' => "test_user",
             'name' => "Test User",
             'email' => "testuser@mail.com",
-            'roles' => [1],
+            'role' => 1,
         ]);
 
         $response->assertStatus(200);
@@ -150,13 +153,8 @@ class UserTest extends FeatureBaseCase
                 "last_login_ip",
                 "timezone",
                 "created_at",
-                "updated_at",
-                "created_by",
-                "updated_by",
-                "deleted_by",
                 "last_login_at",
-                "deleted_at",
-                "roles"
+                "role",
             ]
         ]);
 

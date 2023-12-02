@@ -14,6 +14,7 @@ class LogoutTest extends FeatureBaseCase
      */
     public function testUserCanLogout()
     {
+        $this->artisan('migrate:fresh --seed');
         // Create a user
         $user = User::factory()->create();
 

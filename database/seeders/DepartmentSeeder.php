@@ -13,6 +13,17 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-        Department::factory(10)->create();
+        Department::insert([
+            ["name"=>"cs", "created_at" => now()],
+            ["name"=>"finance", "created_at" => now()],
+            ["name"=>"audit", "created_at" => now()],
+            ["name"=>"hr", "created_at" => now()],
+            ["name"=>"Purchasing", "created_at" => now()],
+            ["name"=>"Inventory", "created_at" => now()],
+            ["name"=>"Marketing", "created_at" => now()],
+            ["name"=>"general affair", "created_at" => now()],
+            ["name"=>"it", "created_at" => now()],
+            ["name"=>"restaurant", "created_at" => now()],
+        ]);
     }
 }

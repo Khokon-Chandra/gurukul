@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
         User::factory(10)->create();
 
         $user = \App\Models\User::create([
-            'department_id'     => Department::factory()->create()->id,
+            'department_id'     => rand(1,10),
             'name'              => 'Administrator',
             'username'          => 'administrator',
             'email'             => 'test@example.com',

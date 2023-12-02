@@ -6,8 +6,6 @@ use App\Events\AnnouncementEvent;
 use App\Listeners\AnnouncementListener;
 use App\Models\Announcement;
 use App\Models\User;
-use Database\Factories\UserFactory;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\FeatureBaseCase;
 use Illuminate\Support\Facades\Event;
 
@@ -193,6 +191,8 @@ class AnnouncementTest extends FeatureBaseCase
 
     public function testAnnouncementCanBeNotify(): void
     {
+        $this->artisan('migrate:fresh --seed');
+        
         Event::fake([
             AnnouncementEvent::class
         ]);
