@@ -220,16 +220,6 @@ class AnnouncementTest extends FeatureBaseCase
 
         $this->artisan('migrate:fresh --seed');
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        $user = User::factory()->create()
-=======
-        $user = User::factory()
-            ->create()
->>>>>>> 5560f0e12a367f5f9bbdcc151f458ce058bf5d98
-            ->assignRole(Role::first());
-=======
->>>>>>> 675c6a66bd90b79ac49fa55ced1b45d0c5bbf461
 
         $user = User::factory()->create()->assignRole(Role::first());
 
@@ -253,13 +243,8 @@ class AnnouncementTest extends FeatureBaseCase
             ])->createQuietly();
 
 
-<<<<<<< HEAD
-        $this->assertDatabaseCount('announcements', 103);
-=======
->>>>>>> 5560f0e12a367f5f9bbdcc151f458ce058bf5d98
 
         $this->assertDatabaseCount('announcements', 103);
-
 
 
         $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [
