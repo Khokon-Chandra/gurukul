@@ -221,25 +221,33 @@ class AnnouncementTest extends FeatureBaseCase
         $this->artisan('migrate:fresh --seed');
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         $user = User::factory()->create()
 =======
         $user = User::factory()
             ->create()
 >>>>>>> 5560f0e12a367f5f9bbdcc151f458ce058bf5d98
             ->assignRole(Role::first());
+=======
+>>>>>>> 675c6a66bd90b79ac49fa55ced1b45d0c5bbf461
 
-        $announcementId = 103;
+        $user = User::factory()->create()->assignRole(Role::first());
+
+        $announcementId = 104;
 
         $CreateAnnouncements = Announcement::factory(3)
             ->sequence(...[
                 [
-                    'id' => 103,
-                    'status' => false,
+                    'id' => $announcementId,
+                    'status' => true
+
                 ],
                 [
+
                     'status' => true,
                 ],
                 [
+
                     'status' => true,
                 ],
             ])->createQuietly();
@@ -249,6 +257,9 @@ class AnnouncementTest extends FeatureBaseCase
         $this->assertDatabaseCount('announcements', 103);
 =======
 >>>>>>> 5560f0e12a367f5f9bbdcc151f458ce058bf5d98
+
+        $this->assertDatabaseCount('announcements', 103);
+
 
 
         $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [
@@ -261,9 +272,10 @@ class AnnouncementTest extends FeatureBaseCase
         $allOtherAnnouncements = Announcement::where('id', '!=', $announcementId)->get();
 
 
-        $this->assertEquals(true,   $updatedAnnouncement->status);
+        $this->assertEquals(false,   $updatedAnnouncement->status);
 
         foreach ($allOtherAnnouncements as $otherAnnouncement){
+
             $this->assertEquals(false, $otherAnnouncement->status);
         }
 
@@ -306,6 +318,37 @@ class AnnouncementTest extends FeatureBaseCase
                 ]
             ]
         ]);
+
+    }
+
+    public function testThatUserCanGetAnnouncementData(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()->assignRole(Role::first());
+
+        $ActiveAnnouncement = Announcement::where('status', true)->first();
+
+        $response = $this->actingAs($user)->getJson(route('service.get.announcement.data'));
+
+        $response->assertOk();
+
+        $response->assertSeeInOrder([$ActiveAnnouncement->number,  $ActiveAnnouncement->message]);
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'id',
+                'number',
+                'message',
+                'status',
+                'created_by',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
+
 
     }
 }
