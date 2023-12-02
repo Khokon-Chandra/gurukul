@@ -73,7 +73,7 @@ class PermissionSeeder extends Seeder
             ],
             [
                 'module_name' => 'user.access.user.update-announcement-status',
-                'name' => 'user.access.user.change-announcement-status',
+                'name' => 'user.access.user.update-announcement-status',
                 'display_name' => 'User Can Update Announcement Status',
 
             ],
