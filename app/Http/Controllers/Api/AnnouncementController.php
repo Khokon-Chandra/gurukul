@@ -161,7 +161,7 @@ class AnnouncementController extends Controller
                 ->log(":causer.name updated Announcement {$announcement->message}.");
 
 
-            $allOtherAnnouncements = Announcement::where('id', '!=', $announcement->id)->get();
+            $allOtherAnnouncements = Announcement::where('id', '!=', $announcement->id)->where('status', true)->get();
 
             foreach ($allOtherAnnouncements as $otherAnnouncement) {
                 $otherAnnouncement->update([
@@ -208,6 +208,12 @@ class AnnouncementController extends Controller
 
             $announcements = Announcement::whereIn('id', $request->announcements)->get();
 
+
+
+            if($announcements){
+
+            }
+
             foreach($announcements as $announcement){
                 $announcement->delete();
             }
@@ -218,9 +224,12 @@ class AnnouncementController extends Controller
                 ->withProperties([
                     'ip' => Auth::user()->last_login_ip,
                     'activity' => "Announcement deleted successfully",
-                    'target' => "{$announcement->message}",
+
+                    'target' => "{$announcement->message}"
+
                 ])
                 ->log(":causer.name deleted multiple Announcements {$announcement->message}.");
+
 
 
 
@@ -238,4 +247,20 @@ class AnnouncementController extends Controller
             ], 500);
         }
     }
+
+
+    public function getData(Request $request): JsonResponse
+    {
+
+        $announcement = Announcement::where('status', true)->firstOrFail();
+
+        return response()->json([
+            'status' => 'success',
+            'data' =>  new AnnouncementResource($announcement)
+        ], 200);
+
+    }
+
+
+
 }

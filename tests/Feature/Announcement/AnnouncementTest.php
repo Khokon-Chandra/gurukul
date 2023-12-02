@@ -220,26 +220,31 @@ class AnnouncementTest extends FeatureBaseCase
 
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->create()
-            ->assignRole(Role::first());
 
-        $announcementId = 103;
+        $user = User::factory()->create()->assignRole(Role::first());
+
+        $announcementId = 104;
 
         $CreateAnnouncements = Announcement::factory(3)
             ->sequence(...[
                 [
-                    'id' => 103,
-                    'status' => false,
+                    'id' => $announcementId,
+                    'status' => true
+
                 ],
                 [
+
                     'status' => true,
                 ],
                 [
+
                     'status' => true,
                 ],
             ])->createQuietly();
 
+
+
+        $this->assertDatabaseCount('announcements', 103);
 
 
 
@@ -253,9 +258,10 @@ class AnnouncementTest extends FeatureBaseCase
         $allOtherAnnouncements = Announcement::where('id', '!=', $announcementId)->get();
 
 
-        $this->assertEquals(true,   $updatedAnnouncement->status);
+        $this->assertEquals(false,   $updatedAnnouncement->status);
 
         foreach ($allOtherAnnouncements as $otherAnnouncement){
+
             $this->assertEquals(false, $otherAnnouncement->status);
         }
 
@@ -298,6 +304,37 @@ class AnnouncementTest extends FeatureBaseCase
                 ]
             ]
         ]);
+
+    }
+
+    public function testThatUserCanGetAnnouncementData(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()->assignRole(Role::first());
+
+        $ActiveAnnouncement = Announcement::where('status', true)->first();
+
+        $response = $this->actingAs($user)->getJson(route('service.get.announcement.data'));
+
+        $response->assertOk();
+
+        $response->assertSeeInOrder([$ActiveAnnouncement->number,  $ActiveAnnouncement->message]);
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'id',
+                'number',
+                'message',
+                'status',
+                'created_by',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
+
 
     }
 }
