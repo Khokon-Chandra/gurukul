@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\CashflowController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
@@ -53,6 +54,10 @@ Route::group(['middleware' => ['auth:api']], function () {
      */
 
     Route::name('user.')->group(function () {
+
+        Route::apiResource('chats', ChatController::class)
+            ->middleware('permission:user.access.user.chat-agent');
+
         Route::put('change-password', [UserController::class, 'changePassword'])
             ->name('change.password')
             ->middleware('permission:user.access.user.change-password');

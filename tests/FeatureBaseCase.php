@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Role;
 
 abstract class FeatureBaseCase extends TestCase
 {
-    use DatabaseMigrations, RefreshDatabase;
+    use DatabaseMigrations;
 
     /**
      * @var String

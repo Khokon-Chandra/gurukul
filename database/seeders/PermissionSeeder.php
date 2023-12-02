@@ -62,16 +62,14 @@ class PermissionSeeder extends Seeder
             ],
             [
 
+                'module_name' => 'user.access.user.chat-agent',
+                'name' => 'user.access.user.chat-agent',
+                'display_name' => 'User Can Create Chat',
+            ],
+            [
                 'module_name' => 'user.access.user.export-activity',
                 'name' => 'user.access.user.export-activity',
                 'display_name' => 'User Can Export Activity in Excel Format',
-
-            ],
-            [
-                'module_name' => 'user.access.user.view-announcement-data',
-                'name' => 'user.access.user.view-announcement-data',
-                'display_name' => 'User Can View Announcement Data',
-
             ],
             [
                 'module_name' => 'user.access.user.update-announcement-status',
@@ -80,12 +78,18 @@ class PermissionSeeder extends Seeder
 
             ],
             [
+
+                'module_name' => 'user.access.user.view-announcement-data',
+                'name' => 'user.access.user.view-announcement-data',
+                'display_name' => 'User Can View Announcement Data',
+
+            ],
+            [
                 'module_name' => 'user.access.user.perform-ip-tasks',
                 'name' => 'user.access.user.perform-ip-tasks',
                 'display_name' => 'Perform User Ip Related Tasks',
 
-            ]
-
+            ],
         ];
 
         Permission::factory(count($permissions))
