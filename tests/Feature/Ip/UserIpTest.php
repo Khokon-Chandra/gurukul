@@ -403,7 +403,7 @@ class UserIpTest extends FeatureBaseCase
 
         $user = User::factory()->create()->assignRole(Role::first());
 
-        $data = UserIp::factory(3)
+        $datas = UserIp::factory(3)
             ->sequence(...[
                 [
                     'id' => 1,
