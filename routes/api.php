@@ -26,6 +26,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download');
         Route::apiResource('user', UserController::class);
+        Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])->name('download.activity')->middleware('permission:user.access.user.export-activity');
         Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
         Route::apiResource('attendances',AttendanceController::class);
     });
@@ -39,6 +40,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
         Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
         Route::put('announcements', [AnnouncementController::class, 'update'])->name('announcements.update');
+        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateAnAnnouncementStatus'])->name('announcement.status.update')->middleware('permission:user.access.user.change-announcement-status');
         Route::delete('announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
         Route::apiResource('cashflows', CashflowController::class);
         Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMany'])->name('cashflows.delete_many');
