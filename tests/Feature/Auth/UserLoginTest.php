@@ -9,7 +9,6 @@ use Tests\FeatureBaseCase;
 
 class UserLoginTest extends FeatureBaseCase
 {
-    use RefreshDatabase;
     public function testUserCanSuccessfullyLogin()
     {
         $user = User::factory()
