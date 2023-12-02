@@ -26,13 +26,21 @@ class UserIpController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
 
-        $query = UserIp::latest();
+        $query = UserIp::query();
 
-        if($request->filled('search')){
+        if ($request->filled('search')) {
             $query->where('ip_address', 'LIKE', "%{$request->search}%");
         }
 
-        $UserIps = $query->paginate(AppConstant::PAGINATION);
+
+        if ($request->filled('filter')) {
+
+            $filterValue = $request->filter === 'asc' ? 'asc' : 'desc';
+            $query->orderBy('id', $filterValue);
+
+        }
+
+        $UserIps = $query->latest()->paginate(AppConstant::PAGINATION);
 
         return UserIpResource::collection($UserIps);
     }
@@ -100,7 +108,7 @@ class UserIpController extends Controller
                 'status' => 'successful',
                 'message' => 'User Ip Created Successfully',
                 'data' => new UserIpResource($UserIp),
-            ],200);
+            ], 200);
 
         } catch (\Exception$e) {
             DB::rollBack();
@@ -196,7 +204,7 @@ class UserIpController extends Controller
                 'status' => 'successful',
                 'message' => 'User Ip Updated Successfully',
                 'data' => new UserIpResource($UserIp),
-            ],200);
+            ], 200);
 
         } catch (\Exception$e) {
             DB::rollBack();
@@ -217,7 +225,7 @@ class UserIpController extends Controller
             DB::beginTransaction();
             $userIdData = [];
             $items = $request->input('items');
-            foreach($items as $item){
+            foreach ($items as $item) {
                 $id = $item['id'];
 
                 if ($item['item']['number3'] === null && $item['item']['number4'] !== null) {
@@ -277,13 +285,13 @@ class UserIpController extends Controller
 
                 // Create Activity Log
                 activity('update User ip')->causedBy(Auth::user()->id)
-                ->performedOn($UserIp)
-                ->withProperties([
-                    'ip' => Auth::user()->last_login_ip,
-                    'target' => $UserIp->ip_address,
-                    'activity' => 'Updated User ip',
-                ])
-                ->log('Successfully Updated User ip, ' . $dataLog);
+                    ->performedOn($UserIp)
+                    ->withProperties([
+                        'ip' => Auth::user()->last_login_ip,
+                        'target' => $UserIp->ip_address,
+                        'activity' => 'Updated User ip',
+                    ])
+                    ->log('Successfully Updated User ip, ' . $dataLog);
 
                 $userIdData[] = $UserIp;
             }
@@ -293,8 +301,8 @@ class UserIpController extends Controller
             return response()->json([
                 'status' => 'successful',
                 'message' => 'Users Ip Updated Successfully',
-                'data' =>  UserIpResource::collection($userIdData),
-            ],200);
+                'data' => UserIpResource::collection($userIdData),
+            ], 200);
 
         } catch (\Exception$e) {
             DB::rollBack();
@@ -311,15 +319,16 @@ class UserIpController extends Controller
     {
 
         try {
-            $ids = explode(',',$ids);
+            $ids = explode(',', $ids);
 
-            foreach ($ids as $id_check){
+            foreach ($ids as $id_check) {
                 $userIp = UserIp::find($id_check);
                 if (!$userIp) {
                     throw ValidationException::withMessages(["Ip With Id $id_check Not Found, Please Send Valid data"]);
-            }}
+                }
+            }
 
-            foreach ($ids as $id){
+            foreach ($ids as $id) {
                 $userIp = UserIp::find($id);
                 $userIp->update([
                     'deleted_by' => Auth::user()->id,
@@ -337,7 +346,6 @@ class UserIpController extends Controller
 
                 $userIp->delete();
             }
-
 
 
             return response()->json([
