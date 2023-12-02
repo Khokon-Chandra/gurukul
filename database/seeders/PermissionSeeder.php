@@ -60,10 +60,18 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'User Can Change Password',
             ],
             [
+
                 'module_name' => 'user.access.user.chat-agent',
                 'name' => 'user.access.user.chat-agent',
                 'display_name' => 'User Can Create Chat',
             ],
+
+            [
+                'module_name' => 'user.access.user.perform-ip-tasks',
+                'name' => 'user.access.user.perform-ip-tasks',
+                'display_name' => 'Perform User Ip Related Tasks',
+            ],
+
 
         ];
 
