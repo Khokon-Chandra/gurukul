@@ -45,6 +45,11 @@ class UserTest extends TestCase
                     'last_login_ip',
                     'active',
                     'created_at',
+                    'role' => [
+                        'id',
+                        'name',
+                        'created_at',
+                    ]
                 ]
             ],
             'meta' => [
@@ -107,7 +112,7 @@ class UserTest extends TestCase
     /**
      * User Update.
      */
-    public function test_userUpdate(): void
+    public function testUserUpdate(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -118,6 +123,7 @@ class UserTest extends TestCase
             ->createQuietly();
 
         $role = Role::create(['name' => 'Writer',]);
+
         $role->permissions()->sync([1, 2, 3]);
 
 
@@ -125,7 +131,7 @@ class UserTest extends TestCase
             'username' => "test_user",
             'name' => "Test User",
             'email' => "testuser@mail.com",
-            'roles' => [1],
+            'role' => 1,
         ]);
 
         $response->assertStatus(200);
@@ -143,13 +149,8 @@ class UserTest extends TestCase
                 "last_login_ip",
                 "timezone",
                 "created_at",
-                "updated_at",
-                "created_by",
-                "updated_by",
-                "deleted_by",
                 "last_login_at",
-                "deleted_at",
-                "roles"
+                "role",
             ]
         ]);
 
