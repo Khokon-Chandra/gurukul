@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\CashflowController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
@@ -25,6 +26,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download');
         Route::apiResource('user', UserController::class);
         Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
+        Route::apiResource('attendances',AttendanceController::class);
     });
 
 
