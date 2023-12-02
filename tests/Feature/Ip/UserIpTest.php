@@ -453,5 +453,4 @@ class UserIpTest extends FeatureBaseCase
 
     }
 
-
 }
