@@ -72,7 +72,7 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'User Can Export Activity in Excel Format',
             ],
             [
-                'module_name' => 'user.access.user.change-announcement-status',
+                'module_name' => 'user.access.user.update-announcement-status',
                 'name' => 'user.access.user.change-announcement-status',
                 'display_name' => 'User Can Update Announcement Status',
 
