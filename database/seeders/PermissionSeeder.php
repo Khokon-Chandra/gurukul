@@ -63,13 +63,18 @@ class PermissionSeeder extends Seeder
                 'module_name' => 'user.access.user.export-activity',
                 'name' => 'user.access.user.export-activity',
                 'display_name' => 'User Can Export Activity in Excel Format',
-
             ],
             [
                 'module_name' => 'user.access.user.change-announcement-status',
                 'name' => 'user.access.user.change-announcement-status',
                 'display_name' => 'User Can Update Announcement Status',
 
+            ],
+            [
+
+                'module_name' => 'user.access.user.perform-ip-tasks',
+                'name' => 'user.access.user.perform-ip-tasks',
+                'display_name' => 'Perform User Ip Related Tasks',
             ]
 
         ];

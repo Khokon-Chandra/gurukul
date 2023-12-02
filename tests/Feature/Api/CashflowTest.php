@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use App\Models\Cashflow;
 use App\Models\User;
-use Database\Factories\CashflowFactory;
 use Illuminate\Http\UploadedFile;
 use Tests\FeatureBaseCase;
 
@@ -17,7 +16,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->getJson(route('service.cashflows.index'));
 
@@ -43,7 +42,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
             'item_name' => '',
@@ -74,7 +73,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
             'item_price' => 'non numeric value',
@@ -88,7 +87,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $image = UploadedFile::fake()->image('banner.png', 200, 200);
 
@@ -105,7 +104,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
         $image = UploadedFile::fake()->image('banner.pdf', 200, 200); // pdf file type
 
 
@@ -122,7 +121,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $image = UploadedFile::fake()->image('banner.png', 200, 200);
 
@@ -152,7 +151,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
         $image = UploadedFile::fake()->image('banner.png', 200, 200); // pdf file type
 
         $cashflow = Cashflow::first();
@@ -170,7 +169,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
         $image = UploadedFile::fake()->image('banner.png', 200, 200); // pdf file type
 
         $cashflow = Cashflow::first();
@@ -193,7 +192,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $image = UploadedFile::fake()->image('banner.png', 200, 200);
 
@@ -248,7 +247,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->deleteJson(route('service.cashflows.destroy', Cashflow::first()->id));
         $response->assertStatus(200);
@@ -264,7 +263,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
 
         $cashflowId = Cashflow::take(5)->pluck('id')->toArray();
@@ -290,7 +289,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), $credentials);
 
@@ -314,7 +313,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->deleteJson(route('service.cashflows.delete_many'), $credentials);
 
