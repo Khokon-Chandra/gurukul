@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChatStoreRequest;
 use App\Http\Resources\Api\Chat\ChatResource;
 use App\Models\Chat;
 use Illuminate\Http\JsonResponse;
@@ -16,17 +18,16 @@ class ChatController extends Controller
 
     public function index()
     {
-        //
+       $chats = Chat::latest()->paginate(AppConstant::PAGINATION);
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => ChatResource::collection($chats)->response()->getData(true)
+        ], 200);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(ChatStoreRequest $request): JsonResponse
     {
-        $request->validate([
-            'send_to' => ['required', 'string', 'max:255'],
-            'date' => ['required'],
-            'time' => ['required'],
-            'subject' => ['required', 'string']
-        ]);
 
         DB::beginTransaction();
 
@@ -68,21 +69,4 @@ class ChatController extends Controller
 
     }
 
-
-    public function show(string $id)
-    {
-        //
-    }
-
-
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-
-    public function destroy(string $id)
-    {
-        //
-    }
 }

@@ -55,14 +55,13 @@ class PermissionSeeder extends Seeder
         $this->insertPermission();
 
         $permissions = [
+
                 [
                     'module_name' => 'user.access.user.change-password',
                     'name' => 'user.access.user.change-password',
                     'display_name' => 'User Can Change Password',
                 ],
                 [
-
-
                     'module_name' => 'user.access.user.chat-agent',
                     'name' => 'user.access.user.chat-agent',
                     'display_name' => 'User Can Create Chat',
@@ -93,11 +92,6 @@ class PermissionSeeder extends Seeder
                     'display_name' => 'Perform User Ip Related Tasks',
 
                 ],
-
-
-            ]
-
-
         ];
 
         Permission::factory(count($permissions))

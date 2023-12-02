@@ -25,7 +25,7 @@ class AnnouncementController extends Controller
     public function index(Request $request)
     {
 
-        $announcements  = Announcement::latest()->filter($request)->paginate(20);
+        $announcements  = Announcement::latest()->filter($request)->paginate(AppConstant::PAGINATION);
 
         return response()->json([
             'status' => 'success',
@@ -62,9 +62,9 @@ class AnnouncementController extends Controller
                 ->withProperties([
                     'ip' => Auth::user()->last_login_ip,
                     'activity' => "Announcement created successfully",
-                    'target' => "$announcement->message",
+                    'target' => "{$announcement->message}",
                 ])
-                ->log(":causer.name created Announcement $announcement->message.");
+                ->log(":causer.name created Announcement {$announcement->message}.");
 
             DB::commit();
 
@@ -108,9 +108,9 @@ class AnnouncementController extends Controller
                     ->withProperties([
                         'ip' => Auth::user()->last_login_ip,
                         'activity' => "Announcement updated successfully",
-                        'target' => "$announcement->message",
+                        'target' => "{$announcement->message}",
                     ])
-                    ->log(":causer.name updated Announcement $announcement->message.");
+                    ->log(":causer.name updated Announcement {$announcement->message}.");
             }
 
 
@@ -156,9 +156,9 @@ class AnnouncementController extends Controller
                 ->withProperties([
                     'ip' => Auth::user()->last_login_ip,
                     'activity' => "Announcement status updated successfully. Action also updated the status of all other announcements",
-                    'target' => "$announcement->message",
+                    'target' => "{$announcement->message}",
                 ])
-                ->log(":causer.name updated Announcement $announcement->message.");
+                ->log(":causer.name updated Announcement {$announcement->message}.");
 
 
             $allOtherAnnouncements = Announcement::where('id', '!=', $announcement->id)->where('status', true)->get();
@@ -224,6 +224,7 @@ class AnnouncementController extends Controller
                 ->withProperties([
                     'ip' => Auth::user()->last_login_ip,
                     'activity' => "Announcement deleted successfully",
+
                     'target' => "{$announcement->message}"
 
                 ])
@@ -247,6 +248,7 @@ class AnnouncementController extends Controller
         }
     }
 
+
     public function getData(Request $request): JsonResponse
     {
 
@@ -258,6 +260,7 @@ class AnnouncementController extends Controller
         ], 200);
 
     }
+
 
 
 }
