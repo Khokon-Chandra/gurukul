@@ -13,7 +13,7 @@ class NotificationTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username', 'administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->getJson(route('service.notifications.index'));
 
@@ -41,7 +41,7 @@ class NotificationTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user     = User::where('username', 'administrator')->first();
+        $user     = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.notifications.store'), [
             'subject' => 'Dummy text for subject',
@@ -69,7 +69,7 @@ class NotificationTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user         = User::where('username', 'administrator')->first();
+        $user         = User::where('username','administrator')->first();
 
         $notification = Notification::factory()->createQuietly();
 
@@ -99,7 +99,7 @@ class NotificationTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user         = User::where('username', 'administrator')->first();
+        $user         = User::where('username','administrator')->first();
 
         $notifications = Notification::take(5)->pluck('id')->toArray();
         $notifications = implode(',',$notifications);
@@ -124,7 +124,7 @@ class NotificationTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user     = User::where('username', 'administrator')->first();
+        $user     = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.notifications.store'), $credentials);
 
@@ -147,7 +147,7 @@ class NotificationTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user     = User::where('username', 'administrator')->first();
+        $user     = User::where('username','administrator')->first();
 
         $notification = Notification::factory()->createQuietly();
 
