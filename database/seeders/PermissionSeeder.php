@@ -52,7 +52,7 @@ class PermissionSeeder extends Seeder
         }
 
 
-        $this->insertPermission();
+        // $this->insertPermission();
 
         $permissions = [
             [
@@ -92,9 +92,13 @@ class PermissionSeeder extends Seeder
             ],
         ];
 
-        Permission::factory(count($permissions))
-            ->sequence(...$permissions)
-            ->create();
+        foreach ($permissions as $permission) {
+            Permission::updateOrCreate($permission, $permission);
+        }
+
+        $role = Role::where('name', "Administrator")->first();
+
+        $role->syncPermissions(\Spatie\Permission\Models\Permission::get()->pluck('id')->toArray());
     }
 
 
