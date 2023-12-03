@@ -17,6 +17,7 @@ class PermissionSeeder extends Seeder
 {
 
     private $permissions = [];
+
     /**
      * Run the database seeds.
      */
@@ -33,20 +34,20 @@ class PermissionSeeder extends Seeder
 
             if ($route->getPrefix() !== $prefix) continue;
 
-            $index       = $this->getIndex($route);
-            $moduleName  = $this->getModuleName($route);
+            $index = $this->getIndex($route);
+            $moduleName = $this->getModuleName($route);
 
-            $routeName   = $this->getRouteName($route);
+            $routeName = $this->getRouteName($route);
 
-            $displayName = str_replace('_', ' ',$routeName);
-            $displayName = str_replace('-', ' ',$displayName);
+            $displayName = str_replace('_', ' ', $routeName);
+            $displayName = str_replace('-', ' ', $displayName);
 
             $parentModule = $this->getParentModuleName($route);
 
             $this->permissions[$parentModule][$moduleName][] = [
-                'name'          => $routeName,
-                'module_name'   => $moduleName,
-                'display_name'  => $displayName
+                'name' => $routeName,
+                'module_name' => $moduleName,
+                'display_name' => $displayName
             ];
         }
 
@@ -60,18 +61,41 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'User Can Change Password',
             ],
             [
+
+                'module_name' => 'user.access.user.chat-agent',
+                'name' => 'user.access.user.chat-agent',
+                'display_name' => 'User Can Create Chat',
+            ],
+            [
+                'module_name' => 'user.access.user.export-activity',
+                'name' => 'user.access.user.export-activity',
+                'display_name' => 'User Can Export Activity in Excel Format',
+            ],
+            [
+                'module_name' => 'user.access.user.update-announcement-status',
+                'name' => 'user.access.user.update-announcement-status',
+                'display_name' => 'User Can Update Announcement Status',
+
+            ],
+            [
+
+                'module_name' => 'user.access.user.view-announcement-data',
+                'name' => 'user.access.user.view-announcement-data',
+                'display_name' => 'User Can View Announcement Data',
+
+            ],
+            [
                 'module_name' => 'user.access.user.perform-ip-tasks',
                 'name' => 'user.access.user.perform-ip-tasks',
                 'display_name' => 'Perform User Ip Related Tasks',
-            ]
 
+            ],
         ];
 
         Permission::factory(count($permissions))
             ->sequence(...$permissions)
             ->create();
     }
-
 
 
     private function insertPermission()
@@ -81,8 +105,8 @@ class PermissionSeeder extends Seeder
             if (Permission::where('name', $moduleName)->count()) continue;
 
             $module = Permission::create([
-                'name'         => $moduleName,
-                'module_name'  => $moduleName,
+                'name' => $moduleName,
+                'module_name' => $moduleName,
                 'display_name' => $moduleName,
             ]);
 
@@ -91,9 +115,9 @@ class PermissionSeeder extends Seeder
                 if (Permission::where('name', $parent)->count()) continue;
 
                 $parent = Permission::create([
-                    'parent_id'    => $module->id,
-                    'name'         => $parent,
-                    'module_name'  => $parent,
+                    'parent_id' => $module->id,
+                    'name' => $parent,
+                    'module_name' => $parent,
                     'display_name' => $parent,
                 ]);
 
@@ -106,7 +130,7 @@ class PermissionSeeder extends Seeder
                         'parent_id' => $parent->id,
                         'name' => $child['name'],
                         'display_name' => $child['display_name'],
-                        'module_name'  => $child['module_name'],
+                        'module_name' => $child['module_name'],
                     ]);
                 }
             }
@@ -114,14 +138,13 @@ class PermissionSeeder extends Seeder
     }
 
 
-
     private function getRouteName($route)
     {
-        $index    = $this->getIndex($route);
-        $method   = explode('@', $route->getActionName())[1];
+        $index = $this->getIndex($route);
+        $method = explode('@', $route->getActionName())[1];
         $routeArr = explode('.', $route->getName());
-        $name     = $routeArr[$index];
-        $ability  = config('abilities')[$method] ?? $method;
+        $name = $routeArr[$index];
+        $ability = config('abilities')[$method] ?? $method;
 
         if ($ability == $name) {
             return $name;
@@ -141,10 +164,9 @@ class PermissionSeeder extends Seeder
     }
 
 
-
     private function getIndex($route)
     {
-        $routes =  explode('.', $route->getName());
+        $routes = explode('.', $route->getName());
         $length = count($routes);
 
         return [
