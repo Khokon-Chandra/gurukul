@@ -92,13 +92,21 @@ class PermissionSeeder extends Seeder
             ],
         ];
 
+        $this->insertPermission();
+
         foreach ($permissions as $permission) {
             Permission::updateOrCreate($permission, $permission);
         }
 
-        $role = Role::where('name', "Administrator")->first();
+        $role = Role::where('name', 'Administrator')->first();
 
-        $role->syncPermissions(\Spatie\Permission\Models\Permission::get()->pluck('id')->toArray());
+        if (! $role) {
+            $role = Role::create(['name' => 'Administrator']);
+        }
+
+        if ($role) {
+            $role->syncPermissions(\Spatie\Permission\Models\Permission::get()->pluck('id')->toArray());
+        }
     }
 
 
@@ -108,7 +116,11 @@ class PermissionSeeder extends Seeder
 
             if (Permission::where('name', $moduleName)->count()) continue;
 
-            $module = Permission::create([
+            $module = Permission::updateOrCreate([
+                'name' => $moduleName,
+                'module_name' => $moduleName,
+                'display_name' => $moduleName,
+            ], [
                 'name' => $moduleName,
                 'module_name' => $moduleName,
                 'display_name' => $moduleName,
@@ -118,7 +130,12 @@ class PermissionSeeder extends Seeder
 
                 if (Permission::where('name', $parent)->count()) continue;
 
-                $parent = Permission::create([
+                $parent = Permission::updateOrCreate([
+                    'parent_id' => $module->id,
+                    'name' => $parent,
+                    'module_name' => $parent,
+                    'display_name' => $parent,
+                ], [
                     'parent_id' => $module->id,
                     'name' => $parent,
                     'module_name' => $parent,
@@ -130,7 +147,12 @@ class PermissionSeeder extends Seeder
 
                     if (Permission::where('name', $child['name'])->count()) continue;
 
-                    Permission::create([
+                    Permission::updateOrCreate([
+                        'parent_id' => $parent->id,
+                        'name' => $child['name'],
+                        'display_name' => $child['display_name'],
+                        'module_name' => $child['module_name'],
+                    ], [
                         'parent_id' => $parent->id,
                         'name' => $child['name'],
                         'display_name' => $child['display_name'],
