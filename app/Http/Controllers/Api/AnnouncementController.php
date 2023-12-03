@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Constants\AppConstant;
 use App\Events\AnnouncementEvent;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\UpdateAnnouncementRequest;
+use App\Http\Requests\Api\Annoncement\AnnouncementRequest;
 use App\Http\Resources\Api\AnnouncementResource;
 use App\Models\Announcement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -22,27 +21,26 @@ class AnnouncementController extends Controller
 
     private array $updatedInstance = [];
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
 
-        $announcements  = Announcement::latest()->filter($request)->paginate(AppConstant::PAGINATION);
+        $announcements  = Announcement::latest()
+            ->filter($request)
+            ->paginate(AppConstant::PAGINATION);
 
         return response()->json([
             'status' => 'success',
-            'data' =>  AnnouncementResource::collection($announcements)->response()->getData(true)
+            'data' =>  AnnouncementResource::collection($announcements)
+                ->response()
+                ->getData(true)
         ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AnnouncementRequest $request): JsonResponse
     {
-        $request->validate([
-            'message' => ["required", "string", "max:255"],
-            'status' => ["required", "boolean"]
-        ]);
-
         DB::beginTransaction();
         try {
 
@@ -85,7 +83,7 @@ class AnnouncementController extends Controller
     /**
      * Update Multiple Records.
      */
-    public function update(UpdateAnnouncementRequest $request)
+    public function update(AnnouncementRequest $request): JsonResponse
     {
 
         DB::beginTransaction();
@@ -131,16 +129,9 @@ class AnnouncementController extends Controller
         }
     }
 
-    public function updateAnAnnouncementStatus(Request $request): JsonResponse
+    public function updateAnAnnouncementStatus(AnnouncementRequest $request): JsonResponse
     {
-
-        $request->validate([
-            'announcement_id' => ['required']
-        ]);
-
-
         DB::beginTransaction();
-
 
         try {
 
@@ -196,41 +187,29 @@ class AnnouncementController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy(AnnouncementRequest $request): JsonResponse
     {
-        $request->validate([
-            'announcements' => ['required', 'array', 'min:1'],
-            'announcements.*' => ['exists:announcements,id']
-        ]);
-
         DB::beginTransaction();
         try {
 
-            $announcements = Announcement::whereIn('id', $request->announcements)->get();
-
-
-
-            if($announcements){
-
-            }
+            $announcements = Announcement::whereIn('id', $request->announcements)
+                ->get();
 
             foreach($announcements as $announcement){
+                activity("Announcement deleted")
+                    ->causedBy(auth()->user())
+                    ->performedOn($announcement)
+                    ->withProperties([
+                        'ip' => Auth::user()->last_login_ip,
+                        'activity' => "Announcement deleted successfully",
+
+                        'target' => "{$announcement->message}"
+
+                    ])
+                    ->log(":causer.name deleted multiple Announcements {$announcement->message}.");
+
                 $announcement->delete();
             }
-
-            activity("Announcement deleted")
-                ->causedBy(auth()->user())
-                ->performedOn($announcement)
-                ->withProperties([
-                    'ip' => Auth::user()->last_login_ip,
-                    'activity' => "Announcement deleted successfully",
-
-                    'target' => "{$announcement->message}"
-
-                ])
-                ->log(":causer.name deleted multiple Announcements {$announcement->message}.");
-
-
 
 
             DB::commit();
@@ -260,7 +239,4 @@ class AnnouncementController extends Controller
         ], 200);
 
     }
-
-
-
 }

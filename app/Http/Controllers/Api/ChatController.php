@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ChatStoreRequest;
+use App\Http\Requests\Api\Chat\ChatRequest;
 use App\Http\Resources\Api\Chat\ChatResource;
 use App\Models\Chat;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class ChatController extends Controller
 {
@@ -26,7 +24,7 @@ class ChatController extends Controller
         ], 200);
     }
 
-    public function store(ChatStoreRequest $request): JsonResponse
+    public function store(ChatRequest $request): JsonResponse
     {
 
         DB::beginTransaction();
