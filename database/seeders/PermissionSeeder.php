@@ -83,6 +83,7 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.view-announcement-data',
                 'display_name' => 'User Can View Announcement Data',
 
+
             ],
             [
                 'module_name' => 'user.access.user.perform-ip-tasks',
