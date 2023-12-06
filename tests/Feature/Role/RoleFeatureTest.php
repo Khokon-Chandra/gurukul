@@ -24,7 +24,7 @@ class RoleFeatureTest extends TestCase
                 'active' => true
             ])
             ->createQuietly();
-        
+
         $user->givePermissionTo('create_roles');
 
 
@@ -63,7 +63,7 @@ class RoleFeatureTest extends TestCase
             ])
             ->createQuietly();
 
-            $user->givePermissionTo('update_roles');
+        $user->givePermissionTo('update_roles');
 
 
 
@@ -110,7 +110,7 @@ class RoleFeatureTest extends TestCase
             ])
             ->createQuietly();
 
-            $user->givePermissionTo('delete_roles');
+        $user->givePermissionTo('delete_roles');
 
 
 
@@ -144,7 +144,7 @@ class RoleFeatureTest extends TestCase
                 'active' => true
             ])
             ->createQuietly();
-        
+
         $user->givePermissionTo('read_roles');
 
         $role = Role::create(['name' => 'Admin']);
@@ -157,20 +157,77 @@ class RoleFeatureTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response->assertJson(function (AssertableJson $json) {
-            $json->has('status')
-                ->has('data')
-                ->has(
-                    'data.0',
-                    fn (AssertableJson $json) =>
-                    $json->has('id')
-                        ->has('name')
-                        ->has('created_at')
-                        ->has('updated_at')
-                        ->etc()
-                );
-        });
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'created_at',
+                    'updated_at'
+                ]
+            ],
+            'meta',
+            'links',
+        ]);
+    }
 
 
+
+
+
+    /**
+     * @test
+     *
+     * @dataProvider roleData
+     */
+    public function testRoleInputValidation($credentials, $errors, $errorKeys)
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user     = User::where('username','administrator')->first();
+
+        $response = $this->actingAs($user)->postJson(route('admin.roles.store'), $credentials);
+
+        $response->assertJsonValidationErrors($errorKeys);
+
+        foreach ($errorKeys as $errorKey) {
+            $response->assertJsonValidationErrorFor($errorKey);
+        }
+
+        $response->assertStatus(422);
+    }
+
+
+
+
+
+    public static function roleData()
+    {
+        return [
+            [
+                [
+                    "name" => "",
+                    "permissions" => [1, 2, 3]
+                ],
+                [
+                    "name" => "The name field is required."
+                ],
+                [
+                    "name"
+                ]
+            ],
+            [
+                [
+                    "name" => "Moderator",
+                    "permissions" => '1,2,3',
+                ],
+                [
+                    "permissions" => "The permissions field must be an array."
+                ],
+                [
+                    "permissions"
+                ]
+            ]
+        ];
     }
 }

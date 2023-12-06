@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\Cashflow;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAnnouncementRequest extends FormRequest
+class DeleteManyCashflowRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,12 @@ class UpdateAnnouncementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'announcements'           => 'required|array|min:1',
-            'announcements.*.id'      => 'required|exists:announcements,id', 
-            'announcements.*.message' => 'required|string|max:255', 
-            'announcements.*.status'  => 'required|boolean', 
+            'cashflow_id' => [
+                'required',
+                'array',
+                'min:1',
+                'exists:cashflows,id'
+            ]
         ];
     }
 }

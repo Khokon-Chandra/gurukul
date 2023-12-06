@@ -4,7 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\UserIp;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -14,6 +17,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens,
+        SoftDeletes,
         HasFactory,
         Notifiable,
         HasRoles;
@@ -24,6 +28,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
+        'department_id',
         'username',
         'name',
         'email',
@@ -53,7 +58,7 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
-     /**
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
@@ -76,5 +81,32 @@ class User extends Authenticatable implements JWTSubject
     public function ips()
     {
         return $this->hasMany(UserIp::class);
+    }
+
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+
+
+    public function scopeFilter($query, $request)
+    {
+        $query->when($request->name ?? false, fn ($query, $name) => $query
+            ->where('name', 'like', "%$name%"))
+            ->when($request->username ?? false, fn ($query, $username) => $query
+                ->where('username', $username))
+            ->when($request->email ?? false, fn ($query, $email) => $query
+                ->where('email', 'like', "%$email%"))
+            ->when($request->date_range ?? false, function ($query, $range) {
+                $dates = explode(' to ',$range);
+                $dates = [
+                    @Carbon::parse($dates[0])->startOfDay()->format('Y-m-d H:i:s'),
+                    @Carbon::parse($dates[1])->endOfDay()->format('Y-m-d H:i:s'),
+                ];
+
+                $query->whereBetween('created_at',$dates);
+            });
     }
 }

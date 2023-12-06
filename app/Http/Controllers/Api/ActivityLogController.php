@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityResource;
 use App\Trait\Authorizable;
@@ -18,11 +19,11 @@ class ActivityLogController extends Controller
      */
     public function index(Request $request): JsonResource
     {
-        $query      = Activity::with('causer')
+        $query = Activity::with('causer')
                 ->latest();
 
         $data = $this->filter($query, $request)
-            ->paginate(20);
+            ->paginate(AppConstant::PAGINATION);
 
         return ActivityResource::collection($data);
     }
@@ -31,7 +32,7 @@ class ActivityLogController extends Controller
 
     public function download(Request $request)
     {
-        $query      = Activity::with('causer')
+        $query = Activity::with('causer')
                 ->latest();
 
         $data = $this->filter($query, $request)
@@ -47,34 +48,34 @@ class ActivityLogController extends Controller
         $dateRange = $request->dateRange ? explode('to',$request->dateRange) : false;
 
         return $query->when($request->description ?? false, function ($query, $description) {
-            $query->where('description', 'like', "%$description%");
-        })
-
-            ->when($request->log_name ?? false, function ($query, $logName) {
-                $query->where('log_name', 'like', "%$logName%");
-            })
-
-            ->when($request->activity ?? false, function ($query, $activity) {
-                $query->where('activity_log.properties->activity', 'like', "%$activity%");
-            })
-
-            ->when($request->target ?? false, function ($query, $target) {
-                $query->where('activity_log.properties->target', 'like', "%$target%");
-            })
-
-
-            ->when($request->start_date && $request->end_date ?? false, function ($query) use ($request) {
+            $query->where('description', 'like', "%{$description}%");
+        })->when($request->log_name ?? false, function ($query, $logName) {
+                $query->where('log_name', 'like', "%{$logName}%");
+            })->when($request->activity ?? false, function ($query, $activity) {
+                $query->where('activity_log.properties->activity', 'like', "%{$activity}%");
+            })->when($request->target ?? false, function ($query, $target) {
+                $query->where('activity_log.properties->target', 'like', "%{$target}%");
+            })->when($request->start_date && $request->end_date ?? false, function ($query) use ($request) {
 
                 $query->whereBetween('created_at', $this->parseDate(
                     $request->start_date,
                     $request->end_date
                 ));
-            })
-
-            ->when($dateRange, function ($query) use ($dateRange) {
+            })->when($dateRange, function ($query) use ($dateRange) {
 
                 $query->whereBetween('created_at', $this->parseDate(...$dateRange));
             });
+    }
+
+    public function exportActivity(Request $request)
+    {
+
+        $query = Activity::latest();
+
+        $activities = $this->filter($query, $request)
+            ->get();
+
+        return ActivityResource::collection($activities);
     }
 
 

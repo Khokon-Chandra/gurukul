@@ -6,11 +6,9 @@ use App\Events\AnnouncementEvent;
 use App\Listeners\AnnouncementListener;
 use App\Models\Announcement;
 use App\Models\User;
-use Database\Factories\UserFactory;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\FeatureBaseCase;
 use Illuminate\Support\Facades\Event;
-
+use Spatie\Permission\Models\Role;
 
 class AnnouncementTest extends FeatureBaseCase
 {
@@ -70,35 +68,40 @@ class AnnouncementTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'status',
             'data' => [
-                'current_page',
-                'data' => [
+                "data" => [
                     '*' => [
                         'id',
+                        'number',
                         'message',
                         'status',
+                        'created_by',
                         'created_at',
                         'updated_at'
                     ]
                 ],
-                'first_page_url',
-                'from',
-                'last_page',
-                'last_page_url',
                 'links' => [
-                    '*' => [
-                        'url',
-                        'label',
-                        'active'
-                    ]
+                    'first',
+                    'last',
+                    'prev',
+                    'next'
                 ],
-                'next_page_url',
-                'path',
-                'per_page',
-                'prev_page_url',
-                'to',
-                'total',
-            ],
-
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'links' => [
+                        '*' => [
+                            'url',
+                            'label',
+                            'active'
+                        ]
+                    ],
+                    'path',
+                    'per_page',
+                    'to',
+                    'total'
+                ]
+            ]
         ]);
     }
 
@@ -177,7 +180,7 @@ class AnnouncementTest extends FeatureBaseCase
     /**
      * Event attached to listener
      */
-    public function testListenerIsAttachedToEvent()
+    public function testListenerIsAttachedToEvent(): void
     {
         Event::fake();
         Event::assertListening(
@@ -193,6 +196,8 @@ class AnnouncementTest extends FeatureBaseCase
 
     public function testAnnouncementCanBeNotify(): void
     {
+        $this->artisan('migrate:fresh --seed');
+        
         Event::fake([
             AnnouncementEvent::class
         ]);
@@ -207,5 +212,127 @@ class AnnouncementTest extends FeatureBaseCase
         $response = $this->actingAs($user)->postJson(route('service.announcements.store'), $payload);
 
         Event::assertDispatched(AnnouncementEvent::class);
+    }
+
+    public function testThatAnnouncementStatusCanBeUpdated(): void {
+
+        $this->artisan('migrate:fresh --seed');
+
+
+        $user = User::factory()->create()->assignRole(Role::first());
+
+        $announcementId = 104;
+
+        $CreateAnnouncements = Announcement::factory(3)
+            ->sequence(...[
+                [
+                    'id' => $announcementId,
+                    'status' => true
+
+                ],
+                [
+
+                    'status' => true,
+                ],
+                [
+
+                    'status' => true,
+                ],
+            ])->createQuietly();
+
+
+
+        $this->assertDatabaseCount('announcements', 103);
+
+
+
+        $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [
+            'announcement_id' =>    $announcementId,
+        ]);
+
+        $response->assertStatus(200);
+
+        $updatedAnnouncement = Announcement::find($announcementId);
+        $allOtherAnnouncements = Announcement::where('id', '!=', $announcementId)->get();
+
+
+        $this->assertEquals(false,   $updatedAnnouncement->status);
+
+        foreach ($allOtherAnnouncements as $otherAnnouncement){
+
+            $this->assertEquals(false, $otherAnnouncement->status);
+        }
+
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                "data" => [
+                    '*' => [
+                        'id',
+                        'number',
+                        'message',
+                        'status',
+                        'created_by',
+                        'created_at',
+                        'updated_at'
+                    ]
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'prev',
+                    'next'
+                ],
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'links' => [
+                        '*' => [
+                            'url',
+                            'label',
+                            'active'
+                        ]
+                    ],
+                    'path',
+                    'per_page',
+                    'to',
+                    'total'
+                ]
+            ]
+        ]);
+
+    }
+
+    public function testThatUserCanGetAnnouncementData(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()->assignRole(Role::first());
+
+        $ActiveAnnouncement = Announcement::where('status', true)->first();
+
+        $response = $this->actingAs($user)->getJson(route('service.get.announcement.data'));
+
+        $response->assertOk();
+
+        $response->assertSeeInOrder([$ActiveAnnouncement->number,  $ActiveAnnouncement->message]);
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'id',
+                'number',
+                'message',
+                'status',
+                'created_by',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
+
+
     }
 }
