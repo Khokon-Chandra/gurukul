@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\UserIp;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -27,6 +28,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
+        'department_id',
         'username',
         'name',
         'email',
@@ -79,6 +81,12 @@ class User extends Authenticatable implements JWTSubject
     public function ips()
     {
         return $this->hasMany(UserIp::class);
+    }
+
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 
 
