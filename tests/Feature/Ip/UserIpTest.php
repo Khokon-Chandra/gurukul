@@ -10,7 +10,6 @@ use Tests\FeatureBaseCase;
 
 class UserIpTest extends FeatureBaseCase
 {
-
     /**
      * User Ip List
      */
