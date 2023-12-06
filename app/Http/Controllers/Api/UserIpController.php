@@ -17,6 +17,7 @@ use Illuminate\Validation\ValidationException;
 
 class UserIpController extends Controller
 {
+    use Authorizable;
 
     public function index(Request $request)
     {
@@ -55,10 +56,9 @@ class UserIpController extends Controller
             'message' => 'Admin Ip Retrieved Successfully',
             'data' => $data,
         ]);
-
     }
 
-    use Authorizable;
+   
 
     public function store(Request $request)
     {
@@ -141,9 +141,8 @@ class UserIpController extends Controller
                 'status' => 'successful',
                 'message' => 'User Ip Created Successfully',
                 'data' => $UserIp,
-            ],200);
-
-        } catch (\Exception$e) {
+            ], 200);
+        } catch (\Exception $e) {
             Log::error($e);
             throw ValidationException::withMessages([$e->getMessage()]);
         }
@@ -186,7 +185,7 @@ class UserIpController extends Controller
             ], 400);
         }
 
-//        DB::beginTransaction();
+        //        DB::beginTransaction();
         try {
 
             $UserIp = UserIp::find($id);
@@ -247,15 +246,14 @@ class UserIpController extends Controller
                 ])
                 ->log('Successfully Updated User ip, ' . $dataLog);
 
-//            DB::commit();
+            //            DB::commit();
 
             return response()->json([
                 'status' => 'successful',
                 'message' => 'User Ip Updated Successfully',
                 'data' => $UserIp,
-            ],200);
-
-        } catch (\Exception$e) {
+            ], 200);
+        } catch (\Exception $e) {
             Log::error($e);
             throw ValidationException::withMessages([$e->getMessage()]);
         }
@@ -317,10 +315,10 @@ class UserIpController extends Controller
         }
 
         try {
-//            DB::beginTransaction();
+            //            DB::beginTransaction();
             $userIdData = [];
             $items = $request->input('items');
-            foreach($items as $item){
+            foreach ($items as $item) {
                 $id = $item['id'];
 
                 if ($item['item']['number3'] === null && $item['item']['number4'] !== null) {
@@ -380,25 +378,24 @@ class UserIpController extends Controller
 
                 // Create Activity Log
                 activity('update User ip')->causedBy(Auth::user()->id)
-                ->performedOn($UserIp)
-                ->withProperties([
-                    'ip' => Auth::user()->last_login_ip,
-                    'target' => $UserIp->ip_address,
-                    'activity' => 'Updated User ip',
-                ])
-                ->log('Successfully Updated User ip, ' . $dataLog);
+                    ->performedOn($UserIp)
+                    ->withProperties([
+                        'ip' => Auth::user()->last_login_ip,
+                        'target' => $UserIp->ip_address,
+                        'activity' => 'Updated User ip',
+                    ])
+                    ->log('Successfully Updated User ip, ' . $dataLog);
 
                 $userIdData[] = $UserIp;
             }
 
-//            DB::commit();
+            //            DB::commit();
             return response()->json([
                 'status' => 'successful',
                 'message' => 'Users Ip Updated Successfully',
                 'data' =>  $userIdData,
-            ],200);
-
-        } catch (\Exception$e) {
+            ], 200);
+        } catch (\Exception $e) {
             Log::error($e);
             throw ValidationException::withMessages([$e->getMessage()]);
         }
@@ -408,15 +405,16 @@ class UserIpController extends Controller
     {
 
         try {
-            $ids = explode(',',$ids);
+            $ids = explode(',', $ids);
 
-            foreach ($ids as $id_check){
+            foreach ($ids as $id_check) {
                 $userIp = UserIp::find($id_check);
                 if (!$userIp) {
                     throw ValidationException::withMessages(["Ip With Id $id_check Not Found, Please Send Valid data"]);
-            }}
+                }
+            }
 
-            foreach ($ids as $id){
+            foreach ($ids as $id) {
                 $userIp = UserIp::find($id);
                 $userIp->update([
                     'deleted_by' => Auth::user()->id,
@@ -442,9 +440,8 @@ class UserIpController extends Controller
                 'message' => 'User Ip Successfully Deleted',
                 'data' => null,
             ]);
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             throw ValidationException::withMessages([$e->getMessage()]);
         }
     }
-
 }
