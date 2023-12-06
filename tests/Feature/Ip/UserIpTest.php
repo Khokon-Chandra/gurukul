@@ -97,6 +97,7 @@ class UserIpTest extends FeatureBaseCase
         $response->assertSeeInOrder(['103.15.245.75']);
 
 
+
         $response->assertDontSee([
             '107.15.245.75',
             '109.15.245.75',
