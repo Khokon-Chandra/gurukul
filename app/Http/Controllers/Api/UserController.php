@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
@@ -33,38 +32,18 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $this->validate($request, [
+       
+        $input = $request->validated();
 
-            'username' => 'required|string|unique:users|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|string|min:8|confirmed',
-            'roles' => 'required',
-        ]);
-
-        $roles = $request->roles ?? [];
-        $roles_ids = Role::select('id')->whereHas('permissions')->get()->pluck('id')->toArray();
-        foreach ($roles as $role_id) {
-            if (!in_array($role_id, $roles_ids)) {
-                throw ValidationException::withMessages(["role with id $role_id does not exist!"]);
-            }
-        }
-
-
-        $input = $request->only([
-            'name',
-            'username',
-            'email',
-        ]);
-        $input['created_by'] = auth()->user()->id ?? 0;
+        $input['created_by'] = Auth::id();
         $input['password'] = Hash::make($request->password);
 
         try {
             DB::beginTransaction();
             $user = User::create($input);
-            $user->roles()->sync($roles);
+            $user->roles()->sync([$request->role]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
@@ -96,30 +75,27 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user)
     {
-        $user->update([
-            'name'       => $request->name,
-            'username'   => $request->username,
-            'email'      => $request->email,
-            'timezone'   => $request->timezone,
-            'updated_by' => Auth::id()
-        ]);
 
+        $input = $request->validated();
+        $input['updated_by'] = Auth::user()->id;
+        $user->update($input);
         $user->roles()->sync([$request->role]);
 
-        # log activity
-        activity('update_user')->causedBy(Auth::id())
+        $user->load('roles');
+
+        activity('update_user')->causedBy(Auth::user()->id)
             ->performedOn($user)
             ->withProperties([
-                'ip'       => Auth::user()->last_login_ip,
-                'target'   => $request->usernname,
+                'ip' => Auth::user()->last_login_ip,
+                'target' => $request->name,
                 'activity' => 'Update user successfully',
             ])
             ->log('Update user successfully');
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'User Updated Successfully',
-            'data'    => new UserResource($user),
+            'data' => new UserResource($user),
         ]);
     }
 
