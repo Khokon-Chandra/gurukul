@@ -26,6 +26,7 @@ class UserIpController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
 
+
         $query = UserIp::query();
 
         if ($request->filled('search')) {
@@ -33,11 +34,30 @@ class UserIpController extends Controller
         }
 
 
-        if ($request->filled('filter')) {
+//        if ($request->filled('filter')) {
+//            $filterValue = $request->filter === 'asc' ? 'asc' : 'desc';
+//            $query->orderBy('id', $filterValue);
+//
+//        }
 
-            $filterValue = $request->filter === 'asc' ? 'asc' : 'desc';
-            $query->orderBy('id', $filterValue);
+        //sort IP
+        if($request->filled('ip_address')){
+            $query->orderBy('ip_address', $request->ip_address);
+        }
 
+        //sort Description
+        if($request->filled('description')){
+            $query->orderBy('description', $request->description);
+        }
+
+        //Sort Whitelisted
+        if($request->filled('whitelisted')){
+            $query->orderBy('whitelisted', $request->whitelisted);
+        }
+
+        //Sort Last_updated
+        if($request->filled('updated_at')){
+            $query->orderBy('updated_at', $request->updated_at);
         }
 
         $UserIps = $query->latest()->paginate(AppConstant::PAGINATION);
