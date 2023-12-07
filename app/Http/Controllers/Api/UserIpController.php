@@ -6,8 +6,6 @@ use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserIP\UserIpRequest;
 use App\Http\Resources\Api\UserIpResource;
-use App\Http\Resources\Api\UserResource;
-use App\Http\Resources\UserIpResourceCollection;
 use App\Models\UserIp;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +14,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class UserIpController extends Controller
@@ -26,18 +23,31 @@ class UserIpController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
 
+
         $query = UserIp::query();
 
         if ($request->filled('search')) {
             $query->where('ip_address', 'LIKE', "%{$request->search}%");
         }
 
+        //sort IP
+        if ($request->filled('ip_address')) {
+            $query->orderBy('ip_address', $request->ip_address);
+        }
 
-        if ($request->filled('filter')) {
+        //sort Description
+        if ($request->filled('description')) {
+            $query->orderBy('description', $request->description);
+        }
 
-            $filterValue = $request->filter === 'asc' ? 'asc' : 'desc';
-            $query->orderBy('id', $filterValue);
+        //Sort Whitelisted
+        if ($request->filled('whitelisted')) {
+            $query->orderBy('whitelisted', $request->whitelisted);
+        }
 
+        //Sort Last_updated
+        if ($request->filled('updated_at')) {
+            $query->orderBy('updated_at', $request->updated_at);
         }
 
         $UserIps = $query->latest()->paginate(AppConstant::PAGINATION);
@@ -109,8 +119,7 @@ class UserIpController extends Controller
                 'message' => 'User Ip Created Successfully',
                 'data' => new UserIpResource($UserIp),
             ], 200);
-
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
 
@@ -205,8 +214,7 @@ class UserIpController extends Controller
                 'message' => 'User Ip Updated Successfully',
                 'data' => new UserIpResource($UserIp),
             ], 200);
-
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
 
@@ -303,8 +311,7 @@ class UserIpController extends Controller
                 'message' => 'Users Ip Updated Successfully',
                 'data' => UserIpResource::collection($userIdData),
             ], 200);
-
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
 
@@ -318,6 +325,7 @@ class UserIpController extends Controller
     public function destroy($ids): JsonResponse
     {
 
+        DB::beginTransaction();
         try {
             $ids = explode(',', $ids);
 
@@ -330,32 +338,33 @@ class UserIpController extends Controller
 
             foreach ($ids as $id) {
                 $userIp = UserIp::find($id);
-                $userIp->update([
-                    'deleted_by' => Auth::user()->id,
-                    'deleted_at' => now(),
-                ]);
-
-                activity('user_ip')->causedBy(Auth::user()->id)
+                activity('user_ip')->causedBy(Auth::id())
                     ->performedOn($userIp)
                     ->withProperties([
-                        'ip' => Auth::user()->last_login_ip,
-                        'target' => $userIp->ip_address,
+                        'ip'       => Auth::user()->last_login_ip,
+                        'target'   => $userIp->ip_address,
                         'activity' => 'Deleted user ip',
                     ])
-                    ->log('Successfully');
-
-                $userIp->delete();
+                    ->log('Deleted Successfully');
+                 $userIp->delete();
             }
 
+            DB::commit();
 
             return response()->json([
                 'status' => 'successful',
                 'message' => 'User Ip Successfully Deleted',
                 'data' => null,
             ]);
-        } catch (\Exception$e) {
-            throw ValidationException::withMessages([$e->getMessage()]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ]);
         }
     }
-
 }

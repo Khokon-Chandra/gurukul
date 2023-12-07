@@ -91,7 +91,6 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'Perform User Ip Related Tasks',
 
             ],
-
         ];
 
         $this->insertPermission();
