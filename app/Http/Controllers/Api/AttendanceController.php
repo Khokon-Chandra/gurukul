@@ -58,4 +58,8 @@ class AttendanceController extends Controller
             ], 500);
         }
     }
+
+    public function destroy(AttendanceRequest $request){
+//        dd($request->all());
+    }
 }

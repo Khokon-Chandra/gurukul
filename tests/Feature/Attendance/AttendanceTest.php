@@ -65,4 +65,48 @@ class AttendanceTest extends TestCase
         ]);
     }
 
+    public function testThatUnauthorizedUserCannotDeleteAttendance(): void
+    {
+        $data = [1, 2, 3, 4, 5];
+        $response = $this->deleteJson(route('admin.attendance.delete', $data));
+        $response->assertStatus(401);
+    }
+
+    public function testThatOnlyAuthorizedUserCanDeleteAttendance(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        Attendance::factory()->sequence(...[
+            [
+                'id' => 31,
+                'username' => "sney",
+                "amount" => 200
+            ],
+            [
+                'id' => 34,
+                'username' => "emeka",
+                "amount" => 100
+            ],
+            [
+                'id' => 35,
+                'username' => "gift",
+                "amount" => 120
+            ]
+        ])->createQuietly();
+
+        $data =  [1,2,3,4];
+
+        $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), ['attendances' => $data]);
+        $response->assertStatus(200);
+
+        //assert that they were actually deleted
+        $deletedAttendances = Attendance::whereIn('id', [31, 34, 35])->get();
+        dd($deletedAttendances);
+
+    }
+
 }

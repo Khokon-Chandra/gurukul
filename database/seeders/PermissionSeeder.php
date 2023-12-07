@@ -95,6 +95,11 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.create-attendance',
                 'display_name' => 'Create Attendance',
             ],
+            [
+                'module_name' => 'user.access.user.delete-attendance',
+                'name' => 'user.access.user.delete-attendance',
+                'display_name' => 'Delete Attendance',
+            ],
         ];
 
         $this->insertPermission();
