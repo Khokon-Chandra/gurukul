@@ -109,7 +109,7 @@ class AttendanceController extends Controller
             $attendance->update([
                 'username' => $request->attendance['username'],
                 'amount' => $request->attendance['amount'],
-                'created_by' => Auth::user()->id
+                'updated_by' => Auth::user()->id
             ]);
 
             activity("Attendance updated")
