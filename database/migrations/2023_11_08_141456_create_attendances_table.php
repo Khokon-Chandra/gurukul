@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->string('username')->index();
-            $table->time('clock')->index();
-            $table->date('date')->index();
+            $table->decimal('amount', 13, 2)->index();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();
             $table->unsignedBigInteger('deleted_by')->nullable()->index();

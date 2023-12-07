@@ -19,8 +19,7 @@ class AttendanceResource extends JsonResource
         return [
             'id'         => $this->id,
             'username'   => $this->username,
-            'clock'      => $this->clock,
-            'date'       => Carbon::parse($this->date)->format('d-F-Y'),
+            'amount' => $this->amount,
             'created_at' => $this->created_at->format('d-F-Y h:i:s A'),
             'updated_at' => $this->updated_at->format('d-F-Y h:i:s A'),
             'created_by' => new UserResource($this->createdBy),
