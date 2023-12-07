@@ -92,6 +92,11 @@ class PermissionSeeder extends Seeder
                     'display_name' => 'Perform User Ip Related Tasks',
 
                 ],
+                [
+                    'module_name' => 'user.access.user.create-attendance',
+                    'name' => 'user.access.user.create-attendance',
+                    'display_name' => 'Create Attendance',
+                ],
 
         ];
 
