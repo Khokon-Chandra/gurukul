@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::apiResource('user', UserController::class);
         Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])->name('download.activity')->middleware('permission:user.access.user.export-activity');
         Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
-        Route::apiResource('attendances',AttendanceController::class);
+        Route::post('create-attendance', [AttendanceController::class, 'store'])->name('attendance.create')->middleware('permission:user.access.user.create-attendance');
     });
 
 

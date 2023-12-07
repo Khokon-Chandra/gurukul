@@ -13,8 +13,7 @@ class Attendance extends Model
 
     protected $fillable = [
         'username',
-        'clock',
-        'date',
+        'amount',
         'created_by',
         'created_at',
         'updated_by',
