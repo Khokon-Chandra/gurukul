@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
         Route::post('create-attendance', [AttendanceController::class, 'store'])->name('attendance.create')->middleware('permission:user.access.user.create-attendance');
         Route::delete('delete-attendance', [AttendanceController::class, 'destroy'])->name('attendance.delete')->middleware('permission:user.access.user.delete-attendance');
+        Route::put('update-attendance', [AttendanceController::class, 'update'])->name('attendance.update')->middleware('permission:user.access.user.update-attendance');
     });
 
 

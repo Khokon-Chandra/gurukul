@@ -50,7 +50,7 @@ class AttendanceController extends Controller
             ], 200);
 
 
-        }catch (\Exception $error){
+        } catch (\Exception $error) {
             DB::rollBack();
 
             return response()->json([
@@ -64,10 +64,10 @@ class AttendanceController extends Controller
     {
         DB::beginTransaction();
 
-        try{
+        try {
             $attendances = Attendance::whereIn('id', $request->attendances)->get();
 
-            foreach ($attendances as $attendance){
+            foreach ($attendances as $attendance) {
 
                 activity("Attendance Deleted")
                     ->causedBy(auth()->user())
@@ -89,8 +89,50 @@ class AttendanceController extends Controller
                 'message' => 'Announcement Deleted',
             ], 200);
 
-        }catch(\Exception $error){
+        } catch (\Exception $error) {
             DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function update(AttendanceRequest $request)
+    {
+        $attendanceId = $request->attendance['id'];
+        DB::beginTransaction();
+        try {
+
+            $attendance = Attendance::find($attendanceId);
+
+            $attendance->update([
+                'username' => $request->attendance['username'],
+                'amount' => $request->attendance['amount']
+            ]);
+
+            activity("Attendance updated")
+                ->causedBy(auth()->user())
+                ->performedOn($attendance)
+                ->withProperties([
+                    'ip' => Auth::user()->last_login_ip,
+                    'activity' => "Attendance updated successfully",
+                    'target' => "{$attendance->username}",
+                ])
+                ->log("Attendance Updated");
+
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Successfully Attendance Updated!!',
+                'data' => new AttendanceResource($attendance)
+            ], 200);
+
+        } catch (\Exception $error) {
+            DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage(),
