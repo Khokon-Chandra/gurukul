@@ -19,7 +19,7 @@ class AttendanceFactory extends Factory
         return [
             'username' => $this->faker->userName(),
             'amount'    => $this->faker->randomNumber(),
-
+            'date' => now()
         ];
     }
 }
