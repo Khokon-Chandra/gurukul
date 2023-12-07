@@ -55,6 +55,7 @@ class PermissionSeeder extends Seeder
         // $this->insertPermission();
 
         $permissions = [
+
             [
                 'module_name' => 'user.access.user.change-password',
                 'name' => 'user.access.user.change-password',
@@ -83,14 +84,18 @@ class PermissionSeeder extends Seeder
                 'module_name' => 'user.access.user.view-announcement-data',
                 'name' => 'user.access.user.view-announcement-data',
                 'display_name' => 'User Can View Announcement Data',
-
             ],
             [
                 'module_name' => 'user.access.user.perform-ip-tasks',
                 'name' => 'user.access.user.perform-ip-tasks',
                 'display_name' => 'Perform User Ip Related Tasks',
-
             ],
+            [
+                'module_name' => 'user.access.user.create-attendance',
+                'name' => 'user.access.user.create-attendance',
+                'display_name' => 'Create Attendance',
+            ],
+
         ];
 
         $this->insertPermission();
