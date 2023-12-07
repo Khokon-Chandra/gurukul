@@ -15,10 +15,8 @@ class PermissionRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        
-        $role = Role::create(['name' => 'Administrator']);
+        $role = Role::updateOrCreate(['name' => 'Administrator'], ['name' => 'Administrator']);
 
         $role->syncPermissions(Permission::get()->pluck('id')->toArray());
-
     }
 }

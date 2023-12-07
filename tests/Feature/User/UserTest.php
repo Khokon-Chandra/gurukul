@@ -6,9 +6,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
-use Tests\TestCase;
+use Tests\FeatureBaseCase;
 
-class UserTest extends TestCase
+class UserTest extends FeatureBaseCase
 {
     /**
      * User List.
@@ -64,10 +64,11 @@ class UserTest extends TestCase
     /**
      * User Create.
      */
-    public function test_userCreate(): void
+    public function testUserCreate(): void
     {
         $this->artisan('migrate:fresh --seed');
 
+        $this->withoutExceptionHandling();
         $user = User::factory()
             ->state([
                 'active' => true
@@ -75,16 +76,18 @@ class UserTest extends TestCase
             ->createQuietly();
 
         $role = Role::create(['name' => 'Writer',]);
+
         $role->permissions()->sync([1, 2, 3]);
 
 
         $response = $this->actingAs($user)->postJson('/api/v1/user', [
+            'department_id' => 1,
             'username' => "test_user",
             'name' => "Test User",
             'email' => "testuser@mail.com",
             'password' => "password",
             'password_confirmation' => 'password',
-            'roles' => [1],
+            'role' => 1,
         ]);
 
         $response->assertStatus(200);
@@ -128,6 +131,7 @@ class UserTest extends TestCase
 
 
         $response = $this->actingAs($user)->putJson('/api/v1/user/1', [
+            'department_id' => 1,
             'username' => "test_user",
             'name' => "Test User",
             'email' => "testuser@mail.com",
@@ -164,7 +168,7 @@ class UserTest extends TestCase
     /**
      * User Delete single or multiple
      */
-    public function test_userDelete(): void
+    public function testUserDelete(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -178,6 +182,7 @@ class UserTest extends TestCase
         $role->permissions()->sync([1, 2, 3]);
 
         User::create([
+            'department_id'=>1,
             'username' => "test_user1",
             'name' => "Test Use1r",
             'email' => "testuser1@mail.com",
@@ -186,6 +191,7 @@ class UserTest extends TestCase
         ]);
 
         User::create([
+            'department_id'=>1,
             'username' => "test_user2",
             'name' => "Test User2",
             'email' => "testuser2@mail.com",

@@ -10,7 +10,6 @@ use Tests\FeatureBaseCase;
 
 class UserIpTest extends FeatureBaseCase
 {
-
     /**
      * User Ip List
      */
@@ -341,7 +340,7 @@ class UserIpTest extends FeatureBaseCase
     }
 
 
-    public function testThatIpAddressListCanBeSortedInAscendingOrder(): void
+    public function testThatUserCanSortOnIpAddressField(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -366,7 +365,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['filter' => 'asc']));
+            ->getJson(route('admin.user-ip.index', ['ip_address' => 'asc']));
 
         $response->assertStatus(200);
 
@@ -374,7 +373,7 @@ class UserIpTest extends FeatureBaseCase
         $this->assertCount(3, UserIp::all());
 
 
-        $response->assertSeeInOrder(['103.15.245.75', '109.15.245.75', '107.15.245.75']);
+        $response->assertSeeInOrder(['103.15.245.75',  '107.15.245.75', '109.15.245.75']);
 
 
         $response->assertJsonStructure([
@@ -398,7 +397,7 @@ class UserIpTest extends FeatureBaseCase
 
     }
 
-    public function testThatIpAddressListCanBeSortedInDescendingOrder(): void
+    public function testThatUserCanSortOnDescriptionField(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -408,14 +407,17 @@ class UserIpTest extends FeatureBaseCase
             ->sequence(...[
                 [
                     'id' => 1,
+                    'description' => 'demas',
                     'ip_address' => '103.15.245.75',
                 ],
                 [
                     'id' => 2,
+                    'description' => 'emeka',
                     'ip_address' => '109.15.245.75',
                 ],
                 [
                     'id' => 3,
+                    'description' => 'favour',
                     'ip_address' => '107.15.245.75',
                 ],
             ])
@@ -423,7 +425,124 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['filter' => 'desc']));
+            ->getJson(route('admin.user-ip.index', ['description' => 'asc']));
+
+        $response->assertStatus(200);
+
+
+        $this->assertCount(3, UserIp::all());
+
+
+        $response->assertSeeInOrder(['demas', 'emeka', 'favour']);
+
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'ip1',
+                    'ip2',
+                    'ip3',
+                    'ip4',
+                    'ip_address',
+                    'whitelisted',
+                    'description',
+                    'created_at',
+                ]
+            ],
+            'links',
+            'meta'
+        ]);
+
+    }
+
+    public function testThatUserCanSortOnWhitelistedField(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()->create()->assignRole(Role::first());
+
+        $datas = UserIp::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 1,
+                    'whitelisted' => true,
+                    'ip_address' => '103.15.245.75',
+                ],
+                [
+                    'id' => 2,
+                    'whitelisted' => false,
+                    'ip_address' => '109.15.245.75',
+                ],
+                [
+                    'id' => 3,
+                    'whitelisted' => true,
+                    'ip_address' => '107.15.245.75',
+                ],
+            ])
+            ->create();
+
+
+        $response = $this->actingAs($user)
+            ->getJson(route('admin.user-ip.index', ['whitelisted' => 'desc']));
+
+        $response->assertStatus(200);
+
+
+        $this->assertCount(3, UserIp::all());
+
+
+        $response->assertSeeInOrder(['false', 'false', 'true']);
+
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'ip1',
+                    'ip2',
+                    'ip3',
+                    'ip4',
+                    'ip_address',
+                    'whitelisted',
+                    'description',
+                    'created_at',
+                ]
+            ],
+            'links',
+            'meta'
+        ]);
+    }
+
+    public function testThatUserCanSortOnUpdatedAtField(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()->create()->assignRole(Role::first());
+
+        $datas = UserIp::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 1,
+                    'updated_at' => '2023-12-06 01:24:18',
+                    'ip_address' => '103.15.245.75',
+                ],
+                [
+                    'id' => 2,
+                    'updated_at' => '2023-12-05 01:24:18',
+                    'ip_address' => '109.15.245.75',
+                ],
+                [
+                    'id' => 3,
+                    'updated_at' => '2023-12-04 01:24:18',
+                    'ip_address' => '107.15.245.75',
+                ],
+            ])
+            ->create();
+
+
+        $response = $this->actingAs($user)
+            ->getJson(route('admin.user-ip.index', ['updated_at' => 'asc']));
 
         $response->assertStatus(200);
 
@@ -451,7 +570,6 @@ class UserIpTest extends FeatureBaseCase
             'links',
             'meta'
         ]);
-
     }
 
 }

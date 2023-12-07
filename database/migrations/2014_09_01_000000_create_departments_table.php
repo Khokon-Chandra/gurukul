@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chats', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->string('receiver')->index();
-            $table->text('subject');
-            $table->timestamp('time')->useCurrent()->index();
-            $table->timestamp('date')->useCurrent()->index();
+            $table->string('name',190)->index();
+            $table->text('description')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chats');
+        Schema::dropIfExists('departments');
     }
 };

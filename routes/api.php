@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\CashflowController;
+use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
@@ -19,16 +20,16 @@ Route::group(['middleware' => ['auth:api']], function () {
      * Admin module routes
      */
     Route::name('admin.')->group(function () {
-        Route::apiResource('user-ip', UserIpController::class)->middleware('permission:user.access.user.perform-ip-tasks');
+        Route::apiResource('user-ip', UserIpController::class);
         Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
-            ->name('user-ip.multi_update')->middleware('permission:user.access.user.perform-ip-tasks');
+            ->name('user-ip.multi_update');
         Route::apiResource('roles', RoleController::class);
         Route::get('logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download');
         Route::apiResource('user', UserController::class);
         Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])->name('download.activity')->middleware('permission:user.access.user.export-activity');
         Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
-        Route::apiResource('attendances',AttendanceController::class);
+        Route::post('create-attendance', [AttendanceController::class, 'store'])->name('attendance.create')->middleware('permission:user.access.user.create-attendance');
     });
 
 
@@ -46,6 +47,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::apiResource('cashflows', CashflowController::class);
         Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMany'])->name('cashflows.delete_many');
         Route::apiResource('notifications',NotificationController::class);
+        Route::get('departments',[DepartmentController::class,'index'])->name('departments.index');
     });
 
 

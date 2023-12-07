@@ -18,8 +18,8 @@ class AttendanceFactory extends Factory
     {
         return [
             'username' => $this->faker->userName(),
-            'clock'    => $this->faker->time(),
-            'date'     => $this->faker->date(),
+            'amount'    => $this->faker->randomNumber(),
+            'date' => now()
         ];
     }
 }
