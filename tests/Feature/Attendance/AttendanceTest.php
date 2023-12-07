@@ -7,9 +7,10 @@ use App\Models\Attendance;
 
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Tests\FeatureBaseCase;
 use Tests\TestCase;
 
-class AttendanceTest extends TestCase
+class AttendanceTest extends FeatureBaseCase
 {
 
     public function testThatUnauthorizedUserCannotCreateAttendance(): void
@@ -81,7 +82,7 @@ class AttendanceTest extends TestCase
             ->create()
             ->assignRole(Role::first());
 
-        Attendance::factory(3)->sequence(...[
+        Attendance::factory(4)->sequence(...[
             [
                 'id' => 31,
                 'username' => "sney",
@@ -96,23 +97,32 @@ class AttendanceTest extends TestCase
                 'id' => 35,
                 'username' => "gift",
                 "amount" => 120
+            ],
+            [
+                'id' => 45,
+                'username' => "gift",
+                "amount" => 120
             ]
         ])->createQuietly();
 
 
         $data = [
-            'attendances' =>  [31,34,35]
+            'attendances' =>  [31,34,35, 45]
         ];
 
 
-        $this->assertDatabaseCount('attendances', 33);
+        $this->assertDatabaseCount('attendances', 34);
 
 
         $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), $data);
         $response->assertStatus(200);
 
 
-        $this->assertDatabaseCount('attendances', 30);
+       //find all the deleted stuff and asset that their deleted at field is not null
+        $deletedAttendances = Attendance::whereIn('id', [31,34,35,45])->get();
+        foreach ($deletedAttendances as $attendance){
+            $this->assertSoftDeleted($attendance);
+        }
 
         $response->assertJsonStructure([
             'status',
@@ -143,7 +153,9 @@ class AttendanceTest extends TestCase
         $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), $data);
         $response->assertStatus(200);
 
-        $this->assertDatabaseCount('attendances', 30);
+        $deletedAttendance = Attendance::find(35);
+
+        $this->assertSoftDeleted($deletedAttendance);
 
         $response->assertJsonStructure([
             'status',
