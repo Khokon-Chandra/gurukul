@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Attendance;
 
+use App\Models\Announcement;
 use App\Models\Attendance;
 
 use App\Models\User;
@@ -72,7 +73,7 @@ class AttendanceTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function testThatOnlyAuthorizedUserCanDeleteAttendance(): void
+    public function testThatOnlyAuthorizedUsersCanDeleteMultipleAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -80,7 +81,7 @@ class AttendanceTest extends TestCase
             ->create()
             ->assignRole(Role::first());
 
-        Attendance::factory()->sequence(...[
+        Attendance::factory(3)->sequence(...[
             [
                 'id' => 31,
                 'username' => "sney",
@@ -98,15 +99,56 @@ class AttendanceTest extends TestCase
             ]
         ])->createQuietly();
 
-        $data =  [1,2,3,4];
 
-        $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), ['attendances' => $data]);
+        $data = [
+            'attendances' =>  [31,34,35]
+        ];
+
+
+        $this->assertDatabaseCount('attendances', 33);
+
+
+        $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), $data);
         $response->assertStatus(200);
 
-        //assert that they were actually deleted
-        $deletedAttendances = Attendance::whereIn('id', [31, 34, 35])->get();
-        dd($deletedAttendances);
+
+        $this->assertDatabaseCount('attendances', 30);
+
+        $response->assertJsonStructure([
+            'status',
+            'message'
+        ]);
 
     }
 
+    public function testThatOnlyAuthorizedUsersCanDeleteASingleAttendance(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        $attendance = Attendance::factory()->create([
+            'id' => 35,
+            'username' => 'sney'
+        ]);
+
+        $data = [
+            'attendances' =>  [35]
+        ];
+
+        $this->assertDatabaseCount('attendances', 31);
+
+        $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), $data);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseCount('attendances', 30);
+
+        $response->assertJsonStructure([
+            'status',
+            'message'
+        ]);
+
+    }
 }

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();
             $table->unsignedBigInteger('deleted_by')->nullable()->index();
-            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -14,7 +14,6 @@ class AttendanceRequest extends BaseFormRequest
         'api/v1/delete-attendance|delete' => [
             'rules' => 'destroyMethodRule',
         ],
-
     ];
 
     public function storeMethodRule(): void
