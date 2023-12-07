@@ -221,4 +221,71 @@ class AttendanceTest extends TestCase
             ]
         ]);
     }
+
+    public function testThatUnauthorizedUsersCannotSeeAttendanceList(): void
+    {
+
+        $response = $this->getJson(route('admin.attendance.list'));
+        $response->assertStatus(401);
+    }
+
+    public function testThatOnlyAuthorizedUsersCanSeeAttendanceList(): void
+    {
+
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        $response = $this->actingAs($user)->getJson(route('admin.attendance.list'));
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                '*' => [
+                    'id',
+                    'username',
+                    'amount',
+                    'created_at',
+                    'updated_at',
+                    'created_by'
+                ]
+            ]
+
+        ]);
+    }
+
+    public function testThatUserCanSearchOnUsernameField(): void
+    {
+
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        $response = $this->actingAs($user)->getJson(route('admin.attendance.list', ['search' => 'greenwood']));
+        $response->assertStatus(200);
+
+
+        //assert that json response was okay
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                '*' => [
+                    'id',
+                    'username',
+                    'amount',
+                    'created_at',
+                    'updated_at',
+                    'created_by'
+                ]
+            ]
+
+        ]);
+    }
+
+
 }
