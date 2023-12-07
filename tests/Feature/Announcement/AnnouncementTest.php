@@ -245,7 +245,6 @@ class AnnouncementTest extends FeatureBaseCase
         $this->assertDatabaseCount('announcements', 103);
 
 
-
         $response = $this->actingAs($user)->patchJson(route('service.announcement.status.update'), [
             'announcement_id' =>    $announcementId,
         ]);
