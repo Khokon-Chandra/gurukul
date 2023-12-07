@@ -200,8 +200,8 @@ class AttendanceTest extends TestCase
         $response->assertStatus(200);
 
         $UpdatedAttendance = Attendance::find(35);
-        $this->assertEquals($data['username'] ,$UpdatedAttendance->username);
-        $this->assertEquals($data['amount'], $UpdatedAttendance->amount, );
+        $this->assertEquals($data['attendance']['username'] ,$UpdatedAttendance->username);
+        $this->assertEquals($data['attendance']['amount'], $UpdatedAttendance->amount);
 
         $response->assertJsonStructure([
             'status',

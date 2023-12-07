@@ -78,7 +78,6 @@ class PermissionSeeder extends Seeder
 
             ],
             [
-
                 'module_name' => 'user.access.user.view-announcement-data',
                 'name' => 'user.access.user.view-announcement-data',
                 'display_name' => 'User Can View Announcement Data',
