@@ -14,6 +14,9 @@ class AttendanceRequest extends BaseFormRequest
         'api/v1/delete-attendance|delete' => [
             'rules' => 'destroyMethodRule',
         ],
+        'api/v1/update-attendance|put' => [
+            'rules' => 'updateMethodRule',
+        ],
     ];
 
     public function storeMethodRule(): void
@@ -29,6 +32,13 @@ class AttendanceRequest extends BaseFormRequest
         $this->rules = [
             'attendances' => ['required', 'array', 'min:1'],
             'attendances.*' => ['exists:attendances,id']
+        ];
+    }
+
+    public function updateMethodRule(): void
+    {
+        $this->rules = [
+            'attendance' => ['required',],
         ];
     }
 

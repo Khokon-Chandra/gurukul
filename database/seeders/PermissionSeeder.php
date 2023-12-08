@@ -55,6 +55,7 @@ class PermissionSeeder extends Seeder
         // $this->insertPermission();
 
         $permissions = [
+
             [
                 'module_name' => 'user.access.user.change-password',
                 'name' => 'user.access.user.change-password',
@@ -72,23 +73,21 @@ class PermissionSeeder extends Seeder
                 'display_name' => 'User Can Export Activity in Excel Format',
             ],
             [
+
                 'module_name' => 'user.access.user.update-announcement-status',
                 'name' => 'user.access.user.update-announcement-status',
                 'display_name' => 'User Can Update Announcement Status',
 
             ],
             [
-
                 'module_name' => 'user.access.user.view-announcement-data',
                 'name' => 'user.access.user.view-announcement-data',
                 'display_name' => 'User Can View Announcement Data',
-
             ],
             [
                 'module_name' => 'user.access.user.perform-ip-tasks',
                 'name' => 'user.access.user.perform-ip-tasks',
                 'display_name' => 'Perform User Ip Related Tasks',
-
             ],
             [
                 'module_name' => 'user.access.user.create-attendance',
@@ -100,6 +99,18 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.delete-attendance',
                 'display_name' => 'Delete Attendance',
             ],
+            [
+                'module_name' => 'user.access.user.update-attendance',
+                'name' => 'user.access.user.update-attendance',
+                'display_name' => 'Update Attendance',
+            ],
+            [
+                'module_name' => 'user.access.user.list-attendance',
+                'name' => 'user.access.user.list-attendance',
+                'display_name' => 'List Attendance',
+            ],
+
+
         ];
 
         $this->insertPermission();

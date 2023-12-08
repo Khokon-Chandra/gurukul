@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class UserIp extends Model
 {
@@ -36,6 +37,15 @@ class UserIp extends Model
         'ip3',
         'ip4'
     ];
+
+
+    protected static function boot() {
+        parent::boot();
+        static::deleting(function($ip) { 
+            $ip->deleted_by = Auth::id();
+        });
+    }
+
 
     public function user(): BelongsTo
     {
