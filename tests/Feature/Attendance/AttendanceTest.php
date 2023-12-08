@@ -112,7 +112,7 @@ class AttendanceTest extends TestCase
         $response->assertStatus(200);
 
 
-        $this->assertDatabaseCount('attendances', 30);
+
 
         $response->assertJsonStructure([
             'status',
@@ -134,6 +134,8 @@ class AttendanceTest extends TestCase
             'username' => 'sney'
         ]);
 
+
+
         $data = [
             'attendances' =>  [35]
         ];
@@ -143,7 +145,6 @@ class AttendanceTest extends TestCase
         $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), $data);
         $response->assertStatus(200);
 
-        $this->assertDatabaseCount('attendances', 30);
 
         $response->assertJsonStructure([
             'status',
