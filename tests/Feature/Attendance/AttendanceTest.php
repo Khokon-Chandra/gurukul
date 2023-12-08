@@ -386,17 +386,17 @@ class AttendanceTest extends FeatureBaseCase
             [
                 'id' => 31,
                 'username' => "greenwood",
-                "amount" => 90000
+                "amount" => 3000000
             ],
             [
                 'id' => 34,
                 'username' => "emeka",
-                "amount" => 100000
+                "amount" => 2000000
             ],
             [
                 'id' => 35,
                 'username' => "gift",
-                "amount" => 120000
+                "amount" => 1000000
             ]
         ])->createQuietly();
 
@@ -406,7 +406,7 @@ class AttendanceTest extends FeatureBaseCase
 
 
 
-        $response->assertSeeInOrder([120000, 100000, 90000]);
+        $response->assertSeeInOrder([3000000, 2000000, 1000000]);
 
 
         $response->assertJsonStructure([
