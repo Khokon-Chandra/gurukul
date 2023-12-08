@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Attendance extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'username',
@@ -19,6 +19,7 @@ class Attendance extends Model
         'updated_by',
         'updated_at',
         'deleted_by',
+        'deleted_at'
     ];
 
 

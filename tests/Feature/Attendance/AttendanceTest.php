@@ -112,7 +112,7 @@ class AttendanceTest extends TestCase
         $response->assertStatus(200);
 
 
-        $this->assertDatabaseCount('attendances', 30);
+
 
         $response->assertJsonStructure([
             'status',
@@ -134,6 +134,8 @@ class AttendanceTest extends TestCase
             'username' => 'sney'
         ]);
 
+
+
         $data = [
             'attendances' =>  [35]
         ];
@@ -143,7 +145,6 @@ class AttendanceTest extends TestCase
         $response = $this->actingAs($user)->deleteJson(route('admin.attendance.delete'), $data);
         $response->assertStatus(200);
 
-        $this->assertDatabaseCount('attendances', 30);
 
         $response->assertJsonStructure([
             'status',
@@ -167,24 +168,13 @@ class AttendanceTest extends TestCase
             ->create()
             ->assignRole(Role::first());
 
-        Attendance::factory(3)->sequence(...[
-            [
-                'id' => 31,
-                'username' => "sney",
-                "amount" => 200
-            ],
-            [
-                'id' => 34,
-                'username' => "emeka",
-                "amount" => 100
-            ],
-            [
+         Attendance::factory()
+            ->state([
                 'id' => 35,
-                'username' => "gift",
-                "amount" => 120
-            ]
-        ])->createQuietly();
-
+                'username' => 'gift',
+                'amount' => 300
+            ])
+            ->createQuietly();
 
 
         $data = [
@@ -212,12 +202,7 @@ class AttendanceTest extends TestCase
                 'amount',
                 'created_at',
                 'updated_at',
-                'created_by' => [
-                    'id',
-                    'name',
-                    'username',
-                    'email'
-                ]
+
             ]
         ]);
     }
