@@ -80,7 +80,6 @@ class PermissionSeeder extends Seeder
 
             ],
             [
-
                 'module_name' => 'user.access.user.view-announcement-data',
                 'name' => 'user.access.user.view-announcement-data',
                 'display_name' => 'User Can View Announcement Data',
@@ -95,7 +94,16 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.create-attendance',
                 'display_name' => 'Create Attendance',
             ],
-
+            [
+                'module_name' => 'user.access.user.delete-attendance',
+                'name' => 'user.access.user.delete-attendance',
+                'display_name' => 'Delete Attendance',
+            ],
+            [
+                'module_name' => 'user.access.user.update-attendance',
+                'name' => 'user.access.user.update-attendance',
+                'display_name' => 'Update Attendance',
+            ],
         ];
 
         $this->insertPermission();

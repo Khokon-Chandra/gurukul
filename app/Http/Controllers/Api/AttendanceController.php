@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Attendance\AttendanceRequest;
+use App\Http\Resources\Api\AnnouncementResource;
 use App\Http\Resources\Api\AttendanceResource;
 use App\Models\Attendance;
 use App\Trait\Authorizable;
@@ -49,7 +50,88 @@ class AttendanceController extends Controller
             ], 200);
 
 
-        }catch (\Exception $error){
+        } catch (\Exception $error) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function destroy(AttendanceRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            $attendances = Attendance::whereIn('id', $request->attendances)->get();
+
+            foreach ($attendances as $attendance) {
+
+                activity("Attendance Deleted")
+                    ->causedBy(auth()->user())
+                    ->performedOn($attendance)
+                    ->withProperties([
+                        'ip' => Auth::user()->last_login_ip,
+                        'activity' => "Attendance deleted successfully",
+                        'target' => "{$attendance->username}",
+                    ])
+                    ->log("Attendance Deleted");
+
+                $attendance->delete();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Announcement Deleted',
+            ], 200);
+
+        } catch (\Exception $error) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function update(AttendanceRequest $request)
+    {
+        $attendanceId = $request->attendance['id'];
+        DB::beginTransaction();
+        try {
+
+            $attendance = Attendance::find($attendanceId);
+
+            $attendance->update([
+                'username' => $request->attendance['username'],
+                'amount' => $request->attendance['amount'],
+                'updated_by' => Auth::user()->id
+            ]);
+
+            activity("Attendance updated")
+                ->causedBy(auth()->user())
+                ->performedOn($attendance)
+                ->withProperties([
+                    'ip' => Auth::user()->last_login_ip,
+                    'activity' => "Attendance updated successfully",
+                    'target' => "{$attendance->username}",
+                ])
+                ->log("Attendance Updated");
+
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Successfully Attendance Updated!!',
+                'data' => new AttendanceResource($attendance)
+            ], 200);
+
+        } catch (\Exception $error) {
             DB::rollBack();
 
             return response()->json([
