@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\RoleResource;
 use App\Trait\Authorizable;
 use Illuminate\Http\Request;
@@ -132,7 +133,8 @@ class RoleController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Role Updated!!',
-                'data' => $role,
+                'data' => new RoleResource($role),
+
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
