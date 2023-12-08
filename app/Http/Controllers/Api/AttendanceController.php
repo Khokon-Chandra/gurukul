@@ -19,6 +19,36 @@ class AttendanceController extends Controller
 {
     use Authorizable;
 
+
+    public function index(Request $request): JsonResponse
+    {
+
+        $query = Attendance::query();
+
+
+        if($request->filled('search')){
+            $query->where('username', 'LIKE', "{$request->search}");
+        }
+
+
+        if($request->filled('username')){
+            $query->orderBy('username', $request->username);
+        }
+
+
+        if($request->filled('amount')){
+            $query->orderBy('amount', $request->amount);
+        }
+
+        $attendances = $query->latest()->paginate(AppConstant::PAGINATION);
+
+
+        return response()->json([
+            'status' => 'success',
+            'data' =>  AttendanceResource::collection($attendances)->response()->getData(true)
+
+        ], 200);
+    }
     public function store(AttendanceRequest $request): JsonResponse
     {
         DB::beginTransaction();
