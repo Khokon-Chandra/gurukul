@@ -22,7 +22,7 @@ class RoleController extends Controller
     {
         $data = Role::latest()
         ->when($request->name ?? false, fn($query, $name) => $query->where('name','like',$name))
-        ->paginate(AppConstant::PAGINATION);
+        ->get();
         return RoleResource::collection($data);
     }
 
@@ -88,7 +88,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         $request->validate([
             'name'          => [
                 'required',
@@ -104,7 +104,7 @@ class RoleController extends Controller
         try {
 
             $role = Role::find($id);
-            
+
             if(!$role){
                 throw new \Exception('No role found',404);
             }

@@ -162,12 +162,12 @@ class RoleFeatureTest extends TestCase
                 '*' => [
                     'id',
                     'name',
+                    'users_count',
+                    'permissions',
                     'created_at',
                     'updated_at'
                 ]
             ],
-            'meta',
-            'links',
         ]);
     }
 
