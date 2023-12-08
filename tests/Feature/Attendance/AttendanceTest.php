@@ -243,14 +243,18 @@ class AttendanceTest extends TestCase
         $response->assertJsonStructure([
             'status',
             'data' => [
-                '*' => [
-                    'id',
-                    'username',
-                    'amount',
-                    'created_at',
-                    'updated_at',
-                    'created_by'
-                ]
+                'data' => [
+                    '*' => [
+                        'id',
+                        'username',
+                        'amount',
+                        'created_at',
+                        'updated_at',
+                        'created_by'
+                    ]
+                ],
+                'links',
+                'meta'
             ]
 
         ]);
@@ -265,27 +269,161 @@ class AttendanceTest extends TestCase
             ->create()
             ->assignRole(Role::first());
 
+        Attendance::factory(3)->sequence(...[
+            [
+                'id' => 31,
+                'username' => "greenwood",
+                "amount" => 200
+            ],
+            [
+                'id' => 34,
+                'username' => "emeka",
+                "amount" => 100
+            ],
+            [
+                'id' => 35,
+                'username' => "gift",
+                "amount" => 120
+            ]
+        ])->createQuietly();
+
+
         $response = $this->actingAs($user)->getJson(route('admin.attendance.list', ['search' => 'greenwood']));
         $response->assertStatus(200);
 
 
-        //assert that json response was okay
+
+        $response->assertSeeInOrder(['greenwood']);
+
+        $response->assertDontSee(['emeka', 'gift']);
 
         $response->assertJsonStructure([
             'status',
             'data' => [
-                '*' => [
-                    'id',
-                    'username',
-                    'amount',
-                    'created_at',
-                    'updated_at',
-                    'created_by'
-                ]
+                'data' => [
+                    '*' => [
+                        'id',
+                        'username',
+                        'amount',
+                        'created_at',
+                        'updated_at',
+                        'created_by'
+                    ]
+                ],
+                'links',
+                'meta'
             ]
 
         ]);
     }
 
+    public function testThatUserCanSortOnUsernameField(): void {
 
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        Attendance::factory(3)->sequence(...[
+            [
+                'id' => 31,
+                'username' => "greenwood",
+                "amount" => 200
+            ],
+            [
+                'id' => 34,
+                'username' => "emeka",
+                "amount" => 100
+            ],
+            [
+                'id' => 35,
+                'username' => "gift",
+                "amount" => 120
+            ]
+        ])->createQuietly();
+
+
+        $response = $this->actingAs($user)->getJson(route('admin.attendance.list', ['username' => 'asc']));
+        $response->assertStatus(200);
+
+
+
+        $response->assertSeeInOrder(['emeka', 'gift', 'greenwood']);
+
+
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'data' => [
+                    '*' => [
+                        'id',
+                        'username',
+                        'amount',
+                        'created_at',
+                        'updated_at',
+                        'created_by'
+                    ]
+                ],
+                'links',
+                'meta'
+            ]
+
+        ]);
+    }
+
+    public function testThatUserCanSortOnAmountField(): void {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->create()
+            ->assignRole(Role::first());
+
+        Attendance::factory(3)->sequence(...[
+            [
+                'id' => 31,
+                'username' => "greenwood",
+                "amount" => 90000
+            ],
+            [
+                'id' => 34,
+                'username' => "emeka",
+                "amount" => 100000
+            ],
+            [
+                'id' => 35,
+                'username' => "gift",
+                "amount" => 120000
+            ]
+        ])->createQuietly();
+
+
+        $response = $this->actingAs($user)->getJson(route('admin.attendance.list', ['amount' => 'desc']));
+        $response->assertStatus(200);
+
+
+
+        $response->assertSeeInOrder([120000, 100000, 90000]);
+
+
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+               'data' => [
+                   '*' => [
+                       'id',
+                       'username',
+                       'amount',
+                       'created_at',
+                       'updated_at',
+                       'created_by'
+                   ]
+               ],
+                'links',
+                'meta'
+            ]
+
+        ]);
+    }
 }
