@@ -83,11 +83,13 @@ class RoleFeatureTest extends TestCase
             "status",
             "message",
             "data" => [
-                "guard_name",
+                "id",
                 "name",
+                'users_count',
+                'permissions',
                 "updated_at",
                 "created_at",
-                "id",
+
             ]
         ]);
     }
@@ -162,12 +164,12 @@ class RoleFeatureTest extends TestCase
                 '*' => [
                     'id',
                     'name',
+                    'users_count',
+                    'permissions',
                     'created_at',
                     'updated_at'
                 ]
             ],
-            'meta',
-            'links',
         ]);
     }
 

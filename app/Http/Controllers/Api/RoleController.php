@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\RoleResource;
 use App\Trait\Authorizable;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class RoleController extends Controller
     {
         $data = Role::latest()
         ->when($request->name ?? false, fn($query, $name) => $query->where('name','like',$name))
-        ->paginate(AppConstant::PAGINATION);
+        ->get();
         return RoleResource::collection($data);
     }
 
@@ -88,7 +89,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         $request->validate([
             'name'          => [
                 'required',
@@ -104,7 +105,7 @@ class RoleController extends Controller
         try {
 
             $role = Role::find($id);
-            
+
             if(!$role){
                 throw new \Exception('No role found',404);
             }
@@ -132,7 +133,8 @@ class RoleController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Role Updated!!',
-                'data' => $role,
+                'data' => new RoleResource($role),
+
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
