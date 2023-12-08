@@ -19,7 +19,9 @@ class Attendance extends Model
         'updated_by',
         'updated_at',
         'deleted_by',
-        'deleted_at'
+        'deleted_at',
+
+
     ];
 
 
