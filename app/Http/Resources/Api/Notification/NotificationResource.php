@@ -16,15 +16,12 @@ class NotificationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        
-
         return [
             'id'         => $this->id,
-            'subject'    => $this->subject,
-            'date'       => Carbon::parse($this->date)->format('d-M-Y'),
-            'time'       => $this->time,
+            'name'       => $this->name,
+            'amount'     => number_format($this->amount,2),
+            'date'       => $this->created_at->format('d-M-Y h:i A'),
             'created_by' => new UserResource($this->createdBy),
-            'created_at' => $this->created_at->format('d-F-Y H:i:s'),
         ];
     }
 

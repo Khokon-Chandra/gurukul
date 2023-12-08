@@ -4,11 +4,12 @@ namespace App\Http\Requests\Api\Notification;
 
 use App\Http\Requests\BaseFormRequest;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class NotificationRequest extends BaseFormRequest
 {
     protected array $routeRequest = [
-        'api/v1/notifications|post'  => [
+        'api/v1/notifications|get'  => [
             'rules'                => 'indexMethodRule',
             'prepareForValidation' => 'indexPrepareForValidation',
         ],
@@ -31,10 +32,19 @@ class NotificationRequest extends BaseFormRequest
     public function indexMethodRule(): void
     {
         $this->rules = [
-            'subject'               => 'nullable',
+            'name'                  => 'nullable',
+            'amount'                => 'nullable|numeric',
             'from_date'             => 'nullable|date',
             'to_date'               => 'nullable|date',
             'date_range'            => 'nullable|string|max:50',
+            'sort_by'               => [
+                'nullable',
+                Rule::in(['name', 'amount', 'created_at']),
+            ],
+            'sort_type'             => [
+                'nullable',
+                Rule::in(['ASC', 'DESC']),
+            ],
             'searchable_date_range' => 'nullable'
         ];
     }
@@ -93,6 +103,7 @@ class NotificationRequest extends BaseFormRequest
 
 
         $this->prepareForValidationRules = [
+            'sort_type' => $this->sort_type ?? 'ASC',
             'searchable_date_range' => $dateRange
         ];
     }
@@ -101,10 +112,10 @@ class NotificationRequest extends BaseFormRequest
     public function deletePrepareForValidation(): void
     {
         $idString = $this->route('notification');
-        $idArray  = explode(',',$idString);
+        $idArray  = explode(',', $idString);
 
-        if(is_array($idArray)){
-            $idArray = array_map(fn($id) => trim($id),$idArray);
+        if (is_array($idArray)) {
+            $idArray = array_map(fn ($id) => trim($id), $idArray);
         }
 
         $this->prepareForValidationRules = [

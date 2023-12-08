@@ -10,7 +10,6 @@ use App\Models\Notification;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -21,8 +20,8 @@ class NotificationController extends Controller
     public function index(NotificationRequest $request): AnonymousResourceCollection
     {
         $data = Notification::with('createdBy')
-            ->latest()
             ->filter($request)
+            ->latest()
             ->paginate(AppConstant::PAGINATION);
 
         return NotificationResource::collection($data);
