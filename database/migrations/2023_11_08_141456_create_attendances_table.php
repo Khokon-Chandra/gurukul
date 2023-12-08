@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('username')->index();
             $table->decimal('amount', 13, 2)->index();
+            $table->timestamp('date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();
             $table->unsignedBigInteger('deleted_by')->nullable()->index();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
