@@ -4,100 +4,191 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Cashflow\DeleteManyCashflowRequest;
-use App\Http\Requests\Api\Cashflow\StoreCashflowRequest;
-use App\Http\Requests\Api\Cashflow\UpdateCashflowRequest;
+use App\Http\Requests\Api\CashflowRequest;
 use App\Http\Resources\Api\CashflowResource;
 use App\Models\Cashflow;
 use App\Trait\Authorizable;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CashflowController extends Controller
 {
     use Authorizable;
-
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(CashflowRequest $request): AnonymousResourceCollection
     {
-        $cashflows = Cashflow::latest()
+        $data = Cashflow::with('createdBy')
             ->filter($request)
+            ->latest()
             ->paginate(AppConstant::PAGINATION);
 
-        return CashflowResource::collection($cashflows);
+        return CashflowResource::collection($data);
     }
 
-
     /**
-     * Create new Cashflow
+     * Store a newly created resource in storage.
      */
-    public function store(StoreCashflowRequest $request)
+    public function store(CashflowRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
-            $data = Cashflow::create($request->validated());
 
+            $cashflow = Cashflow::create($request->validated());
+
+            activity('cashflow_created')->causedBy(Auth::id())
+                ->performedOn($cashflow)
+                ->withProperties([
+                    'ip'       => Auth::user()->last_login_ip ?? $request->ip(),
+                    'target'   => $cashflow->name,
+                    'activity' => 'Created cashflow',
+                ])
+                ->log('Created cashflow successfully');
+
+            DB::commit();
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Cashflow created successfully',
-                'data'    => new CashflowResource($data)
+                'data'    => new CashflowResource($cashflow),
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => $error->getMessage(),
+                'message' => $error->getMessage()
             ], 500);
         }
     }
 
-
-    public function update(UpdateCashflowRequest $request, $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
+        //
+    }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(CashflowRequest $request, Cashflow $cashflow): JsonResponse
+    {
+        DB::beginTransaction();
         try {
-            $cashflow = Cashflow::find($id);
-
-            if (!$cashflow) throw new \Exception('Cashflow not found', 404);
 
             $cashflow->update($request->validated());
+
+            activity('cashflow_updated')->causedBy(Auth::id())
+                ->performedOn($cashflow)
+                ->withProperties([
+                    'ip'       => Auth::user()->last_login_ip ?? $request->ip(),
+                    'target'   => $cashflow->name,
+                    'activity' => 'updated cashflow',
+                ])
+                ->log('updated cashflow successfully');
+
+            DB::commit();
 
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Cashflow updated successfully',
-                'data'    => new CashflowResource($cashflow)
+                'data'    => new CashflowResource($cashflow),
             ], 200);
         } catch (\Exception $error) {
             return response()->json([
                 'status' => 'error',
-                'message' => $error->getMessage(),
+                'message' => $error->getMessage()
             ], 500);
         }
     }
 
+    /**
+     * Update multiple 
+     */
 
-
-    public function destroy(Cashflow $cashflow)
+    public function updateMultiple(CashflowRequest $request): JsonResponse
     {
-        $cashflow->delete();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Cashflow deleted successfully',
-        ], 200);
+        $attributes = $request->validated()['cashflows'];
+
+        DB::beginTransaction();
+        try {
+
+            $idArr = [];
+
+            foreach ($attributes as $attribute) {
+
+                $idArr[] = $attribute['id'];
+
+                $cashflow = Cashflow::find($attribute['id']);
+
+                $cashflow->update($attribute);
+
+                activity('cashflow_updated')->causedBy(Auth::id())
+                    ->performedOn($cashflow)
+                    ->withProperties([
+                        'ip'       => Auth::user()->last_login_ip ?? $request->ip(),
+                        'target'   => $cashflow->name,
+                        'activity' => 'updated cashflow',
+                    ])
+                    ->log('updated cashflow successfully');
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Multiple Cashflow updated successfully',
+                'data'    => CashflowResource::collection(Cashflow::whereIn('id', $idArr)->get()),
+            ], 200);
+        } catch (\Exception $error) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage()
+            ], 500);
+        }
     }
 
-
-    public function deleteMany(DeleteManyCashflowRequest $request)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Cashflow $cashflow): JsonResponse
     {
         try {
-            $isDeleted = Cashflow::whereIn('id', $request->cashflow_id)->delete();
 
-            if (!$isDeleted) {
-                throw new \Exception("Something went wrong. Please try again!!", 500);
-            }
+            $cashflow->delete();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Cashflows are deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage()
+            ], 500);
+        }
+    }
 
+    /**
+     * Remove multiple resource from storage.
+     */
+    public function deleteMultiple(CashflowRequest $request): JsonResponse
+    {
+        try {
+
+            Cashflow::whereIn('id', $request->cashflows)->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cashflows are deleted successfully'
+            ], 200);
+        } catch (\Exception $error) {
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
