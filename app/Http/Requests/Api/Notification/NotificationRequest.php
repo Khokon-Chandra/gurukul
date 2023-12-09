@@ -130,4 +130,6 @@ class NotificationRequest extends BaseFormRequest
             'ids' => $idArray
         ];
     }
+
+    
 }
