@@ -141,9 +141,8 @@ class NotificationController extends Controller
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Multiple Notification updated successfully',
-                'data'    => NotificationResource::collection(Notification::whereIn('id',$idArr)->get()),
+                'data'    => NotificationResource::collection(Notification::whereIn('id', $idArr)->get()),
             ], 200);
-
         } catch (\Exception $error) {
 
             DB::rollBack();
