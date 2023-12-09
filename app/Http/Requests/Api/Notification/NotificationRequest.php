@@ -19,8 +19,8 @@ class NotificationRequest extends BaseFormRequest
         'api/v1/notifications/{notification}|put'   => [
             'rules'                => 'updateMethodRule',
         ],
-        'api/v1/notifications/{notification}|patch' => [
-            'rules'                => 'updateMethodRule',
+        'api/v1/notifications|patch' => [
+            'rules'                => 'updateMultipleMethodRule',
         ],
         'api/v1/notifications/{notification}|delete' => [
             'rules'                => 'deleteMethodRule',
@@ -60,9 +60,18 @@ class NotificationRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'subject' => 'required|min:1|max:255|string',
-            'date'    => 'required|date|date_format:Y-m-d',
-            'time'    => 'required|date_format:H:i',
+            'name'       => 'required|min:1|max:255|string',
+            'amount'     => 'required|numeric|decimal:0,8',
+        ];
+    }
+
+    public function updateMultipleMethodRule(): void
+    {
+        $this->rules = [
+            'notifications'          => 'required|array|min:1',
+            'notifications.*.id'     => 'required|exists:notifications,id',
+            'notifications.*.name'   => 'required|min:1|max:255|string',
+            'notifications.*.amount' => 'required|numeric|decimal:0,8',
         ];
     }
 

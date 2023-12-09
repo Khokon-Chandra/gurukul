@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Notification;
 use App\Models\User;
 use Tests\FeatureBaseCase;
 
@@ -87,6 +88,73 @@ class NotificationTest extends FeatureBaseCase
         }
 
         $response->assertStatus(422);
+    }
+
+    public function testUpdateNotification()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username','administrator')->first();
+
+        $notification = Notification::factory()->createQuietly();
+
+        $response = $this->actingAs($user)->putJson(route('service.notifications.update', $notification->id), [
+            'name' => 'Dummy text for update',
+            'amount'    => 20000,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                'id',
+                'name',
+                'amount',
+                'date',
+                'created_by' => [],
+            ]
+        ]);
+    }
+
+
+
+    public function testUpdateMultipleNotification()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username','administrator')->first();
+
+
+        $response = $this->actingAs($user)->patchJson(route('service.notifications.updateMultiple'), [
+            "notifications" => [
+                [
+                    'id' => 1,
+                    'name' => 'update 1',
+                    'amount' => 10000,
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'update 2',
+                    'amount' => 20000,
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'amount',
+                    'date',
+                    'created_by' => [],
+                ]
+            ]
+        ]);
     }
 
 
