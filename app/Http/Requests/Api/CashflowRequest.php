@@ -16,7 +16,7 @@ class CashflowRequest extends BaseFormRequest
         'api/v1/cashflows|post'  => [
             'rules'                => 'storeMethodRule',
         ],
-        'api/v1/cashflows/{notification}|put'   => [
+        'api/v1/cashflows/{cashflow}|put'   => [
             'rules'                => 'updateMethodRule',
         ],
         'api/v1/cashflows|patch' => [
