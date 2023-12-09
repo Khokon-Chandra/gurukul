@@ -22,9 +22,8 @@ class NotificationRequest extends BaseFormRequest
         'api/v1/notifications|patch' => [
             'rules'                => 'updateMultipleMethodRule',
         ],
-        'api/v1/notifications/{notification}|delete' => [
+        'api/v1/notifications-delete-many|delete' => [
             'rules'                => 'deleteMethodRule',
-            'prepareForValidation' => 'deletePrepareForValidation',
         ],
     ];
 
@@ -79,12 +78,12 @@ class NotificationRequest extends BaseFormRequest
     public function deleteMethodRule(): void
     {
         $this->rules = [
-            'ids' => [
+            'notifications' => [
                 'required',
                 'array',
                 'min:1'
             ],
-            'ids.*' => 'exists:notifications,id'
+            'notifications.*' => 'exists:notifications,id'
         ];
     }
 
@@ -116,20 +115,6 @@ class NotificationRequest extends BaseFormRequest
         ];
     }
 
-
-    public function deletePrepareForValidation(): void
-    {
-        $idString = $this->route('notification');
-        $idArray  = explode(',', $idString);
-
-        if (is_array($idArray)) {
-            $idArray = array_map(fn ($id) => trim($id), $idArray);
-        }
-
-        $this->prepareForValidationRules = [
-            'ids' => $idArray
-        ];
-    }
 
     
 }
