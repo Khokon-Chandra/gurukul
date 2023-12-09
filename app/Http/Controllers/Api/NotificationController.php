@@ -10,6 +10,8 @@ use App\Models\Notification;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
@@ -32,16 +34,28 @@ class NotificationController extends Controller
      */
     public function store(NotificationRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
 
             $notification = Notification::create($request->validated());
 
+            activity('notification_created')->causedBy(Auth::id())
+            ->performedOn($notification)
+            ->withProperties([
+                'ip'       => Auth::user()->last_login_ip ?? $request->ip(),
+                'target'   => $notification->name,
+                'activity' => 'Created notification',
+            ])
+            ->log('Created notification successfully');
+
+            DB::commit();
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Notification created successfully',
                 'data'    => new NotificationResource($notification),
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
