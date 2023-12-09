@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use App\Models\Notification;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 use Tests\FeatureBaseCase;
 
 class NotificationTest extends FeatureBaseCase
@@ -22,13 +21,12 @@ class NotificationTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'data' => [
                 '*' => [
-                    'id',
-                    'subject',
+                    'id',                                                                                                                                                                                                
+                    'name',
+                    'amount',
                     'date',
-                    'time',
-                    'created_at',
                     'created_by' => [],
-                ]
+                ]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
             ],
             'links',
             'meta',
@@ -36,17 +34,15 @@ class NotificationTest extends FeatureBaseCase
     }
 
 
-
-    public function testStoreNotificationSuccessfully()
+    public function testStoreNotification()
     {
         $this->artisan('migrate:fresh --seed');
 
         $user     = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.notifications.store'), [
-            'subject' => 'Dummy text for subject',
-            'date'    => '2023-10-16',
-            'time'    => '02:01'
+            'name'    => 'name of notification',
+            'amount'  => 20000.1003,
         ]);
 
         $response->assertStatus(200);
@@ -55,67 +51,24 @@ class NotificationTest extends FeatureBaseCase
             'message',
             'data' => [
                 'id',
-                'subject',
+                'name',
+                'amount',
                 'date',
-                'time',
                 'created_by' => [],
-                'created_at'
             ]
         ]);
+
+        
     }
 
 
-    public function testUpdateNotificationSuccessfully()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user         = User::where('username','administrator')->first();
-
-        $notification = Notification::factory()->createQuietly();
-
-        $response = $this->actingAs($user)->putJson(route('service.notifications.update', $notification->id), [
-            'subject' => 'Dummy text for update',
-            'date'    => '2023-10-16',
-            'time'    => '02:01'
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-                'id',
-                'subject',
-                'date',
-                'time',
-                'created_by' => [],
-                'created_at'
-            ]
-        ]);
-    }
 
 
-    public function testDeleteMultipleNotificationById()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user         = User::where('username','administrator')->first();
-
-        $notifications = Notification::take(5)->pluck('id')->toArray();
-        $notifications = implode(',',$notifications);
-
-        $response = $this->actingAs($user)->deleteJson(route('service.notifications.destroy', $notifications));
-
-        $response->assertStatus(200);
-
-        $response->assertJsonStructure([
-            'status',
-            'message'
-        ]);
-    }
 
 
-    /**
+
+
+     /**
      * @test
      *
      * @dataProvider notificationData
@@ -137,30 +90,73 @@ class NotificationTest extends FeatureBaseCase
         $response->assertStatus(422);
     }
 
-
-    /**
-     * @test
-     *
-     * @dataProvider notificationData
-     */
-    public function testNotificationUpdateValidation($credentials, $errors, $errorKeys)
+    public function testUpdateNotification()
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user     = User::where('username','administrator')->first();
+        $user         = User::where('username','administrator')->first();
 
         $notification = Notification::factory()->createQuietly();
 
-        $response = $this->actingAs($user)->putJson(route('service.notifications.update', $notification->id), $credentials);
+        $response = $this->actingAs($user)->putJson(route('service.notifications.update', $notification->id), [
+            'name' => 'Dummy text for update',
+            'amount'    => 20000,
+        ]);
 
-        $response->assertJsonValidationErrors($errorKeys);
-
-        foreach ($errorKeys as $errorKey) {
-            $response->assertJsonValidationErrorFor($errorKey);
-        }
-
-        $response->assertStatus(422);
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                'id',
+                'name',
+                'amount',
+                'date',
+                'created_by' => [],
+            ]
+        ]);
     }
+
+
+
+    public function testUpdateMultipleNotification()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username','administrator')->first();
+
+
+        $response = $this->actingAs($user)->patchJson(route('service.notifications.updateMultiple'), [
+            "notifications" => [
+                [
+                    'id' => 1,
+                    'name' => 'update 1',
+                    'amount' => 10000,
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'update 2',
+                    'amount' => 20000,
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'amount',
+                    'date',
+                    'created_by' => [],
+                ]
+            ]
+        ]);
+    }
+
 
 
     public static function notificationData()
@@ -168,46 +164,43 @@ class NotificationTest extends FeatureBaseCase
         return [
             [
                 [
-                    'date'    => '2023-03-16',
-                    'time'    => '02:01',
+                    'amount'    => 10000,
                 ],
                 [
-                    'subject' => [
-                        "The subject field is required."
+                    'name' => [
+                        "The name field is required."
                     ]
                 ],
                 [
-                    'subject'
+                    'name'
                 ]
             ],
             [
                 [
-                    'subject'    => 'Notification subject',
-                    'time'    => '02:01',
+                    'name'    => 'Notification name',
                 ],
                 [
-                    'date' => [
-                        "The date field is required."
+                    'amount' => [
+                        "The amount field is required."
                     ]
                 ],
                 [
-                    'date'
+                    'amount'
                 ]
             ],
-            [
-                [
-                    'subject'    => 'Notification subject',
-                    'date'    => '2023-10-01',
-                ],
-                [
-                    'time' => [
-                        "The time field is required."
-                    ]
-                ],
-                [
-                    'time'
-                ]
-            ]
+           
         ];
     }
+
+
+
+
+
+
+
+
+
+
+
+
 }

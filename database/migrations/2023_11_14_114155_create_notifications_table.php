@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->string('subject',255)->index('notification_subject_index');
-            $table->date('date')->index('notification_date_index');
-            $table->time('time')->index('notification_time_index');
+            $table->string('name',255)->index('notification_name_index');
+            $table->decimal('amount',16)->index('notification_amount_index');
             $table->foreignId('created_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
