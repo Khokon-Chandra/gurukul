@@ -62,7 +62,7 @@ class UserController extends Controller
             ])
             ->log('Created user successfully');
         return response()->json([
-            'status' => 'successful',
+            'status' => 'successful',                                                                                                                                                       
             'message' => 'User Created Sucessfully',
             'data' => $user->load('roles'),
         ]);
