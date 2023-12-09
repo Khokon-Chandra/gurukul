@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMany'])->name('cashflows.delete_many');
         Route::apiResource('notifications',NotificationController::class);
         Route::patch('notifications',[NotificationController::class,'updateMultiple'])->name('notifications.updateMultiple');
+        Route::delete('notifications-delete-many',[NotificationController::class,'deleteMultiple'])->name('notifications.deleteMultiple');
         Route::get('departments',[DepartmentController::class,'index'])->name('departments.index');
     });
 

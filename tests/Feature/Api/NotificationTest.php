@@ -158,6 +158,46 @@ class NotificationTest extends FeatureBaseCase
     }
 
 
+    public function testDestroyNotification()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username','administrator')->first();
+
+        $response = $this->actingAs($user)->deleteJson(route('service.notifications.destroy',1));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'status',
+            'message',
+        ]);
+
+    }
+
+
+    public function testDeleteMultipleNotification()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username','administrator')->first();
+
+        $response = $this->actingAs($user)->deleteJson(route('service.notifications.deleteMultiple'),[
+            'notifications' => [
+                1,2,3,4,5
+            ]
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'status',
+            'message',
+        ]);
+
+    }
+
+
 
     public static function notificationData()
     {
