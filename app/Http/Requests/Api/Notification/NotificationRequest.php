@@ -52,9 +52,8 @@ class NotificationRequest extends BaseFormRequest
     public function storeMethodRule(): void
     {
         $this->rules = [
-            'subject' => 'required|min:1|max:255|string',
-            'date'    => 'required|date|date_format:Y-m-d',
-            'time'    => 'required|date_format:H:i',
+            'name'       => 'required|min:1|max:255|string',
+            'amount'     => 'required|numeric|decimal:0,8',
         ];
     }
 
@@ -122,4 +121,6 @@ class NotificationRequest extends BaseFormRequest
             'ids' => $idArray
         ];
     }
+
+    
 }
