@@ -141,9 +141,8 @@ class NotificationController extends Controller
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Multiple Notification updated successfully',
-                'data'    => NotificationResource::collection(Notification::whereIn('id',$idArr)->get()),
+                'data'    => NotificationResource::collection(Notification::whereIn('id', $idArr)->get()),
             ], 200);
-
         } catch (\Exception $error) {
 
             DB::rollBack();
@@ -158,10 +157,33 @@ class NotificationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(NotificationRequest $request, string $id): JsonResponse
+    public function destroy(Notification $notification): JsonResponse
     {
         try {
-            Notification::whereIn('id', $request->ids)->delete();
+
+            $notification->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Notifications are deleted successfully'
+            ], 200);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $error->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove multiple resource from storage.
+     */
+    public function deleteMultiple(NotificationRequest $request): JsonResponse
+    {
+        try {
+
+            Notification::whereIn('id', $request->notifications)->delete();
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Notifications are deleted successfully'

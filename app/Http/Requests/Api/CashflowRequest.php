@@ -1,28 +1,28 @@
 <?php
 
-namespace App\Http\Requests\Api\Notification;
+namespace App\Http\Requests\Api;
 
 use App\Http\Requests\BaseFormRequest;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
-class NotificationRequest extends BaseFormRequest
+class CashflowRequest extends BaseFormRequest
 {
     protected array $routeRequest = [
-        'api/v1/notifications|get'  => [
+        'api/v1/cashflows|get'  => [
             'rules'                => 'indexMethodRule',
             'prepareForValidation' => 'indexPrepareForValidation',
         ],
-        'api/v1/notifications|post'  => [
+        'api/v1/cashflows|post'  => [
             'rules'                => 'storeMethodRule',
         ],
-        'api/v1/notifications/{notification}|put'   => [
+        'api/v1/cashflows/{cashflow}|put'   => [
             'rules'                => 'updateMethodRule',
         ],
-        'api/v1/notifications|patch' => [
+        'api/v1/cashflows|patch' => [
             'rules'                => 'updateMultipleMethodRule',
         ],
-        'api/v1/notifications-delete-many|delete' => [
+        'api/v1/cashflows-delete-many|delete' => [
             'rules'                => 'deleteMethodRule',
         ],
     ];
@@ -67,10 +67,10 @@ class NotificationRequest extends BaseFormRequest
     public function updateMultipleMethodRule(): void
     {
         $this->rules = [
-            'notifications'          => 'required|array|min:1',
-            'notifications.*.id'     => 'required|exists:notifications,id',
-            'notifications.*.name'   => 'required|min:1|max:255|string',
-            'notifications.*.amount' => 'required|numeric|decimal:0,8',
+            'cashflows'          => 'required|array|min:1',
+            'cashflows.*.id'     => 'required|exists:cashflows,id',
+            'cashflows.*.name'   => 'required|min:1|max:255|string',
+            'cashflows.*.amount' => 'required|numeric|decimal:0,8',
         ];
     }
 
@@ -78,12 +78,12 @@ class NotificationRequest extends BaseFormRequest
     public function deleteMethodRule(): void
     {
         $this->rules = [
-            'notifications' => [
+            'cashflows' => [
                 'required',
                 'array',
                 'min:1'
             ],
-            'notifications.*' => 'exists:notifications,id'
+            'cashflows.*' => 'exists:cashflows,id'
         ];
     }
 
@@ -114,7 +114,4 @@ class NotificationRequest extends BaseFormRequest
             'searchable_date_range' => $dateRange
         ];
     }
-
-
-    
 }
