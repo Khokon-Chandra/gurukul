@@ -14,11 +14,6 @@ class PermissionChildResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if($this->children->count()){
-            return [
-                $this->name => PermissionChildResource::collection($this->children)
-            ];
-        }
 
         return [
             'id'          => $this->id,
