@@ -8,6 +8,7 @@ use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\RoleResource;
 use App\Trait\Authorizable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -19,14 +20,14 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
         $data = Role::latest()
         ->when($request->name ?? false, fn($query, $name) => $query->where('name','like',$name))
         ->get();
+
         return RoleResource::collection($data);
     }
-
 
     /**
      * Store a newly created resource in storage.
