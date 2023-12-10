@@ -29,10 +29,10 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::apiResource('user', UserController::class);
         Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])->name('download.activity')->middleware('permission:user.access.user.export-activity');
         Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
-        Route::post('create-attendance', [AttendanceController::class, 'store'])->name('attendance.create')->middleware('permission:user.access.user.create-attendance');
-        Route::delete('delete-attendance', [AttendanceController::class, 'destroy'])->name('attendance.delete')->middleware('permission:user.access.user.delete-attendance');
-        Route::put('update-attendance', [AttendanceController::class, 'update'])->name('attendance.update')->middleware('permission:user.access.user.update-attendance');
-        Route::get('attendances', [AttendanceController::class, 'index'])->name('attendance.list')->middleware('permission:user.access.user.list-attendance');
+        Route::apiResource('attendances', AttendanceController::class);
+        Route::patch('attendances',[AttendanceController::class,'updateMultiple'])->name('attendances.update_multiple');
+        Route::delete('attendances-delete-many', [AttendanceController::class,'deleteMultiple'])->name('attendances.delete_multiple');
+        
     });
 
 

@@ -17,9 +17,9 @@ class AttendanceFactory extends Factory
     public function definition(): array
     {
         return [
-            'username' => $this->faker->userName(),
-            'amount'    => $this->faker->randomNumber(),
-            'date' => now()
+            'name' => $this->faker->sentence(),
+            'amount'    => $this->faker->randomFloat(),
+            'created_at' => $this->faker->dateTime(),
         ];
     }
 }

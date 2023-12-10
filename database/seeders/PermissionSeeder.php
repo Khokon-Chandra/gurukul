@@ -89,26 +89,7 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.perform-ip-tasks',
                 'display_name' => 'Perform User Ip Related Tasks',
             ],
-            [
-                'module_name' => 'user.access.user.create-attendance',
-                'name' => 'user.access.user.create-attendance',
-                'display_name' => 'Create Attendance',
-            ],
-            [
-                'module_name' => 'user.access.user.delete-attendance',
-                'name' => 'user.access.user.delete-attendance',
-                'display_name' => 'Delete Attendance',
-            ],
-            [
-                'module_name' => 'user.access.user.update-attendance',
-                'name' => 'user.access.user.update-attendance',
-                'display_name' => 'Update Attendance',
-            ],
-            [
-                'module_name' => 'user.access.user.list-attendance',
-                'name' => 'user.access.user.list-attendance',
-                'display_name' => 'List Attendance',
-            ],
+            
 
 
         ];
