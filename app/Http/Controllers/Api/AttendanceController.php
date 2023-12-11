@@ -106,7 +106,7 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Update multiple 
+     * Update multiple
      */
 
     public function updateMultiple(AttendanceRequest $request): JsonResponse
@@ -182,7 +182,7 @@ class AttendanceController extends Controller
     {
         try {
 
-            Attendance::whereIn('id', $request->attendances)->delete();
+            Attendance::destroy($request->attendances);
 
             return response()->json([
                 'status' => 'success',
