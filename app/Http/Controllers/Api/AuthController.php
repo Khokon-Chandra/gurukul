@@ -33,6 +33,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Username has been deactivate!.',
+                'permission_access' => false,
             ], 400);
         }
 
@@ -43,6 +44,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid Login Credentials',
+                'permission_access' => false,
             ], 400);
         }
 
