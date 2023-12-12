@@ -85,7 +85,7 @@ class AnnouncementRequest extends BaseFormRequest
     {
         $this->rules = [
             'message'               => 'nullable',
-            'status'                => 'nullable|numeric',
+            'status'                => 'nullable|boolean',
             'from_date'             => 'nullable|date',
             'to_date'               => 'nullable|date',
             'date_range'            => 'nullable|string|max:50',
