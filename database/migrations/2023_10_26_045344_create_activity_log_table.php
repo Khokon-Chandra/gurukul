@@ -11,6 +11,7 @@ class CreateActivityLogTable extends Migration
         if (config('database.default') === 'mysql') {
             \Illuminate\Support\Facades\DB::statement('SET SESSION sql_require_primary_key=0');
         }
+
         Schema::connection(config('activitylog.database_connection'))->create(config('activitylog.table_name'), function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('log_name')->nullable();

@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionChildResource;
+use App\Http\Resources\Api\PermissionResource;
+use App\Http\Resources\Api\RoleResource;
 use App\Http\Resources\Api\UserResource;
+use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -49,6 +53,8 @@ class AuthController extends Controller
             'remember_token' => $token,
         ]);
 
+
+
         activity('User Login')->causedBy(Auth::user()->id)
             ->performedOn($user)
             ->withProperties([
@@ -58,13 +64,17 @@ class AuthController extends Controller
             ])
             ->log('User Login successfully');
 
+
+        $userPermissions = $user->getAllPermissions();
+
         return response()->json([
             'message' => 'Login Successful',
             'status' => 'success',
             'data' => [
                 'token' => $token,
                 'user' => new UserResource($user),
-                'permissions' => $this->permissions($user->id),
+                'permission_access' => true,
+                'permissions' => PermissionChildResource::collection($userPermissions),
                 'token_type' => 'Bearer',
             ],
         ], 200);
