@@ -4,14 +4,10 @@ namespace Tests\Feature\Api;
 
 use App\Models\Cashflow;
 use App\Models\User;
-use Illuminate\Http\UploadedFile;
 use Tests\FeatureBaseCase;
 
 class CashflowTest extends FeatureBaseCase
 {
-    /**
-     * A basic feature test example.
-     */
     public function testCashflowList(): void
     {
         $this->artisan('migrate:fresh --seed');
@@ -25,12 +21,12 @@ class CashflowTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'data' => [
                 '*' => [
-                    'id',
-                    'item_name',
-                    'upload',
-                    'created_at',
+                    'id',                                                                                                                                                                                                
+                    'name',
+                    'amount',
+                    'date',
                     'created_by' => [],
-                ]
+                ]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
             ],
             'links',
             'meta',
@@ -38,249 +34,41 @@ class CashflowTest extends FeatureBaseCase
     }
 
 
-    public function testCashflowStoreValidationError()
+    public function testStoreCashflow()
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username','administrator')->first();
+        $user     = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
-            'item_name' => '',
-            'item_price' => '',
-            'image' => '',
+            'name'    => 'name of cashflow',
+            'amount'  => 20000.1003,
         ]);
 
-        $response->assertStatus(422);
-
-        $response->assertJson([
-            "message" => "The item name field is required. (and 2 more errors)",
-            'errors' => [
-                'item_name' => [
-                    "The item name field is required."
-                ],
-                'item_price' => [
-                    "The item price field is required."
-                ],
-                'image' => [
-                    "The image field is required."
-                ]
-            ]
-        ]);
-    }
-
-
-    public function testItemPriceNumericDataValidationError()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-
-        $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
-            'item_price' => 'non numeric value',
-        ]);
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrorFor('item_price', 'errors');
-    }
-
-
-    public function testImageUploadValidationError()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-
-        $image = UploadedFile::fake()->image('banner.png', 200, 200);
-
-        $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
-            'image'      => $image,
-        ]);
-        $response->assertStatus(422);
-        $response->assertJsonMissingValidationErrors('image',);
-    }
-
-
-
-    public function testInvalidImageExtensionValidationError()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-        $image = UploadedFile::fake()->image('banner.pdf', 200, 200); // pdf file type
-
-
-        $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
-            'image' => $image,
-        ]);
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrorFor('image', 'errors');
-    }
-
-
-
-    public function testCashflowCreationSuccessfully()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-
-        $image = UploadedFile::fake()->image('banner.png', 200, 200);
-
-        $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
-            'item_name'  => 'Item name',
-            'item_price' => 1200,
-            'image'      => $image,
-        ]);
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'status',
             'message',
             'data' => [
                 'id',
-                'item_name',
-                'item_price',
-                'upload',
-                'created_at',
-                'created_at' => [],
-            ]
-        ]);
-    }
-
-
-
-    public function testItemNameRequiredValidationOnUpdate()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-        $image = UploadedFile::fake()->image('banner.png', 200, 200); // pdf file type
-
-        $cashflow = Cashflow::first();
-
-        $response = $this->actingAs($user)->putJson(route('service.cashflows.update', $cashflow->id), [
-            'item_name' => '',
-            'item_price' => 1200,
-            'image' => $image,
-        ]);
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrorFor('item_name', 'errors');
-    }
-
-    public function testItemPriceRequiredValidationOnUpdate()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-        $image = UploadedFile::fake()->image('banner.png', 200, 200); // pdf file type
-
-        $cashflow = Cashflow::first();
-
-        $response = $this->actingAs($user)->putJson(route('service.cashflows.update', $cashflow->id), [
-            'item_name' => 'update name',
-            'item_price' => '',
-            'image' => $image,
-        ]);
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrorFor('item_price', 'errors');
-    }
-
-
-
-    /**
-     * Cashflow update test case
-     */
-    public function testCashflowUpdateSuccessfully()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-
-        $image = UploadedFile::fake()->image('banner.png', 200, 200);
-
-        $cashflow = Cashflow::first();
-
-        $response = $this->actingAs($user)->putJson(route('service.cashflows.update', $cashflow->id), [
-            'item_name'  => 'Item name',
-            'item_price' => 1200,
-            'image'      => $image,
-        ]);
-
-
-        $response->assertStatus(200);
-
-        $response->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-                'id',
-                'item_name',
-                'item_price',
-                'upload',
+                'name',
+                'amount',
+                'date',
                 'created_by' => [],
-                'created_at',
             ]
         ]);
+
+        
     }
 
 
 
 
-    public function testSoftDeleteCashflow()
-    {
-
-        $this->artisan('migrate:fresh --seed');
-
-        $cashflow = Cashflow::factory()->create();// create cashflow
-        $cashflow->delete();        // delete cashflow
-        $cashflow = Cashflow::withTrashed()->find($cashflow->id); // retrive cashflow with trashed
-
-        $this->assertSoftDeleted('cashflows', [
-            'id'          => $cashflow->id,
-            'item_name'   => $cashflow->item_name,
-            'item_price' => $cashflow->item_price,
-            'upload' => $cashflow->upload
-        ]);
-    }
 
 
 
-    public function testDeleteSingleCashflow()
-    {
-        $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username','administrator')->first();
-
-        $response = $this->actingAs($user)->deleteJson(route('service.cashflows.destroy', Cashflow::first()->id));
-        $response->assertStatus(200);
-        $response->assertJson([
-            'status' => 'success',
-            'message' => 'Cashflow deleted successfully'
-        ]);
-    }
-
-
-
-    public function testDeleteManyCashflow()
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-
-
-        $cashflowId = Cashflow::take(5)->pluck('id')->toArray();
-
-        $response = $this->actingAs($user)->deleteJson(route('service.cashflows.delete_many'), [
-            'cashflow_id' => $cashflowId
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'status' => 'success',
-            'message' => 'Cashflows are deleted successfully'
-        ]);
-    }
-
-
-    /**
+     /**
      * @test
      *
      * @dataProvider cashflowData
@@ -289,7 +77,7 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username','administrator')->first();
+        $user     = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), $credentials);
 
@@ -302,132 +90,157 @@ class CashflowTest extends FeatureBaseCase
         $response->assertStatus(422);
     }
 
-
-
-    /**
-     * @test
-     *
-     * @dataProvider cashflowId
-     */
-    public function testCashflowDeleteMultipleInputValidation($credentials, $errors, $errorKeys)
+    public function testUpdateCashflow()
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username','administrator')->first();
+        $user         = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('service.cashflows.delete_many'), $credentials);
+        $cashflow = Cashflow::factory()->createQuietly();
 
-        $response->assertJsonValidationErrors($errorKeys);
+        $response = $this->actingAs($user)->putJson(route('service.cashflows.update', $cashflow->id), [
+            'name' => 'Dummy text for update',
+            'amount'    => 20000,
+        ]);
 
-        foreach ($errorKeys as $errorKey) {
-            $response->assertJsonValidationErrorFor($errorKey);
-        }
-
-        $response->assertStatus(422);
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                'id',
+                'name',
+                'amount',
+                'date',
+                'created_by' => [],
+            ]
+        ]);
     }
 
 
 
-    public static function cashflowId(): array
+    public function testUpdateMultipleCashflow()
     {
-        return [
-            [
-                [
-                    'cashflow_id',
-                ],
-                [
-                    'cashflow_id' => [
-                        "The cashflow id field is required."
-                    ]
-                ],
-                [
-                    'cashflow_id'
-                ]
-            ],
-            [
-                [
-                    'cashflow_id' => 1
-                ],
-                [
-                    "cashflow_id" => [
-                        "The cashflow id field must be an array."
-                    ]
-                ],
-                [
-                    'cashflow_id',
-                ]
-            ],
+        $this->artisan('migrate:fresh --seed');
 
-            [
-                [
-                    'cashflow_id' => [
-                        1, 2, "abc", "not exists", 89898989, 23423
-                    ]
-                ],
-                [
-                    "cashflow_id" => [
-                        "The selected cashflow id is invalid."
-                    ]
-                ],
-                [
-                    'cashflow_id',
-                ]
-            ],
-
-        ];
-    }
+        $user         = User::where('username','administrator')->first();
 
 
-
-    public static function cashflowData(): array
-    {
-
-        return [
-            [
+        $response = $this->actingAs($user)->patchJson(route('service.cashflows.update_multiple'), [
+            "cashflows" => [
                 [
-                    'item_name' => 'item name',
-                    'item_price' => 1200,
+                    'id' => 1,
+                    'name' => 'update 1',
+                    'amount' => 10000,
                 ],
                 [
-                    'image' => [
-                        'The image field is required.',
-                    ],
-                ],
-                [
-                    'image'
-                ]
-
-            ],
-            [
-                [
-                    'item_name' => 'Item name',
-                    'image'     => UploadedFile::fake()->image('banner.pdf', 200, 200)
-
-                ],
-                [
-                    'item_price' => [
-                        'The item price field is required.'
-                    ],
-                ],
-                [
-                    'item_price'
-                ]
-            ],
-            [
-                [
-
-                    'item_price' => 1200,
-                    'image'      => UploadedFile::fake()->image('banner.pdf', 200, 200)
-                ],
-                [
-                    'item_name' => [
-                        'The item name field is required.'
-                    ],
-                ],
-                [
-                    'item_name'
+                    'id' => 2,
+                    'name' => 'update 2',
+                    'amount' => 20000,
                 ]
             ]
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'amount',
+                    'date',
+                    'created_by' => [],
+                ]
+            ]
+        ]);
+    }
+
+
+    public function testDestroyCashflow()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username','administrator')->first();
+
+        $response = $this->actingAs($user)->deleteJson(route('service.cashflows.destroy',1));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'status',
+            'message',
+        ]);
+
+    }
+
+
+    public function testDeleteMultipleCashflow()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user         = User::where('username','administrator')->first();
+
+        $response = $this->actingAs($user)->deleteJson(route('service.cashflows.delete_multiple'),[
+            'cashflows' => [
+                1,2,3,4,5
+            ]
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'status',
+            'message',
+        ]);
+
+    }
+
+
+
+    public static function cashflowData()
+    {
+        return [
+            [
+                [
+                    'amount'    => 10000,
+                ],
+                [
+                    'name' => [
+                        "The name field is required."
+                    ]
+                ],
+                [
+                    'name'
+                ]
+            ],
+            [
+                [
+                    'name'    => 'Cashflow name',
+                ],
+                [
+                    'amount' => [
+                        "The amount field is required."
+                    ]
+                ],
+                [
+                    'amount'
+                ]
+            ],
+           
         ];
     }
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -48,9 +48,11 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
         Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('get.announcement.data')->middleware('permission:user.access.user.view-announcement-data');
         Route::apiResource('cashflows', CashflowController::class);
-        Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMany'])->name('cashflows.delete_many');
+        Route::patch('cashflows',[CashflowController::class,'updateMultiple'])->name('cashflows.update_multiple');
+        Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMultiple'])->name('cashflows.delete_multiple');
         Route::apiResource('notifications',NotificationController::class);
         Route::patch('notifications',[NotificationController::class,'updateMultiple'])->name('notifications.updateMultiple');
+        Route::delete('notifications-delete-many',[NotificationController::class,'deleteMultiple'])->name('notifications.delete_multiple');
         Route::get('departments',[DepartmentController::class,'index'])->name('departments.index');
     });
 

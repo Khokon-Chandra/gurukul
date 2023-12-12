@@ -17,11 +17,10 @@ class CashflowResource extends JsonResource
     {
         return [
             'id'         => $this->id,
-            'item_name'  => $this->item_name,
-            'item_price' => $this->item_price,
-            'upload'     => $this->upload,
-            'created_at' => $this->created_at->format('d-F-Y H:i A'),
-            'created_by' => new UserResource($this->createdBy)
+            'name'       => $this->name,
+            'amount'     => number_format($this->amount,2),
+            'date'       => $this->created_at->format('d-M-Y h:i A'),
+            'created_by' => new UserResource($this->createdBy),
         ];
     }
 }
