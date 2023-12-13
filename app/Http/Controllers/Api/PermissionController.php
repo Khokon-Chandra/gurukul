@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionChildResource;
 use App\Http\Resources\Api\PermissionResource;
 use App\Models\UserPermission;
 use App\Trait\Authorizable;
@@ -22,7 +23,7 @@ class PermissionController extends Controller
     {
         $data = UserPermission::whereNull('parent_id')->latest()->get();
 
-        return PermissionResource::collection($data);
+        return PermissionChildResource::collection($data);
     }
 
     /**

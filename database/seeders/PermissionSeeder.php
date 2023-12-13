@@ -109,8 +109,6 @@ class PermissionSeeder extends Seeder
                 'name' => 'user.access.user.list-attendance',
                 'display_name' => 'List Attendance',
             ],
-
-
         ];
 
         $this->insertPermission();
