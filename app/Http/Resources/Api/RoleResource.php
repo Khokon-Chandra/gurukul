@@ -16,6 +16,7 @@ class RoleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
         return [
             'id'         => $this->id,
             'name'       => $this->name,
@@ -32,9 +33,5 @@ class RoleResource extends JsonResource
             fn ($user) => $user->roles->where('name', $roleName)->toArray()
         )->count();
     }
-
-
-
-
 
 }
