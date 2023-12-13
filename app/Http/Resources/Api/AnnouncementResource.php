@@ -16,13 +16,10 @@ class AnnouncementResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'number' => $this->number,
             'message' => $this->message,
             'status' => $this->status,
-            'created_by' => $this->created_by,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-
+            'date' => $this->created_at->format('d-M-Y h:i A'),
+            'created_by' => new UserResource($this->createdBy),
         ];
 
 

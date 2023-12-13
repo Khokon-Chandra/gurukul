@@ -29,13 +29,16 @@ class Cashflow extends Model
 
     public function scopeFilter($query, $request)
     {
-        $query->when($request->item_name ?? false, fn($query, $item_name) => $query
-            ->where('item_name','like',"%$item_name%"));
+        $query->when($request->name ?? false, fn ($query, $name) => $query
+            ->where('name', 'like', "%$name%"))
+            ->when($request->amount ?? false, fn ($query, $amount) => $query->where('amount', $amount))
+            ->when($request->searchable_date_range ?? false, fn ($query, $dates) => $query->whereBetween('created_at', $dates))
+            ->when($request->sort_by ?? false, fn ($query, $column) => $query->orderBy($column, $request->sort_type));
     }
 
 
     public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(User::class,'created_by','id');
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 }

@@ -6,6 +6,7 @@
  */
 
 return [
+    ''           => 'read',
     'index'      => 'read',
     'index_data' => 'read',
     'index_list' => 'read',
@@ -16,4 +17,6 @@ return [
     'delete'     => 'delete',
     'restore'    => 'restore',
     'trashed'    => 'restore',
+    'updateMultiple' => 'update_multiple',
+    'deleteMultiple' => 'delete_multiple',
 ];

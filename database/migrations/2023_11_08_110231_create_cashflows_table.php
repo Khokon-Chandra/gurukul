@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('cashflows', function (Blueprint $table) {
             $table->id();
-            $table->string('item_name',255)->index();
-            $table->float('item_price');
-            $table->text('upload');
+            $table->string('name',255)->index('cashflow_name_index');
+            $table->decimal('amount',16)->index('cashflow_amount_index');
             $table->foreignId('created_by')->nullable();
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
