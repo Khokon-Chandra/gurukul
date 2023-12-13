@@ -41,12 +41,12 @@ Route::group(['middleware' => ['auth:api']], function () {
      * Service module routes
      */
     Route::name('service.')->group(function () {
-        Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
-        Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
-        Route::put('announcements', [AnnouncementController::class, 'update'])->name('announcements.update');
-        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateAnAnnouncementStatus'])->name('announcement.status.update')->middleware('permission:user.access.user.update-announcement-status');
-        Route::delete('announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+        Route::apiResource('announcements',AnnouncementController::class);
+        Route::put('announcements-update-multiple', [AnnouncementController::class, 'updateMultiple'])->name('announcements.update_multiple');
+        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateStatus'])->name('announcements.update_status');
         Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('get.announcement.data')->middleware('permission:user.access.user.view-announcement-data');
+        Route::delete('/announcements-delete-multiple',[AnnouncementController::class,'deleteMultiple'])->name('announcements.delete_multiple');
+        
         Route::apiResource('cashflows', CashflowController::class);
         Route::patch('cashflows',[CashflowController::class,'updateMultiple'])->name('cashflows.update_multiple');
         Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMultiple'])->name('cashflows.delete_multiple');
