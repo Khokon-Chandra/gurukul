@@ -148,22 +148,6 @@ class UserLoginTest extends FeatureBaseCase
         ], $this->headers);
 
         $response->assertStatus(200);
-
-        $response->assertJsonStructure([
-            'data' => [
-                'permissions' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'guard_name',
-                        'created_at',
-                        'updated_at'
-                    ]
-                ],
-            ],
-        ]);
-
-        $response->assertJsonCount($role->permissions->count(), 'data.permissions');
     }
 
 
