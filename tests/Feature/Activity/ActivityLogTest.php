@@ -69,7 +69,8 @@ class ActivityLogTest extends FeatureBaseCase
             ->createQuietly();
 
 
-        $response = $this->actingAs($user)->getJson(route('admin.logs.index'));
+        $response = $this->actingAs($user)
+            ->getJson(route('admin.logs.index'));
 
 
         $response->assertStatus(403);
