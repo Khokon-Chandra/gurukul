@@ -24,7 +24,7 @@ class UserIpResource extends JsonResource
             'ip'  => $this->ip,
             'status'      => $this->whitelisted,
             'description' => $this->description,
-            'date'        => $this->updated_at ? Carbon::parse($this->updated_at)->format('d-M-Y h:i A') : '',
+            'date'        => $this->updated_at ? Carbon::parse($this->updated_at)->format('d-M-Y h:i A') : $this->created_at->format('d-M-Y h:i A'),
         ];
     }
 }
