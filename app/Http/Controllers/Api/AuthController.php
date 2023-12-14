@@ -7,6 +7,7 @@ use App\Http\Resources\Api\PermissionChildResource;
 use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\RoleResource;
 use App\Http\Resources\Api\UserResource;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
@@ -66,9 +67,6 @@ class AuthController extends Controller
             ])
             ->log('User Login successfully');
 
-
-        $userPermissions = $user->getAllPermissions();
-
         return response()->json([
             'message' => 'Login Successful',
             'status' => 'success',
@@ -76,7 +74,7 @@ class AuthController extends Controller
                 'token' => $token,
                 'user' => new UserResource($user),
                 'permission_access' => true,
-                'permissions' => PermissionChildResource::collection($userPermissions),
+                'permissions' => $this->pullAuthUserPermissionWithDataStructure(),
                 'token_type' => 'Bearer',
             ],
         ], 200);
@@ -123,16 +121,24 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     *
-     * @param $userId
-     * @return array|array[]
-     *
-     * @todo muna please add a unit test to cover this. !IMPORTANT
-     */
-    protected function permissions($userId)
+    public function pullAuthUserPermissionWithDataStructure()
     {
-        $permissionsUser = User::with('permissions')->find($userId);
-        return $permissionsUser->permissions->toArray();
+        $authUser = auth()->user();
+
+        $permissions =  $authUser->roles->pluck('permissions')->flatten();
+
+        $permissions = $permissions->merge($authUser->permissions);
+
+        $permissionsWithDataStructure = (new Permission)
+            ->modulePermission($permissions->pluck('id')->toArray());
+
+        return $permissionsWithDataStructure->map(
+            fn ($item) => $item->groupBy('sub_module_name')
+                ->map(
+                    fn ($innerItems) => $innerItems->map(
+                        fn ($in) => $in['items'][$in['sub_module_name']]
+                    )
+                )
+        );
     }
 }
