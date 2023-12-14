@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Trait\ParrentBoot;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class UserIp extends Model
 {
     use HasFactory,
-        SoftDeletes;
+        SoftDeletes, ParrentBoot;
 
     protected $table = 'user_ips';
 
@@ -25,7 +26,7 @@ class UserIp extends Model
 
 
     protected $fillable = [
-        'ip_address',
+        'ip',
         'description',
         'whitelisted',
         'created_by',
@@ -45,36 +46,11 @@ class UserIp extends Model
     ];
 
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::deleting(function ($ip) {
-            $ip->deleted_by = Auth::id();
-        });
-    }
-
-
-    public function createdBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by', 'id');
-    }
-
-
-
-    public function updatedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by')
-            ->withDefault([
-                'name' => 'N/A',
-            ]);
-    }
-
-
 
     public function scopeFilter($query, $request): void
     {
-        $query->when($request->ip_address ?? false, fn ($query, $ip_address) => $query
-            ->where('ip_address', $ip_address))
+        $query->when($request->ip ?? false, fn ($query, $ip) => $query
+            ->where('ip','like', "%$ip%"))
             ->when($request->whitelisted ?? false, fn ($query, $whitelisted) => $query->where('whitelisted', $whitelisted))
             ->when($request->description ?? false, fn ($query, $description) => $query->where('description', 'like', "%$description%"))
             ->when($request->sort_by ?? false, fn ($query, $column) => $query->orderBy($column, $request->sort_type));
@@ -88,7 +64,7 @@ class UserIp extends Model
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
-                $ipAddress = explode('.', $attributes['ip_address']);
+                $ipAddress = explode('.', $attributes['ip']);
 
                 return $ipAddress[0] === '*' ? null : $ipAddress[0];
             },
@@ -102,7 +78,7 @@ class UserIp extends Model
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
-                $ipAddress = explode('.', $attributes['ip_address']);
+                $ipAddress = explode('.', $attributes['ip']);
 
                 return $ipAddress[1] === '*' ? null : $ipAddress[1];
             },
@@ -116,7 +92,7 @@ class UserIp extends Model
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
-                $ipAddress = explode('.', $attributes['ip_address']);
+                $ipAddress = explode('.', $attributes['ip']);
 
                 return $ipAddress[2] === '*' ? null : $ipAddress[2];
             },
@@ -131,7 +107,7 @@ class UserIp extends Model
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
-                $ipAddress = explode('.', $attributes['ip_address']);
+                $ipAddress = explode('.', $attributes['ip']);
 
                 return $ipAddress[3] === '*' ? null : $ipAddress[3];
             },

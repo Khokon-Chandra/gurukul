@@ -11,7 +11,8 @@ class UserIpRequest extends BaseFormRequest
 
         'api/v1/user-ip|get' => [
             'rules' => 'indexMethod',
-        ],
+            'prepareForValidation' => 'indexPrepareForSearch',
+        ],  
 
         'api/v1/user-ip|post' => [
             'rules' => 'storeMethodRule',
@@ -25,14 +26,18 @@ class UserIpRequest extends BaseFormRequest
         'api/v1/user-ips|put' => [
             'rules' => 'multipleUpdateMethodRule',
         ],
+        'api/v1/user-ip-delete-multiple|delete' => [
+            'rules' => 'deleteMethodRule',
+        ]
     ];
 
     public function indexMethod(): void
     {
         $this->rules = [
+            'ip' => 'nullable|string|max:255',
             'sort_by'               => [
                 'nullable',
-                Rule::in(['ip_address', 'description', 'whitelisted','created_at','updated_at']),
+                Rule::in(['ip', 'description', 'status','whitelisted','date','updated_at']),
             ],
             'sort_type'             => [
                 'nullable',
@@ -113,6 +118,25 @@ class UserIpRequest extends BaseFormRequest
             'items.*.item.description.max' => 'The description field for item :itemIndex may not be greater than :max characters.',
         ];
     }
+
+
+    public function deleteMethodRule(): void
+    {
+        $this->rules = [
+            'items' => 'required|array|min:1',
+            'items.*' => 'exists:user_ips,id',
+        ];
+    }
+
+    public function indexPrepareForSearch(): void
+    {
+        
+        $this->prepareForValidationRules = [
+            'ip' => $this->ip,
+            'sort_by' => $this->sort_by == 'status' ? 'whitelisted' : ($this->sort_by == 'date' ? 'updated_at' : $this->sort_by),
+        ];
+    }
+
 
     /**
      * todo set custom names for validation with wildcats

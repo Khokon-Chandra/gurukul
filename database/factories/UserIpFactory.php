@@ -17,11 +17,11 @@ class UserIpFactory extends Factory
     public function definition(): array
     {
         return [
-            'ip_address' => '103.15.245.90',
+            'ip'          => '103.15.245.90',
             'whitelisted' => 1,
             'description' => 'testing ip update',
-            'created_by' => 1,
-            'created_at' => now(),
+            'created_by'  => 1,
+            'created_at'  => now(),
         ];
     }
 }
