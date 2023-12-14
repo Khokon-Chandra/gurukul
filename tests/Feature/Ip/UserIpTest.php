@@ -4,7 +4,6 @@ namespace Tests\Feature\Ip;
 
 use App\Models\User;
 use App\Models\UserIp;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\FeatureBaseCase;
 
@@ -17,11 +16,7 @@ class UserIpTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
+        $user = User::where('username', 'administrator')->first();
 
         UserIp::create([
             'ip_address' => '103.15.245.75',
@@ -29,8 +24,6 @@ class UserIpTest extends FeatureBaseCase
             'whitelisted' => 1,
             'created_by' => 2,
         ]);
-
-        $user->assignRole(Role::where('name', 'Administrator')->first());
 
 
         $response = $this->actingAs($user)->getJson('/api/v1/user-ip');
@@ -47,16 +40,14 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip_address',
-                    'whitelisted',
                     'description',
-                    'created_at',
+                    'status',
+                    'date',
                 ]
             ],
             'links',
             'meta'
         ]);
-
-
     }
 
     public function testThatUserCanSearchOnTheIpAddressField(): void
@@ -86,7 +77,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['search' => '103']));
+            ->getJson(route('admin.user-ip.index', ['ip_address' => '103.15.245.75']));
 
         $response->assertStatus(200);
 
@@ -112,16 +103,14 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip_address',
-                    'whitelisted',
                     'description',
-                    'created_at',
+                    'status',
+                    'date',
                 ]
             ],
             'links',
             'meta'
         ]);
-
-
     }
 
     /**
@@ -160,11 +149,15 @@ class UserIpTest extends FeatureBaseCase
             "status",
             "message",
             "data" => [
-                "ip_address",
-                "description",
-                "created_by",
-                "created_at",
-                "id",
+                'id',
+                'ip1',
+                'ip2',
+                'ip3',
+                'ip4',
+                'ip_address',
+                'description',
+                'status',
+                'date',
             ]
         ]);
 
@@ -209,16 +202,15 @@ class UserIpTest extends FeatureBaseCase
             "status",
             "message",
             "data" => [
-                "id",
-                "ip_address",
-                "description",
-                "whitelisted",
-                "created_by",
-                "updated_by",
-                "deleted_by",
-                "deleted_at",
-                "created_at",
-                "updated_at",
+                'id',
+                'ip1',
+                'ip2',
+                'ip3',
+                'ip4',
+                'ip_address',
+                'description',
+                'status',
+                'date',
             ]
         ]);
 
@@ -294,7 +286,7 @@ class UserIpTest extends FeatureBaseCase
     /**
      * User Ip Delete single or multiple
      */
-    public function test_userIpDelete(): void
+    public function testUserIpDelete(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -323,7 +315,55 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
 
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/user-ip/1,2');
+        $response = $this->actingAs($user)->DeleteJson('/api/v1/user-ip/1');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            "status",
+            "message",
+            "data",
+        ]);
+
+        $response->assertJson([
+            'status' => true,
+            'message' => true,
+            'data' => false
+        ]);
+    }
+
+
+    public function testUserIpDeleteMultiple(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $user->assignRole(Role::where('name', 'Administrator')->first());
+
+        UserIp::create([
+            'ip_address' => '103.15.245.74',
+            'whitelisted' => 1,
+            'description' => 'testing ip update',
+            'created_by' => 1,
+            'created_at' => now(),
+        ]);
+
+        UserIp::create([
+            'ip_address' => '103.15.245.75',
+            'whitelisted' => 1,
+            'description' => 'testing ip update',
+            'created_by' => 1,
+            'created_at' => now(),
+        ]);
+
+
+        $response = $this->actingAs($user)->DeleteJson('/api/v1/user-ip-delete-multiple',[
+            'items' => [1,2]
+        ]);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -346,7 +386,7 @@ class UserIpTest extends FeatureBaseCase
 
         $user = User::factory()->create()->assignRole(Role::first());
 
-        $data = UserIp::factory(3)
+        UserIp::factory(3)
             ->sequence(...[
                 [
                     'id' => 1,
@@ -365,7 +405,10 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['ip_address' => 'asc']));
+            ->getJson(route('admin.user-ip.index', [
+                'sort_by' => 'ip_address',
+                'sort_type' => 'ASC',
+            ]),);
 
         $response->assertStatus(200);
 
@@ -385,16 +428,14 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip_address',
-                    'whitelisted',
+                    'status',
                     'description',
-                    'created_at',
+                    'date',
                 ]
             ],
             'links',
             'meta'
         ]);
-
-
     }
 
     public function testThatUserCanSortOnDescriptionField(): void
@@ -425,7 +466,10 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['description' => 'asc']));
+            ->getJson(route('admin.user-ip.index', [
+                'sort_by' => 'description',
+                'sort_type' => 'ASC',
+            ]));
 
         $response->assertStatus(200);
 
@@ -445,15 +489,14 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip_address',
-                    'whitelisted',
+                    'status',
                     'description',
-                    'created_at',
+                    'date',
                 ]
             ],
             'links',
             'meta'
         ]);
-
     }
 
     public function testThatUserCanSortOnWhitelistedField(): void
@@ -484,7 +527,10 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['whitelisted' => 'desc']));
+            ->getJson(route('admin.user-ip.index', [
+                'sort_by' => 'whitelisted',
+                'sort_type' => 'DESC'
+            ]));
 
         $response->assertStatus(200);
 
@@ -504,9 +550,9 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip_address',
-                    'whitelisted',
+                    'status',
                     'description',
-                    'created_at',
+                    'date',
                 ]
             ],
             'links',
@@ -542,7 +588,10 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['updated_at' => 'asc']));
+            ->getJson(route('admin.user-ip.index', [
+                'sort_by'   => 'updated_at',
+                'sort_type' => 'ASC',
+            ]));
 
         $response->assertStatus(200);
 
@@ -562,14 +611,13 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip_address',
-                    'whitelisted',
+                    'status',
                     'description',
-                    'created_at',
+                    'date',
                 ]
             ],
             'links',
             'meta'
         ]);
     }
-
 }

@@ -21,6 +21,7 @@ Route::group(['middleware' => ['auth:api']], function () {
      */
     Route::name('admin.')->group(function () {
         Route::apiResource('user-ip', UserIpController::class);
+        Route::delete('user-ip-delete-multiple',[UserIpController::class,'deleteMultiple'])->name('user-ip.delete-multiple');
         Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
             ->name('user-ip.multi_update');
         Route::apiResource('roles', RoleController::class);
