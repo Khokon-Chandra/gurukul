@@ -27,12 +27,17 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download');
         Route::apiResource('user', UserController::class);
-        Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])->name('download.activity')->middleware('permission:user.access.user.export-activity');
-        Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
+        Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])
+            ->name('download.activity')
+            ->middleware('permission:user.access.users.activity.export');
+        Route::apiResource('permissions', PermissionController::class)
+            ->only('index', 'update');
         Route::apiResource('attendances', AttendanceController::class);
-        Route::patch('attendances',[AttendanceController::class,'updateMultiple'])->name('attendances.update_multiple');
-        Route::delete('attendances-delete-many', [AttendanceController::class,'deleteMultiple'])->name('attendances.delete_multiple');
-        
+        Route::patch('attendances',[AttendanceController::class,'updateMultiple'])
+            ->name('attendances.update_multiple');
+        Route::delete('attendances-delete-many', [AttendanceController::class,'deleteMultiple'])
+            ->name('attendances.delete_multiple');
+
     });
 
 
@@ -44,9 +49,10 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::apiResource('announcements',AnnouncementController::class);
         Route::put('announcements-update-multiple', [AnnouncementController::class, 'updateMultiple'])->name('announcements.update_multiple');
         Route::patch('update-announcement-status', [AnnouncementController::class, 'updateStatus'])->name('announcements.update_status');
-        Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('get.announcement.data')->middleware('permission:user.access.user.view-announcement-data');
+        Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('get.announcement.data')
+            ->middleware('permission:user.access.social.announcement.view-announcement-data');
         Route::delete('/announcements-delete-multiple',[AnnouncementController::class,'deleteMultiple'])->name('announcements.delete_multiple');
-        
+
         Route::apiResource('cashflows', CashflowController::class);
         Route::patch('cashflows',[CashflowController::class,'updateMultiple'])->name('cashflows.update_multiple');
         Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMultiple'])->name('cashflows.delete_multiple');
@@ -63,11 +69,9 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     Route::name('user.')->group(function () {
 
-        Route::apiResource('chats', ChatController::class)
-            ->middleware('permission:user.access.user.chat-agent');
+        Route::apiResource('chats', ChatController::class);
 
         Route::put('change-password', [UserController::class, 'changePassword'])
-            ->name('change.password')
-            ->middleware('permission:user.access.user.change-password');
+            ->name('change.password');
     });
 });

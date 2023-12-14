@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Log;
 
 class AnnouncementController extends Controller
 {
-
     use Authorizable;
     /**
      * Display a listing of the resource.
