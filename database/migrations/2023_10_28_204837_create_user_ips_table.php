@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('user_ips', function (Blueprint $table) {
             $table->id();
-            $table->string('ip_address')->nullable()->index();
+            $table->string('ip')->nullable()->index();
             $table->string('description')->nullable()->index();
-            $table->string('whitelisted')->nullable()->default(1)->index();
+            $table->boolean('whitelisted')->default(1)->index();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();
             $table->unsignedBigInteger('deleted_by')->nullable()->index();

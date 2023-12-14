@@ -16,20 +16,15 @@ class UserIpResource extends JsonResource
     public function toArray(Request $request)
     {
         return [
-            'id' => $this->id,
-            'ip1' => $this->ip1,
-            'ip2' => $this->ip2,
-            'ip3' => $this->ip3,
-            'ip4' => $this->ip4,
-            'ip_address' => $this->ip_address,
-            'whitelisted' => $this->whitelisted == 1,
+            'id'          => $this->id,
+            'ip1'         => $this->ip1,
+            'ip2'         => $this->ip2,
+            'ip3'         => $this->ip3,
+            'ip4'         => $this->ip4,
+            'ip'  => $this->ip,
+            'status'      => $this->whitelisted,
             'description' => $this->description,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'deleted_at' => Carbon::parse($this->updated_at)->setTimezone(new \DateTimeZone('Asia/Jakarta')),
-            'updated_by' => $this->updated_by,
-            'created_by' => $this->created_by,
-            'deleted_by' => $this->deleted_by,
+            'date'        => $this->updated_at ? Carbon::parse($this->updated_at)->format('d-M-Y h:i A') : '',
         ];
     }
 }
