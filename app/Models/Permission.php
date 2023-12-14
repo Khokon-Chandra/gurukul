@@ -19,8 +19,6 @@ class Permission extends \Spatie\Permission\Models\Permission
             try {
                 $level = explode('.', $item->name);
 
-                logger('log level');
-                logger($level);
                 $condition2 = count($level) >= 2 &&
                     $level[0] === 'user' &&
                     $level[1] === 'access';
