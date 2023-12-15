@@ -22,9 +22,7 @@ class RoleController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $data = Role::latest()
-        ->when($request->name ?? false, fn($query, $name) => $query->where('name','like',$name))
-        ->get();
+        $data = Role::latest()->get();
 
         return RoleResource::collection($data);
     }
