@@ -17,7 +17,7 @@ class UserIpFactory extends Factory
     public function definition(): array
     {
         return [
-            'ip'          => '103.15.245.90',
+            'ip'          => $this->faker->ipv4(),
             'whitelisted' => 1,
             'description' => 'testing ip update',
             'created_by'  => 1,
