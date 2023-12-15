@@ -37,7 +37,7 @@ class UserIpRequest extends BaseFormRequest
             'ip' => 'nullable|string|max:255',
             'sort_by'               => [
                 'nullable',
-                Rule::in(['ip', 'description', 'status','whitelisted','date','updated_at']),
+                Rule::in(['ip', 'description', 'status','whitelisted','date','created_at','updated_at']),
             ],
             'sort_type'             => [
                 'nullable',

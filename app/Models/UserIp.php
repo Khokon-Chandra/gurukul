@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Auth;
 class UserIp extends Model
 {
     use HasFactory,
-        SoftDeletes, ParrentBoot;
+        SoftDeletes,
+        ParrentBoot;
 
     protected $table = 'user_ips';
 
@@ -50,10 +51,21 @@ class UserIp extends Model
     public function scopeFilter($query, $request): void
     {
         $query->when($request->ip ?? false, fn ($query, $ip) => $query
-            ->where('ip','like', "%$ip%"))
+            ->where('ip', 'like', "%$ip%"))
             ->when($request->whitelisted ?? false, fn ($query, $whitelisted) => $query->where('whitelisted', $whitelisted))
             ->when($request->description ?? false, fn ($query, $description) => $query->where('description', 'like', "%$description%"))
-            ->when($request->sort_by ?? false, fn ($query, $column) => $query->orderBy($column, $request->sort_type));
+            ->when($request->sort_by ?? false, function ($query, $column) use ($request) {
+
+                $defaultConnectionName = config('database.default');
+                $connectionName        = $this->getConnectionName() ?? $defaultConnectionName;
+
+                if (trim($column) == 'ip' && $connectionName  == 'mysql') {
+                    $query->orderByRaw('INET_ATON(ip) ' . $request->sort_type);
+                }
+                 else {
+                    $query->orderBy($column, $request->sort_type);
+                }
+            });
     }
 
 
