@@ -26,7 +26,7 @@ class PermissionTest extends FeatureBaseCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'data' => [
+            'users' => [
             ]
         ]);
     }

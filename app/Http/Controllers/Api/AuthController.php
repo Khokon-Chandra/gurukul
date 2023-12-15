@@ -16,9 +16,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Trait\HasPermissionsStructure;
 
 class AuthController extends Controller
 {
+    use HasPermissionsStructure;
     public function login(Request $request): JsonResponse
     {
         $this->validate($request, [
@@ -121,24 +123,5 @@ class AuthController extends Controller
         }
     }
 
-    public function pullAuthUserPermissionWithDataStructure()
-    {
-        $authUser = auth()->user();
 
-        $permissions =  $authUser->roles->pluck('permissions')->flatten();
-
-        $permissions = $permissions->merge($authUser->permissions);
-
-        $permissionsWithDataStructure = (new Permission)
-            ->modulePermission($permissions->pluck('id')->toArray());
-
-        return $permissionsWithDataStructure->map(
-            fn ($item) => $item->groupBy('sub_module_name')
-                ->map(
-                    fn ($innerItems) => $innerItems->map(
-                        fn ($in) => $in['items'][$in['sub_module_name']]
-                    )
-                )
-        );
-    }
 }
