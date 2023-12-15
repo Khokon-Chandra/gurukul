@@ -54,6 +54,7 @@ class ActivityLogController extends Controller
             ->when($request->log_name ?? false, function ($query, $logName) {
                 $query->where('log_name', 'like', "%{$logName}%");
             })
+
             ->when($request->ip ?? false, function ($query, $ip) {
                 $query->where('activity_log.properties->ip', 'like', "%{$ip}%");
             })
@@ -75,6 +76,35 @@ class ActivityLogController extends Controller
             ->when($dateRange, function ($query) use ($dateRange) {
 
                 $query->whereBetween('created_at', $this->parseDate(...$dateRange));
+            })
+
+            ->when($request->username ?? false, function ($query, $username){
+                $query->whereHas('causer',function($query) use($username){
+                    $query->where('username',$username);
+                });
+            })
+
+            ->when($request->sort_by == 'ip', function ($query) use($request){
+                $query->orderBy('activity_log.properties->ip', $request->sort_type);
+            })
+
+            ->when($request->sort_by == 'activity', function ($query) use($request){
+                $query->orderBy('activity_log.properties->activity', $request->sort_type);
+            })
+
+            ->when($request->sort_by == 'description', function ($query) use($request){
+                $query->orderBy('activity_log.description', $request->sort_type);
+            })
+
+            ->when($request->sort_by == 'log_name', function ($query) use($request){
+                $query->orderBy('activity_log.log_name', $request->sort_type);
+            })
+
+
+            ->when($request->sort_by == 'username', function ($query) use($request){
+                $query->whereHas('causer',function($query) use($request){
+                    $query->orderBy('username',$request->sort_type);
+                });
             });
     }
 
