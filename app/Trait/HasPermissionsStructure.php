@@ -27,12 +27,10 @@ trait HasPermissionsStructure
         );
     }
 
-    public function pullAllPermissionsWithDataStructure(){
-
-        $permissions = Permission::all();
-
+    public function pullAllPermissionsWithDataStructure()
+    {
         $permissionsWithDataStructure = (new Permission)
-            ->modulePermission($permissions->pluck('id')->toArray());
+            ->modulePermission();
 
         return $permissionsWithDataStructure->map(
             fn ($item) => $item->groupBy('sub_module_name')
