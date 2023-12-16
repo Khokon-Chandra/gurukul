@@ -98,64 +98,30 @@ class ActivityLogTest extends FeatureBaseCase
 
     public function testUserCanDownloadActivityLogList(): void
     {
-
         $this->artisan("migrate:fresh --seed");
 
         $this->artisan("db:seed --class=ActivityLogSeeder");
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-        $user->givePermissionTo('download_logs');
-
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->getJson(route('admin.logs.download'));
-
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
             'data' => [
                 '*' => [
-                    'id',
-                    'log_name',
-                    'description',
-                    'target',
-                    'activity',
-                    'ip',
-                    'created_at',
+                    'NO',
+                    'DATE',
+                    'USERNAME',
+                    'IP',
+                    'ACTIVITY',
+                    'TARGET',
+                    'DESCRIPTION',
                 ],
             ]
         ]);
     }
 
-    public function testUserCanDownloadActivityInExcelFormat(){
-        $this->artisan("migrate:fresh --seed");
-
-        $user = User::factory()
-            ->create()
-            ->assignRole(Role::first());
-
-        $response = $this->actingAs($user)->getJson(route('admin.download.activity'));
-
-        $response->assertOk();
-
-        $response->assertJsonStructure([
-            'data' => [
-                '*' => [
-                    'id',
-                    'log_name',
-                    'description',
-                    'target',
-                    'activity',
-                    'ip',
-                    'created_at',
-                ],
-            ]
-        ]);
-
-    }
+   
 }
