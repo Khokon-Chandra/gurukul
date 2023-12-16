@@ -22,8 +22,6 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        $data = UserPermission::whereNull('parent_id')->latest()->get();
-
         return $this->pullAllPermissionsWithDataStructure();
     }
 
