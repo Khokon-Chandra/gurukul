@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionChildResource;
+use App\Http\Resources\Api\PermissionResource;
+use App\Http\Resources\Api\RoleResource;
 use App\Http\Resources\Api\UserResource;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -11,9 +16,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Trait\HasPermissionsStructure;
 
 class AuthController extends Controller
 {
+    use HasPermissionsStructure;
     public function login(Request $request): JsonResponse
     {
         $this->validate($request, [
@@ -29,6 +36,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Username has been deactivate!.',
+                'permission_access' => false,
             ], 400);
         }
 
@@ -39,6 +47,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid Login Credentials',
+                'permission_access' => false,
             ], 400);
         }
 
@@ -48,6 +57,8 @@ class AuthController extends Controller
             'last_login_ip' => $request->ip() ?? $request->getClientIp() ?? "0.0.0.0",
             'remember_token' => $token,
         ]);
+
+
 
         activity('User Login')->causedBy(Auth::user()->id)
             ->performedOn($user)
@@ -64,7 +75,8 @@ class AuthController extends Controller
             'data' => [
                 'token' => $token,
                 'user' => new UserResource($user),
-                'permissions' => $this->permissions($user->id),
+                'permission_access' => true,
+                'permissions' => $this->pullAuthUserPermissionWithDataStructure(),
                 'token_type' => 'Bearer',
             ],
         ], 200);
@@ -111,16 +123,5 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     *
-     * @param $userId
-     * @return array|array[]
-     *
-     * @todo muna please add a unit test to cover this. !IMPORTANT
-     */
-    protected function permissions($userId)
-    {
-        $permissionsUser = User::with('permissions')->find($userId);
-        return $permissionsUser->permissions->toArray();
-    }
+
 }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\PermissionChildResource;
 use App\Http\Resources\Api\PermissionResource;
 use App\Models\UserPermission;
 use App\Trait\Authorizable;
+use App\Trait\HasPermissionsStructure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,15 +16,13 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    use Authorizable;
+    use Authorizable, HasPermissionsStructure;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = UserPermission::whereNull('parent_id')->latest()->get();
-
-        return PermissionResource::collection($data);
+        return $this->pullAllPermissionsWithDataStructure();
     }
 
     /**

@@ -4,11 +4,12 @@ namespace App\Http\Requests\Api\Notification;
 
 use App\Http\Requests\BaseFormRequest;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class NotificationRequest extends BaseFormRequest
 {
     protected array $routeRequest = [
-        'api/v1/notifications|post'  => [
+        'api/v1/notifications|get'  => [
             'rules'                => 'indexMethodRule',
             'prepareForValidation' => 'indexPrepareForValidation',
         ],
@@ -18,12 +19,11 @@ class NotificationRequest extends BaseFormRequest
         'api/v1/notifications/{notification}|put'   => [
             'rules'                => 'updateMethodRule',
         ],
-        'api/v1/notifications/{notification}|patch' => [
-            'rules'                => 'updateMethodRule',
+        'api/v1/notifications|patch' => [
+            'rules'                => 'updateMultipleMethodRule',
         ],
-        'api/v1/notifications/{notification}|delete' => [
+        'api/v1/notifications-delete-many|delete' => [
             'rules'                => 'deleteMethodRule',
-            'prepareForValidation' => 'deletePrepareForValidation',
         ],
     ];
 
@@ -31,10 +31,19 @@ class NotificationRequest extends BaseFormRequest
     public function indexMethodRule(): void
     {
         $this->rules = [
-            'subject'               => 'nullable',
+            'name'                  => 'nullable',
+            'amount'                => 'nullable|numeric',
             'from_date'             => 'nullable|date',
             'to_date'               => 'nullable|date',
             'date_range'            => 'nullable|string|max:50',
+            'sort_by'               => [
+                'nullable',
+                Rule::in(['name', 'amount', 'created_at']),
+            ],
+            'sort_type'             => [
+                'nullable',
+                Rule::in(['ASC', 'DESC']),
+            ],
             'searchable_date_range' => 'nullable'
         ];
     }
@@ -42,18 +51,26 @@ class NotificationRequest extends BaseFormRequest
     public function storeMethodRule(): void
     {
         $this->rules = [
-            'subject' => 'required|min:1|max:255|string',
-            'date'    => 'required|date|date_format:Y-m-d',
-            'time'    => 'required|date_format:H:i',
+            'name'       => 'required|min:1|max:255|string',
+            'amount'     => 'required|numeric|decimal:0,8',
         ];
     }
 
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'subject' => 'required|min:1|max:255|string',
-            'date'    => 'required|date|date_format:Y-m-d',
-            'time'    => 'required|date_format:H:i',
+            'name'       => 'required|min:1|max:255|string',
+            'amount'     => 'required|numeric|decimal:0,8',
+        ];
+    }
+
+    public function updateMultipleMethodRule(): void
+    {
+        $this->rules = [
+            'notifications'          => 'required|array|min:1',
+            'notifications.*.id'     => 'required|exists:notifications,id',
+            'notifications.*.name'   => 'required|min:1|max:255|string',
+            'notifications.*.amount' => 'required|numeric|decimal:0,8',
         ];
     }
 
@@ -61,12 +78,12 @@ class NotificationRequest extends BaseFormRequest
     public function deleteMethodRule(): void
     {
         $this->rules = [
-            'ids' => [
+            'notifications' => [
                 'required',
                 'array',
                 'min:1'
             ],
-            'ids.*' => 'exists:notifications,id'
+            'notifications.*' => 'exists:notifications,id'
         ];
     }
 
@@ -93,22 +110,11 @@ class NotificationRequest extends BaseFormRequest
 
 
         $this->prepareForValidationRules = [
+            'sort_type' => $this->sort_type ?? 'ASC',
             'searchable_date_range' => $dateRange
         ];
     }
 
 
-    public function deletePrepareForValidation(): void
-    {
-        $idString = $this->route('notification');
-        $idArray  = explode(',',$idString);
-
-        if(is_array($idArray)){
-            $idArray = array_map(fn($id) => trim($id),$idArray);
-        }
-
-        $this->prepareForValidationRules = [
-            'ids' => $idArray
-        ];
-    }
+    
 }

@@ -28,10 +28,10 @@ class WhiteListIpAddressessMiddleware
         }
 
         $ipClient = $request->ip ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        $ipWhiteListed = UserIp::select('ip_address')->where('whitelisted', true)->get();
+        $ipWhiteListed = UserIp::select('ip')->where('whitelisted', true)->get();
         $ipWL = [];
         foreach ($ipWhiteListed as $key => $ip) {
-            $arrayIp = explode('.', $ip->ip_address);
+            $arrayIp = explode('.', $ip->ip);
             if ($arrayIp[2] == '*' && $arrayIp[3] == '*') {
                 $newIp = [];
                 for ($x = 0; $x <= 255; $x++) {
@@ -49,7 +49,7 @@ class WhiteListIpAddressessMiddleware
                     $newIpAddress[] = $arrayIp[0] . '.' . $arrayIp[1] . '.' . $arrayIp[2] . '.' . $x;
                 }
             } else {
-                $newIpAddress = [$ip->ip_address];
+                $newIpAddress = [$ip->ip];
             }
             foreach ($newIpAddress as $key => $ip) {
                 $ipWL[] = $ip;

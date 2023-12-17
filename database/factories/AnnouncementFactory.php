@@ -18,10 +18,10 @@ class AnnouncementFactory extends Factory
     public function definition(): array
     {
         return [
-            'number'     => random_int(1,999999),
             'message'    => $this->faker->sentence(6),
-            'status'     => $this->faker->boolean(),
-            'created_at' => Carbon::now(),
+            'status'     => false,
+            'created_at' => $this->faker->dateTime(),
+            'created_by' => rand(1,5),
         ];
     }
 }

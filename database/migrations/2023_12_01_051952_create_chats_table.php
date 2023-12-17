@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
             $table->string('receiver')->index();
-            $table->text('subject')->index();
+            $table->text('subject');
             $table->timestamp('time')->useCurrent()->index();
             $table->timestamp('date')->useCurrent()->index();
             $table->timestamps();
