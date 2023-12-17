@@ -6,17 +6,20 @@ use App\Constants\AppConstant;
 use App\Events\AnnouncementEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Annoncement\AnnouncementRequest;
+use App\Http\Resources\Api\ActivatedAnnouncementResource;
 use App\Http\Resources\Api\AnnouncementResource;
 use App\Models\Announcement;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AnnouncementController extends Controller
 {
+
     use Authorizable;
     /**
      * Display a listing of the resource.
@@ -38,6 +41,15 @@ class AnnouncementController extends Controller
     }
 
     /**
+     * Retrive already activated announcement
+     */
+    public function activated(): ActivatedAnnouncementResource
+    {
+        $announcement = Announcement::where('status', true)->first();
+        return new ActivatedAnnouncementResource($announcement);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(AnnouncementRequest $request): JsonResponse
@@ -50,6 +62,12 @@ class AnnouncementController extends Controller
                 'status' => $request->status,
                 'created_by' => Auth::id(),
             ]);
+
+            if ($announcement->status) {
+                Announcement::where('id', '!=', $announcement->id)->update([
+                    'status' => false,
+                ]);
+            }
 
             AnnouncementEvent::dispatchIf($announcement->status, $announcement);
 
@@ -85,7 +103,6 @@ class AnnouncementController extends Controller
      */
     public function update(AnnouncementRequest $request, Announcement $announcement): JsonResponse
     {
-
         DB::beginTransaction();
         try {
 
@@ -163,7 +180,6 @@ class AnnouncementController extends Controller
                 'message' => 'Successfully Announcement Updated!!',
                 'data' => AnnouncementResource::collection($this->updatedInstance) //use Resource
             ], 200);
-
         } catch (\Exception $error) {
             DB::rollBack();
             return response()->json([
@@ -253,7 +269,6 @@ class AnnouncementController extends Controller
                 'status' => 'success',
                 'message' => 'Announcements Deleted Successfully',
             ], 200);
-
         } catch (\Exception $error) {
 
             DB::rollBack();
@@ -262,7 +277,6 @@ class AnnouncementController extends Controller
                 'status' => 'error',
                 'message' => $error->getMessage(),
             ], 500);
-
         }
     }
 
