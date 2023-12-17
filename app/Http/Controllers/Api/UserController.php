@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserRequest;
 use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
+use App\Trait\CanSort;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -19,13 +20,18 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    use CanSort;
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $users = User::with('roles')->latest()->filter($request)->paginate(AppConstant::PAGINATION);
+        $query = User::with('roles')->filter($request);
+        $this->sortUserData($request, $query);
+        $users = $query->latest()->paginate(AppConstant::PAGINATION);
+
         return UserResource::collection($users);
+
     }
 
 
@@ -34,7 +40,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-       
+
         $input = $request->validated();
 
         $input['created_by'] = Auth::id();
@@ -62,7 +68,7 @@ class UserController extends Controller
             ])
             ->log('Created user successfully');
         return response()->json([
-            'status' => 'successful',                                                                                                                                                       
+            'status' => 'successful',
             'message' => 'User Created Sucessfully',
             'data' => $user->load('roles'),
         ]);
@@ -175,4 +181,6 @@ class UserController extends Controller
             'message' => "Password Update Successful"
         ]);
     }
+
+
 }

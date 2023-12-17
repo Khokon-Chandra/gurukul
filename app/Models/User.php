@@ -93,7 +93,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function scopeFilter($query, $request)
     {
-        $query->when($request->name ?? false, fn ($query, $name) => $query
+        $query->when(
+            $request->name ?? false, fn ($query, $name) => $query
             ->where('name', 'like', "%$name%"))
             ->when($request->username ?? false, fn ($query, $username) => $query
                 ->where('username', $username))
@@ -108,5 +109,6 @@ class User extends Authenticatable implements JWTSubject
 
                 $query->whereBetween('created_at',$dates);
             });
+
     }
 }

@@ -43,6 +43,7 @@ class UserTest extends FeatureBaseCase
                     'type',
                     'email',
                     'last_login_ip',
+                    'join_date',
                     'active',
                     'created_at',
                     'role' => [
@@ -56,7 +57,7 @@ class UserTest extends FeatureBaseCase
 
             ],
             'links' => [
-                
+
             ],
         ]);
     }
@@ -213,6 +214,73 @@ class UserTest extends FeatureBaseCase
             'status' => true,
             'message' => true,
             'data' => false
+        ]);
+    }
+
+    public function testThatUserCanSearchOnUsername(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+    $users = User::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 200,
+                    'username' => "James",
+                ],
+                [
+                    'id' => 201,
+                    'username' => "John",
+                ],
+                [
+                    'id' => 202,
+                    'username' => "Peter",
+                ],
+            ])->createQuietly();
+
+        $role = Role::create(['name' => 'Admin']);
+        $role->permissions()->sync([1, 2, 3]);
+
+
+
+        $response = $this->actingAs($user)->getJson('/api/v1/user?username=James');
+
+       $response->assertSeeInOrder(['James']);
+        $response->assertDontSee(['John', 'Peter']);
+
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            "data" => [
+                '*' => [
+                    'id',
+                    'name',
+                    'username',
+                    'type',
+                    'email',
+                    'last_login_ip',
+                    'join_date',
+                    'active',
+                    'created_at',
+                    'role' => [
+                        'id',
+                        'name',
+                        'created_at',
+                    ]
+                ]
+            ],
+            'meta' => [
+
+            ],
+            'links' => [
+
+            ],
         ]);
     }
 }
