@@ -132,10 +132,11 @@ class UserTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)->putJson('/api/v1/user/1', [
-            'department_id' => 1,
+
             'username' => "test_user",
             'name' => "Test User",
-            'email' => "testuser@mail.com",
+            'password' => "123456789",
+            'password_confirmation' => "123456789",
             'role' => 1,
         ]);
 
