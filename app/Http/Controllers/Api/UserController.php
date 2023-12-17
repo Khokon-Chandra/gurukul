@@ -109,15 +109,16 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      * @throws ValidationException
      */
-    public function destroy($ids)
+    public function destroy(UserRequest $request)
     {
+        dd($request->ids);
         try {
-            $ids = explode(',', $ids);
+            $ids = explode(',', $request->ids);
 
             foreach ($ids as $id_check) {
                 $user = User::find($id_check);
                 if (!$user) {
-                    throw ValidationException::withMessages(["With Id $id_check Not Found, Please Send Valid data"]);
+                    throw ValidationException::withMessages(["User With Id $id_check Not Found, Please Send Valid data"]);
                 }
             }
 
