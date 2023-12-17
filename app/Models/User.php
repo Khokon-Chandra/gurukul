@@ -36,6 +36,8 @@ class User extends Authenticatable implements JWTSubject
         'last_login_ip',
         'timezone',
         'updated_by',
+        'deleted_by',
+        'deleted_at'
     ];
 
     /**

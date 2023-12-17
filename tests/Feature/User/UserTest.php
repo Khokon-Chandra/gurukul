@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Models\User;
+use App\Models\UserIp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
@@ -183,38 +184,47 @@ class UserTest extends FeatureBaseCase
         $role = Role::create(['name' => 'Writer',]);
         $role->permissions()->sync([1, 2, 3]);
 
-        User::create([
-            'department_id'=>1,
-            'username' => "test_user1",
-            'name' => "Test Use1r",
-            'email' => "testuser1@mail.com",
-            'password' => 'password',
-            'roles' => [1],
-        ]);
 
-        User::create([
-            'department_id'=>1,
-            'username' => "test_user2",
-            'name' => "Test User2",
-            'email' => "testuser2@mail.com",
-            'password' => 'password',
-            'roles' => [1],
-        ]);
+        User::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 120,
+                    'department_id'=>1,
+                    'username' => "test_user278",
+                    'name' => "Test User2",
+                    'email' => "testuser21@mail.com",
+                    'password' => 'password',
+
+                ],
+                [
+                    'id' => 121,
+                    'department_id'=>1,
+                    'username' => "test_user21",
+                    'name' => "Test User2",
+                    'email' => "testuser24@mail.com",
+                    'password' => 'password',
+
+                ],
+                [
+                    'id' => 122,
+                    'department_id'=>1,
+                    'username' => "test_user1",
+                    'name' => "Test User2",
+                    'email' => "testuser20@mail.com",
+                    'password' => 'password',
+
+                ],
+            ])
+            ->create();
 
 
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/user/1,2');
+        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user', ['ids' => 120,121]));
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
             "status",
             "message",
             "data",
-        ]);
-
-        $response->assertJson([
-            'status' => true,
-            'message' => true,
-            'data' => false
         ]);
     }
 

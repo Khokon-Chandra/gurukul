@@ -109,9 +109,9 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      * @throws ValidationException
      */
-    public function destroy(UserRequest $request)
+    public function destroy(Request $request)
     {
-        dd($request->ids);
+
         try {
             $ids = explode(',', $request->ids);
 
