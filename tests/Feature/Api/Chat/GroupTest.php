@@ -51,6 +51,7 @@ class GroupTest extends FeatureBaseCase
                     'name',
                     'username',
                     'last_login_at',
+                    'status',
                 ]
             ]
         ]);

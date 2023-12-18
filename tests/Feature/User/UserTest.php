@@ -78,7 +78,8 @@ class UserTest extends FeatureBaseCase
                     'id',
                     'name',
                     'username',
-                    'last_login_at'
+                    'last_login_at',
+                    'status',
                 ]
             ]
         ]);

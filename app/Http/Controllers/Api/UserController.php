@@ -33,7 +33,7 @@ class UserController extends Controller
 
     public function allUser(): AnonymousResourceCollection
     {
-        $users = User::select('id','name','username','last_login_at')->get();
+        $users = User::select('id','name','username','last_login_at','status')->get();
         return GroupMemberResource::collection($users);
     }
 

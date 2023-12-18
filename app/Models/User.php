@@ -37,6 +37,8 @@ class User extends Authenticatable implements JWTSubject
         'last_login_ip',
         'timezone',
         'updated_by',
+        'last_performed_at',
+        'status',
     ];
 
     /**
@@ -57,6 +59,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'status'   => 'boolean',
     ];
 
     /**
