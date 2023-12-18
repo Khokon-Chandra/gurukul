@@ -7,6 +7,7 @@ use App\Models\UserIp;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -89,6 +90,17 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Department::class);
     }
 
+
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class);
+    }
+
+
+    public function chats()
+    {
+        return $this->morphMany(Chat::class, 'chatable');
+    }
 
 
     public function scopeFilter($query, $request)
