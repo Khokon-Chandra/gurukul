@@ -16,6 +16,10 @@ class UserRequest extends BaseFormRequest
         'api/v1/user/{user}|put' => [
             'rules' => 'updateMethodRule',
         ],
+        'api/v1/user/{id}|delete' => [
+            'rules' => 'deleteMethodRule',
+        ],
+
 
 
     ];
@@ -57,6 +61,13 @@ class UserRequest extends BaseFormRequest
             ],
             'password'      => 'required|string|min:8|confirmed',
             'role' => 'required|exists:roles,id'
+        ];
+    }
+
+    public function deleteMethodRule(): void
+    {
+        $this->rules = [
+            'ids'     => 'required|exists:users,id',
         ];
     }
 }

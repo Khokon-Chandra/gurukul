@@ -224,7 +224,7 @@ class UserTest extends FeatureBaseCase
         $response->assertJsonStructure([
             "status",
             "message",
-            "data",
+            "permissions",
         ]);
     }
 

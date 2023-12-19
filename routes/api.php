@@ -29,7 +29,8 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download')
         ->middleware('permission:user.access.users.activity.export');
         Route::apiResource('user', UserController::class);
-        Route::delete('user', [UserController::class, 'destroy'])->name('delete.user');
+        Route::delete('user', [UserController::class, 'destroy'])->name('delete.user')
+        ->middleware('permission:user.access.users.user_list.delete-user');
         Route::apiResource('permissions', PermissionController::class)
             ->only('index', 'update');
         Route::apiResource('attendances', AttendanceController::class);
