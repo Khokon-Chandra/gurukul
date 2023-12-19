@@ -249,12 +249,292 @@ class UserTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?username=James');
-
+        $response->assertStatus(200);
        $response->assertSeeInOrder(['James']);
-        $response->assertDontSee(['John', 'Peter']);
+       $response->assertDontSee(['John', 'Peter']);
 
+
+
+        $response->assertJsonStructure([
+            "data" => [
+                '*' => [
+                    'id',
+                    'name',
+                    'username',
+                    'type',
+                    'email',
+                    'last_login_ip',
+                    'join_date',
+                    'active',
+                    'created_at',
+                    'role' => [
+                        'id',
+                        'name',
+                        'created_at',
+                    ]
+                ]
+            ],
+            'meta' => [
+
+            ],
+            'links' => [
+
+            ],
+        ]);
+    }
+
+    public function testThatUserCanSortName(): void{
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $users = User::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 200,
+                    'username' => "James",
+                    'name' => "funke"
+                ],
+                [
+                    'id' => 201,
+                    'username' => "John",
+                    'name' => 'emeka'
+                ],
+                [
+                    'id' => 202,
+                    'username' => "Peter",
+                    'name' => 'jeniffer'
+                ],
+            ])->createQuietly();
+
+        $role = Role::create(['name' => 'Admin']);
+        $role->permissions()->sync([1, 2, 3]);
+
+
+
+        $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['emeka', 'funke', 'jeniffer']);
+        $response->assertJsonStructure([
+            "data" => [
+                '*' => [
+                    'id',
+                    'name',
+                    'username',
+                    'type',
+                    'email',
+                    'last_login_ip',
+                    'join_date',
+                    'active',
+                    'created_at',
+                    'role' => [
+                        'id',
+                        'name',
+                        'created_at',
+                    ]
+                ]
+            ],
+            'meta' => [
+
+            ],
+            'links' => [
+
+            ],
+        ]);
+    }
+
+    public function testThatUserCanSortUserName(): void{
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $users = User::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 200,
+                    'username' => "Abel",
+                    'name' => "funke"
+                ],
+                [
+                    'id' => 201,
+                    'username' => "Cain",
+                    'name' => 'emeka'
+                ],
+                [
+                    'id' => 202,
+                    'username' => "Bello",
+                    'name' => 'jeniffer'
+                ],
+            ])->createQuietly();
+
+        $role = Role::create(['name' => 'Admin']);
+        $role->permissions()->sync([1, 2, 3]);
+
+
+
+        $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['Cain', 'Bello', 'Abel']);
+        $response->assertJsonStructure([
+            "data" => [
+                '*' => [
+                    'id',
+                    'name',
+                    'username',
+                    'type',
+                    'email',
+                    'last_login_ip',
+                    'join_date',
+                    'active',
+                    'created_at',
+                    'role' => [
+                        'id',
+                        'name',
+                        'created_at',
+                    ]
+                ]
+            ],
+            'meta' => [
+
+            ],
+            'links' => [
+
+            ],
+        ]);
+    }
+
+    public function testThatUserCanSortJoinDate(): void{
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory()
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly();
+
+        $users = User::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 200,
+                    'username' => "Abel",
+                    'name' => "funke",
+                    'created_at' => '2023-12-17'
+                ],
+                [
+                    'id' => 201,
+                    'username' => "Cain",
+                    'name' => 'emeka',
+                    'created_at' => '2023-12-18'
+                ],
+                [
+                    'id' => 202,
+                    'username' => "Bello",
+                    'name' => 'jeniffer',
+                    'created_at' => '2023-12-19'
+
+                ],
+            ])->createQuietly();
+
+        $role = Role::create(['name' => 'Admin']);
+        $role->permissions()->sync([1, 2, 3]);
+
+
+
+        $response = $this->actingAs($user)->getJson('/api/v1/user?sort_joindate=desc');
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['Bello', 'Cain', 'Abel']);
+        $response->assertJsonStructure([
+            "data" => [
+                '*' => [
+                    'id',
+                    'name',
+                    'username',
+                    'type',
+                    'email',
+                    'last_login_ip',
+                    'join_date',
+                    'active',
+                    'created_at',
+                    'role' => [
+                        'id',
+                        'name',
+                        'created_at',
+                    ]
+                ]
+            ],
+            'meta' => [
+
+            ],
+            'links' => [
+
+            ],
+        ]);
+    }
+
+    public function testThatUserCanSortUserRole(): void{
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::factory([
+            'id' => 300,
+            'username' => "sney",
+            'name' => "sneymoney",
+        ])
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly()->assignRole(Role::first());
+
+        $userWithRole = User::factory([
+            'id' => 302,
+            'username' => "emoney1",
+            'name' => "emoney",
+        ])
+            ->state([
+                'active' => true
+            ])
+            ->createQuietly()->assignRole(Role::first());
+
+
+        $usersWithoutRole = User::factory(3)
+            ->sequence(...[
+                [
+                    'id' => 200,
+                    'username' => "Abel",
+                    'name' => "funke",
+                    'created_at' => '2023-12-17'
+                ],
+                [
+                    'id' => 201,
+                    'username' => "Cain",
+                    'name' => 'emeka',
+                    'created_at' => '2023-12-18'
+                ],
+                [
+                    'id' => 202,
+                    'username' => "Bello",
+                    'name' => 'jeniffer',
+                    'created_at' => '2023-12-19'
+
+                ],
+            ])->createQuietly();
+
+
+
+        $response = $this->actingAs($user)->getJson('/api/v1/user?sort_role=desc');
 
         $response->assertStatus(200);
+        $response->assertSee(['sneymoney', 'emoney']);
+        $response->assertDontSeeText(['bello', 'funke', 'jeniffer']);
+
+
 
         $response->assertJsonStructure([
             "data" => [

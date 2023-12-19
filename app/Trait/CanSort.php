@@ -24,16 +24,13 @@ trait CanSort
         }
 
         if($request->filled('sort_role')){
-//           $data = $usersWithRoles = User::join('model_has_roles', 'users.id', '=', 'model_has_roles.role_id')
-//               ->select('users.*')
-//               ->get();
-//           dd($data);
+           return $query->leftJoin('model_has_roles', function($join){
+               $join->whereNotNull('model_has_roles.model_id');
+                $join->on('users.id', '=', 'model_has_roles.model_id');
 
-            $data = $query->join('model_has_roles', 'users.id', 'model_has_roles.model_id')
-                ->join('roles', 'model_has_roles.model_id', 'roles.id')
-                ->select('user.username', 'roles.name', 'roles.guard_name');
-
-            $data->orderBy('name', $request->sort_role);
+            })->select('users.*', 'roles.name as role_name', 'roles.guard_name as role_guard_name', 'roles.created_at as role_created_at')
+                ->rightJoin('roles', 'model_has_roles.role_id', 'roles.id')
+                ->orderBy('role_created_at', $request->sort_role);
+            }
         }
-    }
 }
