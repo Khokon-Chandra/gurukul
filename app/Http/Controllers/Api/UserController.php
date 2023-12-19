@@ -112,19 +112,16 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      * @throws ValidationException
      */
-    public function destroy(UserRequest $request): JsonResponse
+    public function deleteUser(UserRequest $request): JsonResponse
     {
-        dd($request->all());
-
         try {
-            $ids = explode(',', $request->ids);
+            $ids = $request->ids;
 
             foreach ($ids as $id) {
                 $user = User::findOrFail($id);
 
                 $user->update([
                     'deleted_by' => Auth::user()->id,
-                    'deleted_at' => now(),
                 ]);
 
                 activity('user')->causedBy(Auth::user()->id)
@@ -141,8 +138,7 @@ class UserController extends Controller
 
             return response()->json([
                 'status' => 'successful',
-                'message' => 'User Successfully Deleted',
-//                'permissions' => new PermissionChildResource($user->getAllPermissions()),
+                'message' => 'Delete Operation Successful',
             ]);
         } catch (\Exception $e) {
             return response()->json([

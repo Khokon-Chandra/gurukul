@@ -16,12 +16,9 @@ class UserRequest extends BaseFormRequest
         'api/v1/user/{user}|put' => [
             'rules' => 'updateMethodRule',
         ],
-        'api/v1/user/{id}|delete' => [
+        'api/v1/delete-user|delete' => [
             'rules' => 'deleteMethodRule',
         ],
-
-
-
     ];
 
     public function storeMethodRule(): void
@@ -67,7 +64,7 @@ class UserRequest extends BaseFormRequest
     public function deleteMethodRule(): void
     {
         $this->rules = [
-            'ids'     => 'required|exists:users,id',
+            'ids.*'     => 'required|exists:users,id',
         ];
     }
 }

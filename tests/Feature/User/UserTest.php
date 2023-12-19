@@ -179,10 +179,8 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
+            ->createQuietly()->assignRole(Role::first());
 
-        $role = Role::create(['name' => 'Writer',]);
-        $role->permissions()->sync([1, 2, 3]);
 
 
         User::factory(3)
@@ -218,13 +216,16 @@ class UserTest extends FeatureBaseCase
             ->create();
 
 
-        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user', ['ids' => 120,121]));
+        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
+        [
+            'ids' => [120,121]
+        ]);
 
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
-            "permissions",
         ]);
     }
 
