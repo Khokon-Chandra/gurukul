@@ -72,6 +72,6 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::apiResource('chats', ChatController::class);
 
         Route::put('change-password/{user}', [UserController::class, 'changePassword'])
-            ->name('change.password');
+            ->name('change.password')->middleware('permission:user.access.users.user_list.change-password');
     });
 });
