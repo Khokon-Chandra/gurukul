@@ -13,7 +13,7 @@ class UserRequest extends BaseFormRequest
         'api/v1/user|post' => [
             'rules' => 'storeMethodRule',
         ],
-        'api/v1/user/{user}|put' => [
+        'api/v1/user-update/{user}|put' => [
             'rules' => 'updateMethodRule',
         ],
 

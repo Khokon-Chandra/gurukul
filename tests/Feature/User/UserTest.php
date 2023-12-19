@@ -124,23 +124,29 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
-
-        $role = Role::create(['name' => 'Writer',]);
-
-        $role->permissions()->sync([1, 2, 3]);
+            ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->putJson('/api/v1/user/1', [
+        $userToUpdate = User::factory()->create([
+            'id' => 200
+        ]);
 
+
+        $response = $this->actingAs($user)->putJson(route('admin.update.user', ['user' =>  $userToUpdate->id]), [
             'username' => "test_user",
-            'name' => "Test User",
+            'name' => "Test User Updated",
             'password' => "123456789",
             'password_confirmation' => "123456789",
             'role' => 1,
         ]);
 
         $response->assertStatus(200);
+
+        $UpdatedUser = User::find($userToUpdate->id);
+
+        $this->assertEquals('test_user',  $UpdatedUser->username);
+        $this->assertEquals('Test User Updated',  $UpdatedUser->name);
+
         $response->assertJsonStructure([
             "status",
             "message",
@@ -158,12 +164,6 @@ class UserTest extends FeatureBaseCase
                 "last_login_at",
                 "role",
             ]
-        ]);
-
-        $response->assertJson([
-            'status' => true,
-            'message' => true,
-            'data' => true
         ]);
     }
 

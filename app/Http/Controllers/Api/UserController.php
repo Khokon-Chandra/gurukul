@@ -79,12 +79,16 @@ class UserController extends Controller
     /**
      * Update user.
      */
-    public function update(UserRequest $request, User $user)
+    public function updateUser(UserRequest $request, User $user): JsonResponse
     {
 
-        $input = $request->validated();
-        $input['updated_by'] = Auth::user()->id;
-        $user->update($input);
+        $user->update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => $request->password,
+            'role' => $request->role,
+            'updated_by' => Auth::user()->id
+        ]);
         $user->roles()->sync([$request->role]);
 
         $user->load('roles');
