@@ -15,10 +15,6 @@ class PermissionResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-<<<<<<< HEAD
-        return [
-            $this->name => PermissionChildResource::collection($this->children),
-=======
     if($this->getUsersPermissions()){
         foreach($this->getUsersPermissions() as $permission){
             return [
@@ -29,7 +25,7 @@ class PermissionResource extends JsonResource
 
     return [
 
->>>>>>> d670d72405727b81ea77d3c9a23f5728372b8e04
+
         ];
 
     }
