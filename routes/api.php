@@ -29,6 +29,10 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download')
         ->middleware('permission:user.access.users.activity.export');
         Route::apiResource('user', UserController::class);
+
+        Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store')
+            ->middleware('permission:user.access.users.user_list.create-user');
+
         Route::apiResource('permissions', PermissionController::class)
             ->only('index', 'update');
         Route::apiResource('attendances', AttendanceController::class);

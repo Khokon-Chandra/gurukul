@@ -8,16 +8,14 @@ use Illuminate\Validation\Rule;
 
 class UserRequest extends BaseFormRequest
 {
-    
+
     protected array $routeRequest = [
-        'api/v1/user|post' => [
+        'api/v1/create-user|post' => [
             'rules' => 'storeMethodRule',
         ],
         'api/v1/user/{user}|put' => [
             'rules' => 'updateMethodRule',
         ],
-
-       
     ];
 
     public function storeMethodRule(): void
@@ -31,7 +29,7 @@ class UserRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('users','username')
             ],
-            
+
             'email' => [
                 'required',
                 'string',
@@ -56,14 +54,14 @@ class UserRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('users','username')->ignore($this->route('user'))
             ],
-            
+
             'email' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('users','email')->ignore($this->route('user'))
             ],
-            
+
             'role' => 'required|exists:roles,id',
             'timezone' => 'nullable|string|max:100',
         ];

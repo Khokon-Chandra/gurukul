@@ -74,14 +74,10 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
-
-        $role = Role::create(['name' => 'Writer',]);
-
-        $role->permissions()->sync([1, 2, 3]);
+            ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->postJson('/api/v1/user', [
+        $response = $this->actingAs($user)->postJson(route('admin.user.store'), [
             'department_id' => 1,
             'username' => "test_user",
             'name' => "Test User",
@@ -92,6 +88,13 @@ class UserTest extends FeatureBaseCase
         ]);
 
         $response->assertStatus(200);
+        $this->assertDatabaseCount('users', 13);
+        $this->assertDatabaseHas('users', [
+            'department_id' => 1,
+            'username' => "test_user",
+            'name' => "Test User",
+            'email' => "testuser@mail.com",
+        ]);
         $response->assertJsonStructure([
             "status",
             "message",
@@ -104,12 +107,6 @@ class UserTest extends FeatureBaseCase
                 "id",
                 "roles"
             ]
-        ]);
-
-        $response->assertJson([
-            'status' => true,
-            'message' => true,
-            'data' => true
         ]);
     }
 

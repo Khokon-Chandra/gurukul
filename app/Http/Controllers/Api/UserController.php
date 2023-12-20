@@ -38,40 +38,41 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function storeUser(UserRequest $request): JsonResponse
     {
-
-        $input = $request->validated();
-
-        $input['created_by'] = Auth::id();
-        $input['password'] = Hash::make($request->password);
-
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
+            $input = $request->validated();
+            $input['created_by'] = Auth::id();
+            $input['password'] = Hash::make($request->password);
             $user = User::create($input);
             $user->roles()->sync([$request->role]);
+
+            activity('create_user')->causedBy(Auth::user()->id ?? 1)
+                ->performedOn($user)
+                ->withProperties([
+                    'ip' => Auth::user()->last_login_ip ?? $request->ip(),
+                    'target' => $request->username,
+                    'activity' => 'Created user successfully',
+                ])
+                ->log('Created user successfully');
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'successful',
+                'message' => 'User Created Successfully',
+                'data' => $user->load('roles'),
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
-
-            throw ValidationException::withMessages([$e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        DB::commit();
-        # log activity
-        activity('create_user')->causedBy(Auth::user()->id ?? 1)
-            ->performedOn($user)
-            ->withProperties([
-                'ip' => Auth::user()->last_login_ip ?? $request->ip(),
-                'target' => $request->username,
-                'activity' => 'Created user successfully',
-            ])
-            ->log('Created user successfully');
-        return response()->json([
-            'status' => 'successful',
-            'message' => 'User Created Sucessfully',
-            'data' => $user->load('roles'),
-        ]);
     }
 
 
