@@ -151,15 +151,30 @@ class AttendanceController extends Controller
      */
     public function destroy(Attendance $attendance): JsonResponse
     {
+        DB::beginTransaction();
         try {
+
+            activity('attendance_deleted')->causedBy(Auth::id())
+                ->performedOn($attendance)
+                ->withProperties([
+                    'ip'       => Auth::user()->last_login_ip ?? request()->ip(),
+                    'target'   => $attendance->name,
+                    'activity' => 'deleted attendance',
+                ])
+                ->log('attendance deleted successfully');
 
             $attendance->delete();
 
+            DB::commit();
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Attendances are deleted successfully'
+                'message' => 'Attendances deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+
+            DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
@@ -172,15 +187,34 @@ class AttendanceController extends Controller
      */
     public function deleteMultiple(AttendanceRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
 
-            Attendance::destroy($request->attendances);
+            foreach (Attendance::whereIn('id', $request->attendances)->get() as $attendance) :
+
+                activity('attendance_deleted')->causedBy(Auth::id())
+                    ->performedOn($attendance)
+                    ->withProperties([
+                        'ip'       => Auth::user()->last_login_ip ?? request()->ip(),
+                        'target'   => $attendance->name,
+                        'activity' => 'deleted attendance',
+                    ])
+                    ->log('attendance deleted successfully');
+
+                $attendance->delete();
+
+            endforeach;
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Attendances are deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+
+            DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
