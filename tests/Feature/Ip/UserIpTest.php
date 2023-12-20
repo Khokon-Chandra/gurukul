@@ -77,7 +77,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['ip' => '103.15.245.75']));
+            ->getJson(route('users.user-ip.index', ['ip' => '103.15.245.75']));
 
         $response->assertStatus(200);
 
@@ -405,7 +405,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.user-ip.index', [
                 'sort_by' => 'ip',
                 'sort_type' => 'ASC',
             ]),);
@@ -466,7 +466,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.user-ip.index', [
                 'sort_by' => 'description',
                 'sort_type' => 'ASC',
             ]));
@@ -527,7 +527,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.user-ip.index', [
                 'sort_by' => 'status',
                 'sort_type' => 'DESC'
             ]));
@@ -588,7 +588,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.user-ip.index', [
                 'sort_by'   => 'date',
                 'sort_type' => 'ASC',
             ]));

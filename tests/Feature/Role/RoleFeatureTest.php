@@ -28,7 +28,7 @@ class RoleFeatureTest extends TestCase
         $user->givePermissionTo('create_roles');
 
 
-        $response = $this->actingAs($user)->postJson(route('admin.roles.store'), [
+        $response = $this->actingAs($user)->postJson(route('users.roles.store'), [
             'name' => Str::random(10),
             'permissions' => [1, 2, 3]
         ]);
@@ -72,7 +72,7 @@ class RoleFeatureTest extends TestCase
         ]);
 
 
-        $response = $this->actingAs($user)->putJson(route('admin.roles.update', $role->id), [
+        $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
             'name' => Str::random(10),
             'permissions' => [1, 2, 3]
         ]);
@@ -121,7 +121,7 @@ class RoleFeatureTest extends TestCase
         ]);
 
 
-        $response = $this->actingAs($user)->deleteJson(route('admin.roles.destroy', $role->id));
+        $response = $this->actingAs($user)->deleteJson(route('users.roles.destroy', $role->id));
 
 
         $response->assertStatus(200);
@@ -154,7 +154,7 @@ class RoleFeatureTest extends TestCase
         $role->permissions()->sync([1, 2, 3]);
 
 
-        $response = $this->actingAs($user)->getJson(route('admin.roles.index'));
+        $response = $this->actingAs($user)->getJson(route('users.roles.index'));
 
 
         $response->assertStatus(200);
@@ -188,7 +188,7 @@ class RoleFeatureTest extends TestCase
 
         $user     = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('admin.roles.store'), $credentials);
+        $response = $this->actingAs($user)->postJson(route('users.roles.store'), $credentials);
 
         $response->assertJsonValidationErrors($errorKeys);
 

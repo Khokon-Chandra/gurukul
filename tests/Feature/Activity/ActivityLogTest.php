@@ -24,10 +24,10 @@ class ActivityLogTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-        $user->givePermissionTo('read_logs');
+        $user->givePermissionTo('read_activities');
 
 
-        $response = $this->actingAs($user)->getJson(route('admin.logs.index'));
+        $response = $this->actingAs($user)->getJson(route('users.activities.index'));
 
 
         $response->assertStatus(200);
@@ -70,7 +70,7 @@ class ActivityLogTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.logs.index'));
+            ->getJson(route('users.activities.index'));
 
 
         $response->assertStatus(403);
@@ -85,10 +85,10 @@ class ActivityLogTest extends FeatureBaseCase
 
         $user = User::factory()->create();
 
-        $user->revokePermissionTo('download_logs');
+        $user->revokePermissionTo('download_activities');
 
 
-        $response = $this->actingAs($user)->getJson(route('admin.logs.download'));
+        $response = $this->actingAs($user)->getJson(route('users.activities.download'));
 
 
         $response->assertStatus(403);
@@ -104,7 +104,7 @@ class ActivityLogTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('admin.logs.download'));
+        $response = $this->actingAs($user)->getJson(route('users.activities.download'));
 
         $response->assertStatus(200);
 

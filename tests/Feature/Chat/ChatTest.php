@@ -17,7 +17,7 @@ class ChatTest extends FeatureBaseCase
     public function testThatUnauthorizedUsersCannotCreateChat(): void
     {
 
-        $response = $this->postJson(route('user.chats.store'));
+        $response = $this->postJson(route('social.chats.store'));
 
         $response->assertStatus(401);
     }
@@ -29,7 +29,7 @@ class ChatTest extends FeatureBaseCase
             ->create()
             ->assignRole(Role::first());
 
-        $response = $this->actingAs($user)->getJson(route('user.chats.index'));
+        $response = $this->actingAs($user)->getJson(route('social.chats.index'));
 
         $response->assertStatus(200);
 
@@ -92,7 +92,7 @@ class ChatTest extends FeatureBaseCase
             'subject' => 'Intrusion detected'
         ];
 
-        $response = $this->actingAs($user)->postJson(route('user.chats.store'), $data);
+        $response = $this->actingAs($user)->postJson(route('social.chats.store'), $data);
 
         $response->assertStatus(200);
 

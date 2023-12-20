@@ -21,7 +21,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.announcements.store'), [
+        $response = $this->actingAs($user)->postJson(route('social.announcements.store'), [
             'message' => 'Dummy text for announcement message',
             'status' => rand(0, 1)
         ]);
@@ -50,7 +50,7 @@ class AnnouncementTest extends FeatureBaseCase
         $user = User::where('username','administrator')->first();
 
 
-        $response = $this->actingAs($user)->getJson(route('service.announcements.index'));
+        $response = $this->actingAs($user)->getJson(route('social.announcements.index'));
 
         $response->assertStatus(200);
 
@@ -105,7 +105,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $announcement = Announcement::first();
 
-        $response = $this->actingAs($user)->putJson(route('service.announcements.update', $announcement->id), [
+        $response = $this->actingAs($user)->putJson(route('social.announcements.update', $announcement->id), [
             'message' => 'update message',
             'status'  => false,
         ]);
@@ -136,7 +136,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->putJson(route('service.announcements.update_multiple'), [
+        $response = $this->actingAs($user)->putJson(route('social.announcements.update_multiple'), [
             "announcements" => [
                 ['id' => 1,'message' => 'update1','status'=>true],
                 ['id' => 2,'message' => 'update2','status'=>false],
@@ -176,7 +176,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('service.announcements.destroy',1));
+        $response = $this->actingAs($user)->deleteJson(route('social.announcements.destroy',1));
 
         $response->assertStatus(200);
 
@@ -194,7 +194,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('service.announcements.delete_multiple'),[
+        $response = $this->actingAs($user)->deleteJson(route('social.announcements.delete_multiple'),[
            "announcements" => [ 1,2,3]
         ]);
 
@@ -241,7 +241,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.announcements.store'), $payload);
+        $response = $this->actingAs($user)->postJson(route('social.announcements.store'), $payload);
 
         Event::assertDispatched(AnnouncementEvent::class);
     }
@@ -277,7 +277,7 @@ class AnnouncementTest extends FeatureBaseCase
         $this->assertDatabaseCount('announcements', 104);
 
 
-        $response = $this->actingAs($user)->patchJson(route('service.announcements.update_status'), [
+        $response = $this->actingAs($user)->patchJson(route('social.announcements.update_status'), [
             'announcement_id' =>    $announcementId,
         ]);
 
@@ -342,7 +342,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $ActiveAnnouncement = Announcement::where('status', true)->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.get.announcement.data'));
+        $response = $this->actingAs($user)->getJson(route('social.announcements.data'));
 
         $response->assertOk();
 
@@ -367,7 +367,7 @@ class AnnouncementTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.announecements.activated'));
+        $response = $this->actingAs($user)->getJson(route('social.announcements.activated'));
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' =>[

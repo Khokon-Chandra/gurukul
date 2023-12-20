@@ -14,7 +14,7 @@ class CashflowTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.cashflows.index'));
+        $response = $this->actingAs($user)->getJson(route('finance.cashflows.index'));
 
         $response->assertStatus(200);
 
@@ -40,7 +40,7 @@ class CashflowTest extends FeatureBaseCase
 
         $user     = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), [
+        $response = $this->actingAs($user)->postJson(route('finance.cashflows.store'), [
             'name'    => 'name of cashflow',
             'amount'  => 20000.1003,
         ]);
@@ -79,7 +79,7 @@ class CashflowTest extends FeatureBaseCase
 
         $user     = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.cashflows.store'), $credentials);
+        $response = $this->actingAs($user)->postJson(route('finance.cashflows.store'), $credentials);
 
         $response->assertJsonValidationErrors($errorKeys);
 
@@ -98,7 +98,7 @@ class CashflowTest extends FeatureBaseCase
 
         $cashflow = Cashflow::factory()->createQuietly();
 
-        $response = $this->actingAs($user)->putJson(route('service.cashflows.update', $cashflow->id), [
+        $response = $this->actingAs($user)->putJson(route('finance.cashflows.update', $cashflow->id), [
             'name' => 'Dummy text for update',
             'amount'    => 20000,
         ]);
@@ -126,7 +126,7 @@ class CashflowTest extends FeatureBaseCase
         $user         = User::where('username','administrator')->first();
 
 
-        $response = $this->actingAs($user)->patchJson(route('service.cashflows.update_multiple'), [
+        $response = $this->actingAs($user)->patchJson(route('finance.cashflows.update_multiple'), [
             "cashflows" => [
                 [
                     'id' => 1,
@@ -164,7 +164,7 @@ class CashflowTest extends FeatureBaseCase
 
         $user         = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('service.cashflows.destroy',1));
+        $response = $this->actingAs($user)->deleteJson(route('finance.cashflows.destroy',1));
 
         $response->assertStatus(200);
 
@@ -182,7 +182,7 @@ class CashflowTest extends FeatureBaseCase
 
         $user         = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('service.cashflows.delete_multiple'),[
+        $response = $this->actingAs($user)->deleteJson(route('finance.cashflows.delete_multiple'),[
             'cashflows' => [
                 1,2,3,4,5
             ]
