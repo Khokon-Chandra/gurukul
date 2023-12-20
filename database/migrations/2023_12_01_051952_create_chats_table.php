@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->string('receiver')->index();
-            $table->text('subject');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->unsignedBigInteger('chatable_id')->comment('user_id == private_chat, group_id == group_chat');
+            $table->string('chatable_type')->comment('User model or Group model type');
+            $table->text('message');
             $table->timestamp('time')->useCurrent()->index();
             $table->timestamp('date')->useCurrent()->index();
             $table->timestamps();
