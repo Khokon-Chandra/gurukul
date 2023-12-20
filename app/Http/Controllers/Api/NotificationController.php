@@ -172,6 +172,7 @@ class NotificationController extends Controller
                 'message' => 'Notification deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
@@ -184,6 +185,7 @@ class NotificationController extends Controller
      */
     public function deleteMultiple(NotificationRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
 
             foreach (Notification::whereIn('id', $request->notifications)->get() as $notification) :
@@ -200,11 +202,14 @@ class NotificationController extends Controller
                 $notification->delete();
             endforeach;
 
+            DB::commit();
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Notifications are deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
