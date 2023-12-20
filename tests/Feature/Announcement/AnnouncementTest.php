@@ -274,7 +274,7 @@ class AnnouncementTest extends FeatureBaseCase
 
 
 
-        $this->assertDatabaseCount('announcements', 103);
+        $this->assertDatabaseCount('announcements', 104);
 
 
         $response = $this->actingAs($user)->patchJson(route('service.announcements.update_status'), [
@@ -356,6 +356,23 @@ class AnnouncementTest extends FeatureBaseCase
                 "status",
                 "date",
                 "created_by",
+            ]
+        ]);
+    }
+
+
+    public function testActivatedAnnouncement()
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username','administrator')->first();
+
+        $response = $this->actingAs($user)->getJson(route('service.announecements.activated'));
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' =>[
+                'message',
+                'status'
             ]
         ]);
     }

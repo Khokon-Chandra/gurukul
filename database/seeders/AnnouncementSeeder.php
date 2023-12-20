@@ -13,6 +13,9 @@ class AnnouncementSeeder extends Seeder
      */
     public function run(): void
     {
+        Announcement::factory()->create([
+            'status' => true,
+        ]);
         Announcement::factory(100)->create();
     }
 }
