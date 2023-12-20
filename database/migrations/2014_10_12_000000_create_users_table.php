@@ -29,6 +29,8 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable()->index();
             $table->unsignedBigInteger('deleted_by')->nullable()->index();
             $table->timestamp('last_login_at')->useCurrent();
+            $table->timestamp('last_performed_at')->nullable();
+            $table->boolean('status')->default(0)->comment('0= offline, 1= online');
             $table->softDeletes();
         });
     }

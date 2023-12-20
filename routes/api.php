@@ -5,12 +5,12 @@ use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\CashflowController;
 use App\Http\Controllers\Api\DepartmentController;
-use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserIpController;
+use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -63,8 +63,12 @@ Route::name('finance.')->group(function () {
  * Social dodule routes
  */
 Route::name('social.')->group(function () {
-    //chat route
-    Route::apiResource('chats', ChatController::class);
+    // group chat route
+    Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
+    Route::get('groups/{group}', [GroupController::class, 'show'])->name('groups.show');
+    Route::get('groups/{group}/members', [GroupController::class, 'members'])->name('groups.members');
+    Route::post('groups/{group}', [GroupController::class, 'storeChat'])->name('groups.storeChat');
+    Route::get('all-users', [UserController::class, 'allUser'])->name('users.all');
 
     // notification routes
     Route::apiResource('notifications', NotificationController::class);
@@ -79,4 +83,13 @@ Route::name('social.')->group(function () {
         ->middleware('permission:user.access.social.announcement.view-announcement-data');
     Route::delete('/announcements-delete-multiple', [AnnouncementController::class, 'deleteMultiple'])->name('announcements.delete_multiple');
     Route::get('activated-announcement', [AnnouncementController::class, 'activated'])->name('announcements.activated');
+});
+
+
+
+/**
+ * Service module routes
+ */
+Route::name('service.')->group(function () {
+   Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
 });
