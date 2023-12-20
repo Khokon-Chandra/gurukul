@@ -90,6 +90,7 @@ class NotificationController extends Controller
                 'data'    => new NotificationResource($notification),
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
