@@ -95,11 +95,11 @@ class User extends Authenticatable implements JWTSubject
     {
         $query->when(
             $request->name ?? false, fn ($query, $name) => $query
-            ->where('name', 'like', "%$name%"))
+            ->where('name', 'like', "%{$name}%"))
             ->when($request->username ?? false, fn ($query, $username) => $query
-                ->where('username', $username))
+                ->where('username', 'like', "%{$username}%"))
             ->when($request->email ?? false, fn ($query, $email) => $query
-                ->where('email', 'like', "%$email%"))
+                ->where('email', 'like', "%{$email}%"))
             ->when($request->date_range ?? false, function ($query, $range) {
                 $dates = explode(' to ',$range);
                 $dates = [
