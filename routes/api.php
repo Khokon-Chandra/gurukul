@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('get.announcement.data')
             ->middleware('permission:user.access.social.announcement.view-announcement-data');
         Route::delete('/announcements-delete-multiple',[AnnouncementController::class,'deleteMultiple'])->name('announcements.delete_multiple');
+        Route::get('activated-announcement',[AnnouncementController::class,'activated'])->name('announecements.activated');
 
         Route::apiResource('cashflows', CashflowController::class);
         Route::patch('cashflows',[CashflowController::class,'updateMultiple'])->name('cashflows.update_multiple');
