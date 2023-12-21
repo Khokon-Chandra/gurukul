@@ -19,7 +19,7 @@ class AnnouncementFactory extends Factory
     {
         return [
             'message'    => $this->faker->sentence(6),
-            'status'     => $this->faker->boolean(),
+            'status'     => false,
             'created_at' => $this->faker->dateTime(),
             'created_by' => rand(1,5),
         ];
