@@ -19,13 +19,7 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-        $user->givePermissionTo('create_roles');
+        $user = User::where('username', 'administrator')->first();
 
 
         $response = $this->actingAs($user)->postJson(route('users.roles.store'), [
@@ -57,15 +51,7 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-        $user->givePermissionTo('update_roles');
-
-
+        $user = User::where('username', 'administrator')->first();
 
         $role = Role::create([
             'name' => 'Test_Role'
@@ -106,15 +92,7 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-        $user->givePermissionTo('delete_roles');
-
-
+        $user = User::where('username', 'administrator')->first();
 
         $role = Role::create([
             'name' => 'Test_Role'
@@ -141,13 +119,7 @@ class RoleFeatureTest extends TestCase
         $this->artisan('migrate:fresh --seed');
 
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-        $user->givePermissionTo('read_roles');
+        $user = User::where('username', 'administrator')->first();
 
         $role = Role::create(['name' => 'Admin']);
 

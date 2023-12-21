@@ -30,7 +30,6 @@ return new class extends Migration
 
         Schema::create($tableNames['permissions'], function (Blueprint $table) {
             $table->bigIncrements('id'); // permission id
-            $table->foreignId('parent_id')->nullable(); // permission id
             $table->string('module_name')->nullable();
             $table->string('display_name')->nullable();       // For MySQL 8.0 use string('name', 125);
             $table->string('name');       // For MySQL 8.0 use string('name', 125);

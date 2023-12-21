@@ -17,6 +17,7 @@ return [
     'delete'     => 'delete',
     'restore'    => 'restore',
     'trashed'    => 'restore',
-    'updateMultiple' => 'update_multiple',
-    'deleteMultiple' => 'delete_multiple',
+    'updateMultiple' => 'update multiple',
+    'multiUpdate'    => 'update multiple',
+    'deleteMultiple' => 'delete multiple',
 ];

@@ -19,7 +19,7 @@ class PermissionTest extends FeatureBaseCase
 
         $user = User::factory()->create();
 
-        $user->givePermissionTo('read_permissions');
+        $user->givePermissionTo('user.access.users.permissions.index');
 
         $response = $this->actingAs($user)->getJson(route('users.permissions.index'));
 
@@ -39,7 +39,7 @@ class PermissionTest extends FeatureBaseCase
 
         $user = User::factory()->create();
 
-        $user->givePermissionTo('update_permissions');
+        $user->givePermissionTo('user.access.users.permissions.update');
 
         $response = $this->actingAs($user)->putJson(route('users.permissions.update', 1), [
             'name' => 'update from test',

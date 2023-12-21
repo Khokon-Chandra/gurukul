@@ -20,15 +20,15 @@ use Illuminate\Support\Facades\Route;
  * user module routes
  */
 Route::name('users.')->group(function () {
-    Route::apiResource('user-ip', UserIpController::class);
-    Route::delete('user-ip-delete-multiple', [UserIpController::class, 'deleteMultiple'])->name('user-ip.delete-multiple');
+    Route::apiResource('user', UserController::class);
+
+    Route::apiResource('ip', UserIpController::class)->except('show');
+    Route::delete('user-ip-delete-multiple', [UserIpController::class, 'deleteMultiple'])->name('ip.delete-multiple');
     Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
-        ->name('user-ip.multi_update');
+        ->name('ip.multi_update');
     Route::apiResource('roles', RoleController::class);
     Route::get('activities', [ActivityLogController::class, 'index'])->name('activities.index');
-    Route::get('activities/download', [ActivityLogController::class, 'download'])->name('activities.download')
-        ->middleware('permission:user.access.users.activity.export');
-    Route::apiResource('user', UserController::class);
+    Route::get('activities/download', [ActivityLogController::class, 'download'])->name('activities.download');
     Route::apiResource('permissions', PermissionController::class)
         ->only('index', 'update');
     Route::apiResource('attendances', AttendanceController::class);
@@ -38,16 +38,9 @@ Route::name('users.')->group(function () {
         ->name('attendances.delete_multiple');
 
     Route::put('change-password', [UserController::class, 'changePassword'])
-        ->name('change.password');
+        ->name('user.password.change');
 });
 
-
-/**
- * Service module routes
- */
-Route::name('service.')->group(function () {
-    Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
-});
 
 /**
  * Finance routes
@@ -79,8 +72,7 @@ Route::name('social.')->group(function () {
     Route::apiResource('announcements', AnnouncementController::class);
     Route::put('announcements-update-multiple', [AnnouncementController::class, 'updateMultiple'])->name('announcements.update_multiple');
     Route::patch('update-announcement-status', [AnnouncementController::class, 'updateStatus'])->name('announcements.update_status');
-    Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('announcements.data')
-        ->middleware('permission:user.access.social.announcement.view-announcement-data');
+    Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('announcements.data');
     Route::delete('/announcements-delete-multiple', [AnnouncementController::class, 'deleteMultiple'])->name('announcements.delete_multiple');
     Route::get('activated-announcement', [AnnouncementController::class, 'activated'])->name('announcements.activated');
 });
