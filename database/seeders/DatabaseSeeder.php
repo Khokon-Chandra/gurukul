@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             AnnouncementSeeder::class,
             CashflowSeeder::class,
             NotificationSeeder::class,
-            AttendanceSeeder::class
+            AttendanceSeeder::class,
+            GroupSeeder::class,
         ]);
 
     }
