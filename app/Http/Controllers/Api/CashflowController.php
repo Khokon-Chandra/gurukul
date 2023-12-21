@@ -161,11 +161,20 @@ class CashflowController extends Controller
     {
         try {
 
+            activity('cashflow_deleted')->causedBy(Auth::id())
+                ->performedOn($cashflow)
+                ->withProperties([
+                    'ip'       => Auth::user()->last_login_ip ?? request()->ip(),
+                    'target'   => $cashflow->name,
+                    'activity' => 'deleted cashflow',
+                ])
+                ->log('cashflow deleted successfully');
+
             $cashflow->delete();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Cashflows are deleted successfully'
+                'message' => 'Cashflow deleted successfully'
             ], 200);
         } catch (\Exception $error) {
             return response()->json([
@@ -180,15 +189,33 @@ class CashflowController extends Controller
      */
     public function deleteMultiple(CashflowRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
 
-            Cashflow::whereIn('id', $request->cashflows)->delete();
+            foreach (Cashflow::whereIn('id', $request->cashflows)->get() as $cashflow) :
+
+                activity('cashflow_deleted')->causedBy(Auth::id())
+                    ->performedOn($cashflow)
+                    ->withProperties([
+                        'ip'       => Auth::user()->last_login_ip ?? request()->ip(),
+                        'target'   => $cashflow->name,
+                        'activity' => 'deleted cashflow',
+                    ])
+                    ->log('cashflow deleted successfully');
+
+                $cashflow->delete();
+            endforeach;
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Cashflows are deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+
+            DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
