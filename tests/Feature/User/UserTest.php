@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Models\User;
+use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
@@ -180,7 +181,7 @@ class UserTest extends FeatureBaseCase
         $role->permissions()->sync([1, 2, 3]);
 
         User::create([
-            'department_id'=>1,
+            'department_id' => 1,
             'username' => "test_user1",
             'name' => "Test Use1r",
             'email' => "testuser1@mail.com",
@@ -189,7 +190,7 @@ class UserTest extends FeatureBaseCase
         ]);
 
         User::create([
-            'department_id'=>1,
+            'department_id' => 1,
             'username' => "test_user2",
             'name' => "Test User2",
             'email' => "testuser2@mail.com",
@@ -224,30 +225,11 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-    $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 200,
-                    'username' => "James",
-                ],
-                [
-                    'id' => 201,
-                    'username' => "John",
-                ],
-                [
-                    'id' => 202,
-                    'username' => "Peter",
-                ],
-            ])->createQuietly();
+        UserFactory::createUsersForTest();
 
-        $role = Role::create(['name' => 'Admin']);
-        $role->permissions()->sync([1, 2, 3]);
+        $response = $this->actingAs($user)->getJson('/api/v1/user?username=Queen');
 
-
-
-        $response = $this->actingAs($user)->getJson('/api/v1/user?username=James');
-
-       $response->assertSeeInOrder(['James']);
+        $response->assertSeeInOrder(['Queen']);
         $response->assertDontSee(['John', 'Peter']);
 
 
