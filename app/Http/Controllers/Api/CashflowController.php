@@ -8,6 +8,7 @@ use App\Http\Requests\Api\CashflowRequest;
 use App\Http\Resources\Api\CashflowResource;
 use App\Models\Cashflow;
 use App\Trait\Authorizable;
+use App\Trait\ParseActivity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class CashflowController extends Controller
 {
-    use Authorizable;
+    use Authorizable, ParseActivity;
     /**
      * Display a listing of the resource.
      */
@@ -64,22 +65,12 @@ class CashflowController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(CashflowRequest $request, Cashflow $cashflow): JsonResponse
     {
         DB::beginTransaction();
         try {
-
-            $cashflow->update($request->validated());
 
             activity('cashflow_updated')->causedBy(Auth::id())
                 ->performedOn($cashflow)
@@ -88,7 +79,9 @@ class CashflowController extends Controller
                     'target'   => $cashflow->name,
                     'activity' => 'updated cashflow',
                 ])
-                ->log('updated cashflow successfully');
+                ->log($this->parseUpdateAble($cashflow,$request->all()));
+
+                $cashflow->update($request->validated());
 
             DB::commit();
 
@@ -133,7 +126,7 @@ class CashflowController extends Controller
                         'target'   => $cashflow->name,
                         'activity' => 'updated cashflow',
                     ])
-                    ->log('updated cashflow successfully');
+                    ->log($this->parseUpdateAble($cashflow,$attribute));
             }
 
             DB::commit();
