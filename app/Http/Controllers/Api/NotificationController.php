@@ -64,14 +64,6 @@ class NotificationController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(NotificationRequest $request, Notification $notification): JsonResponse
@@ -98,6 +90,7 @@ class NotificationController extends Controller
                 'data'    => new NotificationResource($notification),
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
@@ -159,15 +152,28 @@ class NotificationController extends Controller
      */
     public function destroy(Notification $notification): JsonResponse
     {
+        DB::beginTransaction();
         try {
+
+            activity('notification deleted')->causedBy(Auth::id())
+                ->performedOn($notification)
+                ->withProperties([
+                    'ip'       => Auth::user()->last_login_ip ?? request()->ip(),
+                    'target'   => $notification->name,
+                    'activity' => 'deleted notification',
+                ])
+                ->log('notification deleted successfully');
 
             $notification->delete();
 
+            DB::commit();
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Notifications are deleted successfully'
+                'message' => 'Notification deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
@@ -180,15 +186,31 @@ class NotificationController extends Controller
      */
     public function deleteMultiple(NotificationRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
 
-            Notification::whereIn('id', $request->notifications)->delete();
+            foreach (Notification::whereIn('id', $request->notifications)->get() as $notification) :
+
+                activity('notification deleted')->causedBy(Auth::id())
+                    ->performedOn($notification)
+                    ->withProperties([
+                        'ip'       => Auth::user()->last_login_ip ?? request()->ip(),
+                        'target'   => $notification->name,
+                        'activity' => 'deleted notification',
+                    ])
+                    ->log('notification deleted successfully');
+
+                $notification->delete();
+            endforeach;
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Notifications are deleted successfully'
             ], 200);
         } catch (\Exception $error) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => $error->getMessage()
