@@ -7,6 +7,7 @@ use App\Models\UserIp;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -37,7 +38,10 @@ class User extends Authenticatable implements JWTSubject
         'timezone',
         'updated_by',
         'deleted_by',
-        'deleted_at'
+        'deleted_at',
+        'last_performed_at',
+        'status',
+
     ];
 
     /**
@@ -58,6 +62,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'status'   => 'boolean',
     ];
 
     /**
@@ -91,6 +96,17 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Department::class);
     }
 
+
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class);
+    }
+
+
+    public function chats()
+    {
+        return $this->morphMany(Chat::class, 'chatable');
+    }
 
 
     public function scopeFilter($query, $request)

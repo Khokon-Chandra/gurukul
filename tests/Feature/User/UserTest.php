@@ -63,6 +63,30 @@ class UserTest extends FeatureBaseCase
         ]);
     }
 
+
+    public function testAllUserList(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username', 'administrator')->first();
+
+        $response = $this->actingAs($user)->getJson(route('service.users.all'));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'username',
+                    'last_login_at',
+                    'status',
+                ]
+            ]
+        ]);
+    }
+
     /**
      * User Create.
      */

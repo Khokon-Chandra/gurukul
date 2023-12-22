@@ -21,7 +21,8 @@ class AnnouncementTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.announcements.store'), [
+        $response = $this->actingAs($user)
+            ->postJson(route('service.announcements.store'), [
             'message' => 'Dummy text for announcement message',
             'status' => rand(0, 1)
         ]);
@@ -161,11 +162,6 @@ class AnnouncementTest extends FeatureBaseCase
         ]);
     }
 
-
-
-
-
-
     /**
      * Delete announcement
      */
@@ -186,8 +182,6 @@ class AnnouncementTest extends FeatureBaseCase
         ]);
     }
 
-
-
     public function testAnnouncementMultiDelete(): void
     {
         $this->artisan('migrate:fresh --seed');
@@ -206,9 +200,6 @@ class AnnouncementTest extends FeatureBaseCase
         ]);
     }
 
-
-
-
     /**
      * Event attached to listener
      */
@@ -220,7 +211,6 @@ class AnnouncementTest extends FeatureBaseCase
             AnnouncementListener::class
         );
     }
-
 
     /**
      * Announcement Event test
@@ -248,52 +238,29 @@ class AnnouncementTest extends FeatureBaseCase
 
     public function testThatAnnouncementStatusCanBeUpdated(): void
     {
-
         $this->artisan('migrate:fresh --seed');
 
         $user = User::where('username','administrator')->first();
 
-        $announcementId = 104;
-
         $CreateAnnouncements = Announcement::factory(3)
-            ->sequence(...[
-                [
-                    'id' => $announcementId,
-                    'status' => false
-
-                ],
-                [
-
-                    'status' => true,
-                ],
-                [
-
-                    'status' => true,
-                ],
-            ])->createQuietly();
-
-
-
-        $this->assertDatabaseCount('announcements', 104);
+            ->createQuietly();
 
 
         $response = $this->actingAs($user)->patchJson(route('service.announcements.update_status'), [
-            'announcement_id' =>    $announcementId,
+            'announcement_id' => ($CreateAnnouncements->first())->id,
         ]);
 
         $response->assertStatus(200);
 
-        $updatedAnnouncement = Announcement::find($announcementId);
-        $allOtherAnnouncements = Announcement::where('id', '!=', $announcementId)->get();
+        $updatedAnnouncement = Announcement::find(($CreateAnnouncements->first())->id);
+        $allOtherAnnouncements = Announcement::where('id', '!=', ($CreateAnnouncements->first())->id)->get();
 
 
-        $this->assertEquals(true,   $updatedAnnouncement->status);
+        $this->assertTrue($updatedAnnouncement->status);
 
         foreach ($allOtherAnnouncements as $otherAnnouncement) {
-
-            $this->assertEquals(false, $otherAnnouncement->status);
+            $this->assertFalse($otherAnnouncement->status);
         }
-
 
         $response->assertJsonStructure([
             'status',
@@ -361,13 +328,13 @@ class AnnouncementTest extends FeatureBaseCase
     }
 
 
-    public function testActivatedAnnouncement()
+    public function testUserCanActivateAnnouncement()
     {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.announecements.activated'));
+        $response = $this->actingAs($user)->getJson(route('service.announcements.activate'));
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' =>[

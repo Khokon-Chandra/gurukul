@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserRequest;
 use App\Http\Resources\Api\PermissionChildResource;
 use App\Http\Resources\Api\PermissionResource;
+use App\Http\Resources\Api\GroupMemberResource;
 use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
 use App\Trait\CanSort;
@@ -35,6 +36,14 @@ class UserController extends Controller
 
         return UserResource::collection($users);
 
+    }
+
+
+
+    public function allUser(): AnonymousResourceCollection
+    {
+        $users = User::select('id','name','username','last_login_at','status')->get();
+        return GroupMemberResource::collection($users);
     }
 
 
