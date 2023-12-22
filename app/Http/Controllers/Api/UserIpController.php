@@ -18,7 +18,6 @@ use Illuminate\Validation\ValidationException;
 class UserIpController extends Controller
 {
     use Authorizable;
-
     public function index(UserIpRequest $request): AnonymousResourceCollection
     {
 
@@ -348,7 +347,7 @@ class UserIpController extends Controller
                 'message' => 'User Ip Successfully Deleted',
                 'data' => null,
             ]);
-            
+
         } catch (\Exception $e) {
 
             DB::rollBack();
