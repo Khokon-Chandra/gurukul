@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserRequest;
+use App\Http\Resources\Api\GroupMemberResource;
 use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +27,14 @@ class UserController extends Controller
     {
         $users = User::with('roles')->latest()->filter($request)->paginate(AppConstant::PAGINATION);
         return UserResource::collection($users);
+    }
+
+
+
+    public function allUser(): AnonymousResourceCollection
+    {
+        $users = User::select('id','name','username','last_login_at','status')->get();
+        return GroupMemberResource::collection($users);
     }
 
 

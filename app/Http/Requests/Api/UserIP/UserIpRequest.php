@@ -3,15 +3,22 @@
 namespace App\Http\Requests\Api\UserIP;
 
 use App\Http\Requests\BaseFormRequest;
+use Illuminate\Validation\Rule;
 
 class UserIpRequest extends BaseFormRequest
 {
     protected array $routeRequest = [
+
+        'api/v1/user-ip|get' => [
+            'rules' => 'indexMethod',
+            'prepareForValidation' => 'indexPrepareForSearch',
+        ],  
+
         'api/v1/user-ip|post' => [
             'rules' => 'storeMethodRule',
         ],
         'api/v1/user-ip/{user_ip}|put' => [
-            'rules' => 'updateMethodRule',           
+            'rules' => 'updateMethodRule',
         ],
         'api/v1/user-ip/{user_ip}|patch' => [
             'rules' => 'updateMethodRule',
@@ -19,7 +26,25 @@ class UserIpRequest extends BaseFormRequest
         'api/v1/user-ips|put' => [
             'rules' => 'multipleUpdateMethodRule',
         ],
+        'api/v1/user-ip-delete-multiple|delete' => [
+            'rules' => 'deleteMethodRule',
+        ]
     ];
+
+    public function indexMethod(): void
+    {
+        $this->rules = [
+            'ip' => 'nullable|string|max:255',
+            'sort_by'               => [
+                'nullable',
+                Rule::in(['ip', 'description', 'status','whitelisted','date','created_at','updated_at']),
+            ],
+            'sort_type'             => [
+                'nullable',
+                Rule::in(['ASC', 'DESC']),
+            ],
+        ];
+    }
 
     public function storeMethodRule(): void
     {
@@ -39,7 +64,7 @@ class UserIpRequest extends BaseFormRequest
             'number2' => 'required|min:0|max:255|numeric',
             'number3' => 'required|min:0|max:255|numeric',
             'number4' => 'required|min:0|max:255|numeric',
-            'whitelisted' => 'required|max:255|numeric',
+            'whitelisted' => 'required|boolean',
             'description' => 'required|max:255',
         ];
     }
@@ -54,7 +79,7 @@ class UserIpRequest extends BaseFormRequest
             'items.*.item.number2' => 'required|integer',
             'items.*.item.number3' => 'required|integer',
             'items.*.item.number4' => 'required|integer',
-            'items.*.item.whitelisted' => 'required|integer',
+            'items.*.item.whitelisted' => 'required|boolean',
             'items.*.item.description' => 'required|string|max:255',
         ];
     }
@@ -70,7 +95,7 @@ class UserIpRequest extends BaseFormRequest
             '*.max' => 'The number must not be greater than 255',
 
             'whitelisted.required' => 'The number whitelisted is required',
-            'description.required' => 'The number whitelisted is required',
+            'description.required' => 'The number description is required',
 
             'items.required' => 'The items field is required.',
             'items.array' => 'The items must be an array.',
@@ -93,6 +118,25 @@ class UserIpRequest extends BaseFormRequest
             'items.*.item.description.max' => 'The description field for item :itemIndex may not be greater than :max characters.',
         ];
     }
+
+
+    public function deleteMethodRule(): void
+    {
+        $this->rules = [
+            'items' => 'required|array|min:1',
+            'items.*' => 'exists:user_ips,id',
+        ];
+    }
+
+    public function indexPrepareForSearch(): void
+    {
+        
+        $this->prepareForValidationRules = [
+            'ip' => $this->ip,
+            'sort_by' => $this->sort_by == 'status' ? 'whitelisted' : ($this->sort_by == 'date' ? 'updated_at' : $this->sort_by),
+        ];
+    }
+
 
     /**
      * todo set custom names for validation with wildcats

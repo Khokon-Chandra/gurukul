@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\ActivityExportableResource;
 use App\Http\Resources\Api\ActivityResource;
 use App\Trait\Authorizable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Spatie\Activitylog\Models\Activity;
 
@@ -17,12 +19,12 @@ class ActivityLogController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function index(Request $request): JsonResource
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Activity::with('causer')
-                ->latest();
+        $query = Activity::with('causer');
 
         $data = $this->filter($query, $request)
+            ->latest()
             ->paginate(AppConstant::PAGINATION);
 
         return ActivityResource::collection($data);
@@ -30,52 +32,85 @@ class ActivityLogController extends Controller
 
 
 
-    public function download(Request $request)
+    public function download(Request $request): AnonymousResourceCollection
     {
-        $query = Activity::with('causer')
-                ->latest();
+        $query = Activity::with('causer');
+        
+        $data  = $this->filter($query, $request)
+            ->latest()
+            ->get()->map(function($item, $index){
+                $item->no = $index + 1;
+                return $item;
+            });
 
-        $data = $this->filter($query, $request)
-            ->get();
-
-        return ActivityResource::collection($data);
+        return ActivityExportableResource::collection($data);
     }
 
 
 
     private function filter($query, $request)
     {
-        $dateRange = $request->dateRange ? explode('to',$request->dateRange) : false;
+        $dateRange = $request->dateRange ? explode('to', $request->dateRange) : false;
 
-        return $query->when($request->description ?? false, function ($query, $description) {
-            $query->where('description', 'like', "%{$description}%");
-        })->when($request->log_name ?? false, function ($query, $logName) {
+        return $query
+            ->when($request->description ?? false, function ($query, $description) {
+                $query->where('description', 'like', "%{$description}%");
+            })
+            ->when($request->log_name ?? false, function ($query, $logName) {
                 $query->where('log_name', 'like', "%{$logName}%");
-            })->when($request->activity ?? false, function ($query, $activity) {
+            })
+
+            ->when($request->ip ?? false, function ($query, $ip) {
+                $query->where('activity_log.properties->ip', 'like', "%{$ip}%");
+            })
+
+            ->when($request->activity ?? false, function ($query, $activity) {
                 $query->where('activity_log.properties->activity', 'like', "%{$activity}%");
-            })->when($request->target ?? false, function ($query, $target) {
+            })
+
+            ->when($request->target ?? false, function ($query, $target) {
                 $query->where('activity_log.properties->target', 'like', "%{$target}%");
-            })->when($request->start_date && $request->end_date ?? false, function ($query) use ($request) {
+            })
+            ->when($request->start_date && $request->end_date ?? false, function ($query) use ($request) {
 
                 $query->whereBetween('created_at', $this->parseDate(
                     $request->start_date,
                     $request->end_date
                 ));
-            })->when($dateRange, function ($query) use ($dateRange) {
+            })
+            ->when($dateRange, function ($query) use ($dateRange) {
 
                 $query->whereBetween('created_at', $this->parseDate(...$dateRange));
+            })
+
+            ->when($request->username ?? false, function ($query, $username){
+                $query->whereHas('causer',function($query) use($username){
+                    $query->where('username',$username);
+                });
+            })
+
+            ->when($request->sort_by == 'ip', function ($query) use($request){
+                $query->orderBy('activity_log.properties->ip', $request->sort_type);
+            })
+
+            ->when($request->sort_by == 'activity', function ($query) use($request){
+                $query->orderBy('activity_log.properties->activity', $request->sort_type);
+            })
+
+            ->when($request->sort_by == 'description', function ($query) use($request){
+                $query->orderBy('activity_log.description', $request->sort_type);
+            })
+
+            ->when($request->sort_by == 'log_name', function ($query) use($request){
+                $query->orderBy('activity_log.log_name', $request->sort_type);
+            })
+
+
+            ->when($request->sort_by == 'username', function ($query) use($request){
+                $query->whereHas('causer',function($query) use($request){
+                    $query->orderBy('username',$request->sort_type);
+                });
             });
-    }
-
-    public function exportActivity(Request $request)
-    {
-
-        $query = Activity::latest();
-
-        $activities = $this->filter($query, $request)
-            ->get();
-
-        return ActivityResource::collection($activities);
     }
 
 

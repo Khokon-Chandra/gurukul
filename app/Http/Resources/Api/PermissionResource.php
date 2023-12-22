@@ -14,8 +14,22 @@ class PermissionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            $this->name => PermissionChildResource::collection($this->children),
+
+    if($this->getUsersPermissions()){
+        foreach($this->getUsersPermissions() as $permission){
+            return [
+                $permission->module_name  => new PermissionChildResource($permission)
+            ];
+        }
+    }
+
+    return [
+
         ];
+
+    }
+
+    public function getUsersPermissions(){
+        return $this->resource?->pivot?->pivotParent?->permissions;
     }
 }

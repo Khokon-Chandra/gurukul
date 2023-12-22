@@ -17,9 +17,9 @@ class CashflowFactory extends Factory
     public function definition(): array
     {
         return [
-            'item_name' => $this->faker->sentence(),
-            'item_price' => rand(1000,99999),
-            'upload' => $this->faker->imageUrl()
+            'name' => $this->faker->sentence(),
+            'amount'    => $this->faker->randomFloat(),
+            'created_at' => $this->faker->dateTime(),
         ];
     }
 }

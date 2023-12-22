@@ -9,7 +9,6 @@ use App\Http\Resources\Api\UserIpResource;
 use App\Models\UserIp;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,38 +18,12 @@ use Illuminate\Validation\ValidationException;
 class UserIpController extends Controller
 {
     use Authorizable;
-
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(UserIpRequest $request): AnonymousResourceCollection
     {
 
-
-        $query = UserIp::query();
-
-        if ($request->filled('search')) {
-            $query->where('ip_address', 'LIKE', "%{$request->search}%");
-        }
-
-        //sort IP
-        if ($request->filled('ip_address')) {
-            $query->orderBy('ip_address', $request->ip_address);
-        }
-
-        //sort Description
-        if ($request->filled('description')) {
-            $query->orderBy('description', $request->description);
-        }
-
-        //Sort Whitelisted
-        if ($request->filled('whitelisted')) {
-            $query->orderBy('whitelisted', $request->whitelisted);
-        }
-
-        //Sort Last_updated
-        if ($request->filled('updated_at')) {
-            $query->orderBy('updated_at', $request->updated_at);
-        }
-
-        $UserIps = $query->latest()->paginate(AppConstant::PAGINATION);
+        $UserIps = UserIp::filter($request)
+            ->latest()
+            ->paginate(AppConstant::PAGINATION);
 
         return UserIpResource::collection($UserIps);
     }
@@ -65,7 +38,7 @@ class UserIpController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Format IP Invalid!.',
-            ], 400);
+            ], 422);
         }
 
 
@@ -75,29 +48,24 @@ class UserIpController extends Controller
             $ip2 = $request->number2;
             $ip3 = $request->number3;
             $ip4 = $request->number4;
-            $ip_address = $ip1 . '.' . $ip2 . '.' . $ip3 . '.' . $ip4;
-            $checkIps = UserIp::select('ip_address')
-                ->where('ip_address', 'LIKE', '%' . $ip1 . '.' . $ip2 . '%')
-                ->pluck('ip_address')
-                ->toArray();
+            $ip = $ip1 . '.' . $ip2 . '.' . $ip3 . '.' . $ip4;
+            $checkIps   = UserIp::where('ip', $ip)->count();
 
-            if ($checkIps != []) {
-                if (in_array($ip_address, $checkIps)) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'User Ip already exist',
-                        'ip_whitelist' => $ip_address,
-                    ], 400);
-                }
+            if ($checkIps) {
+
+                return response()->json([
+                    'status'       => 'error',
+                    'message'      => 'User Ip already exist',
+                    'ip_whitelist' => $ip,
+                ], 400);
             }
 
             // Insert to Database
             $payload = [
-                'ip_address' => $ip_address,
-                'whitelisted' => 1,
+                'ip'  => $ip,
                 'description' => $request->description,
-                'created_by' => Auth::user()->id,
-                'created_at' => now(),
+                'created_by'  => Auth::id(),
+                'created_at'  => now(),
             ];
 
             $UserIp = UserIp::create($payload);
@@ -107,7 +75,7 @@ class UserIpController extends Controller
                 ->performedOn($UserIp)
                 ->withProperties([
                     'ip' => Auth::user()->last_login_ip,
-                    'target' => $UserIp->ip_address,
+                    'target' => $UserIp->ip,
                     'activity' => 'Create user ip',
                 ])
                 ->log('Successfully');
@@ -130,7 +98,7 @@ class UserIpController extends Controller
     /**
      * @throws ValidationException
      */
-    public function update(UserIpRequest $request, $id): JsonResponse
+    public function update(UserIpRequest $request, UserIp $userIp): JsonResponse
     {
 
         if ($request->number3 === null && $request->number4 !== null) {
@@ -143,66 +111,57 @@ class UserIpController extends Controller
         DB::beginTransaction();
         try {
 
-            $UserIp = UserIp::find($id);
-
-            if (!$UserIp) {
-                throw ValidationException::withMessages(["$UserIp Ip Not Found"]);
-            }
-
             $ip1 = $request->number1;
             $ip2 = $request->number2;
             $ip3 = $request->number3;
             $ip4 = $request->number4;
-            $ip_address = $ip1 . '.' . $ip2 . '.' . $ip3 . '.' . $ip4;
+            $ip = $ip1 . '.' . $ip2 . '.' . $ip3 . '.' . $ip4;
 
-            $checkIps = UserIp::select('ip_address')
-                ->where('ip_address', 'LIKE', '%' . $ip1 . '.' . $ip2 . '%')
-                ->whereNotIn('id', [$id])
-                ->pluck('ip_address')
-                ->toArray();
+            $checkIps = UserIp::select('ip')
+                ->where('ip', $ip)
+                ->whereNotIn('id', [$userIp->id])
+                ->count();
 
-            if ($checkIps != []) {
-
-                if (in_array($ip_address, $checkIps)) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'User Ip already exist',
-                        'ip_whitelist' => $ip_address,
-                    ], 400);
-                }
+            if ($checkIps) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'User Ip already exist',
+                    'ip_whitelist' => $ip,
+                ], 400);
             }
 
+
             // Update on Database
-            $description = $request->description ?? $UserIp->description;
+            $description = $request->description ?? $userIp->description;
             $payload = [
-                'ip_address' => $ip_address,
+                'ip' => $ip,
                 'whitelisted' => $request->whitelisted,
                 'description' => $description,
-                'updated_by' => auth()->user()->id,
+                'updated_by' => Auth::id(),
                 'updated_at' => now(),
             ];
 
             $dataUpdate = [];
-            if ($UserIp->ip_address != $ip_address) {
-                $dataUpdate['ip_address'] = 'IP Address : ' . $UserIp->ip_address . ' -> ' . $ip_address;
+            if ($userIp->ip != $ip) {
+                $dataUpdate['ip'] = 'IP Address : ' . $userIp->ip . ' -> ' . $ip;
             }
-            if ($UserIp->whitelisted != $request->whitelisted) {
-                $dataUpdate['whitelisted'] = 'Whitelisted : ' . ($UserIp->whitelisted == 1 ? 'True' : 'False') . ' -> ' . ($request->whitelisted == 1 ? 'True' : 'False');
+            if ($userIp->whitelisted != $request->whitelisted) {
+                $dataUpdate['whitelisted'] = 'Whitelisted : ' . ($userIp->whitelisted == 1 ? 'True' : 'False') . ' -> ' . ($request->whitelisted == 1 ? 'True' : 'False');
             }
-            if ($UserIp->description != $description) {
-                $dataUpdate['description'] = 'Description : ' . $UserIp->description . ' -> ' . $description;
+            if ($userIp->description != $description) {
+                $dataUpdate['description'] = 'Description : ' . $userIp->description . ' -> ' . $description;
             }
 
             $dataLog = implode(', ', $dataUpdate) == null ? 'No Data Updated' : implode(', ', $dataUpdate);
 
-            $UserIp->update($payload);
+            $userIp->update($payload);
 
             // Create Activity Log
             activity('update User ip')->causedBy(Auth::user()->id)
-                ->performedOn($UserIp)
+                ->performedOn($userIp)
                 ->withProperties([
                     'ip' => Auth::user()->last_login_ip,
-                    'target' => $UserIp->ip_address,
+                    'target' => $userIp->ip,
                     'activity' => 'Updated User ip',
                 ])
                 ->log('Successfully Updated User ip, ' . $dataLog);
@@ -212,7 +171,7 @@ class UserIpController extends Controller
             return response()->json([
                 'status' => 'successful',
                 'message' => 'User Ip Updated Successfully',
-                'data' => new UserIpResource($UserIp),
+                'data' => new UserIpResource($userIp),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -253,15 +212,15 @@ class UserIpController extends Controller
                 $ip2 = $item['item']['number2'];
                 $ip3 = $item['item']['number3'];
                 $ip4 = $item['item']['number4'];
-                $ip_address = $ip1 . '.' . $ip2 . '.' . $ip3 . '.' . $ip4;
-                $checkIps = UserIp::select('ip_address')->where('ip_address', 'LIKE', '%' . $ip1 . '.' . $ip2 . '%')->whereNotIn('id', [$id])->pluck('ip_address')->toArray();
+                $ip = $ip1 . '.' . $ip2 . '.' . $ip3 . '.' . $ip4;
+                $checkIps = UserIp::select('ip')->where('ip', 'LIKE', '%' . $ip1 . '.' . $ip2 . '%')->whereNotIn('id', [$id])->pluck('ip')->toArray();
                 if ($checkIps != []) {
 
-                    if (in_array($ip_address, $checkIps)) {
+                    if (in_array($ip, $checkIps)) {
                         return response()->json([
                             'status' => 'error',
                             'message' => 'User Ip already exist',
-                            'ip_whitelist' => $ip_address,
+                            'ip_whitelist' => $ip,
                         ], 400);
                     }
                 }
@@ -269,7 +228,7 @@ class UserIpController extends Controller
                 // Update on Database
                 $description = $item['item']['description'] ?? $UserIp->description;
                 $payload = [
-                    'ip_address' => $ip_address,
+                    'ip' => $ip,
                     'whitelisted' => $item['item']['whitelisted'],
                     'description' => $description,
                     'updated_by' => auth()->user()->id,
@@ -277,8 +236,8 @@ class UserIpController extends Controller
                 ];
 
                 $dataUpdate = [];
-                if ($UserIp->ip_address != $ip_address) {
-                    $dataUpdate['ip_address'] = 'IP Address : ' . $UserIp->ip_address . ' -> ' . $ip_address;
+                if ($UserIp->ip != $ip) {
+                    $dataUpdate['ip'] = 'IP Address : ' . $UserIp->ip . ' -> ' . $ip;
                 }
                 if ($UserIp->whitelisted != $request->whitelisted) {
                     $dataUpdate['whitelisted'] = 'Whitelisted : ' . ($UserIp->whitelisted == 1 ? 'True' : 'False') . ' -> ' . ($request->whitelisted == 1 ? 'True' : 'False');
@@ -296,7 +255,7 @@ class UserIpController extends Controller
                     ->performedOn($UserIp)
                     ->withProperties([
                         'ip' => Auth::user()->last_login_ip,
-                        'target' => $UserIp->ip_address,
+                        'target' => $UserIp->ip,
                         'activity' => 'Updated User ip',
                     ])
                     ->log('Successfully Updated User ip, ' . $dataLog);
@@ -322,31 +281,63 @@ class UserIpController extends Controller
     /**
      * @throws ValidationException
      */
-    public function destroy($ids): JsonResponse
+    public function destroy(UserIp $userIp): JsonResponse
     {
 
         DB::beginTransaction();
         try {
-            $ids = explode(',', $ids);
 
-            foreach ($ids as $id_check) {
-                $userIp = UserIp::find($id_check);
-                if (!$userIp) {
-                    throw ValidationException::withMessages(["Ip With Id $id_check Not Found, Please Send Valid data"]);
-                }
-            }
 
-            foreach ($ids as $id) {
+
+
+            activity('user_ip')->causedBy(Auth::id())
+                ->performedOn($userIp)
+                ->withProperties([
+                    'ip'       => Auth::user()->last_login_ip,
+                    'target'   => $userIp->ip,
+                    'activity' => 'Deleted user ip',
+                ])
+                ->log('Deleted Successfully');
+            $userIp->delete();
+
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'successful',
+                'message' => 'User Ip Successfully Deleted',
+                'data' => null,
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+
+    public function deleteMultiple(UserIpRequest $request): JsonResponse
+    {
+
+        DB::beginTransaction();
+        try {
+
+            foreach ($request->items as $id) {
                 $userIp = UserIp::find($id);
                 activity('user_ip')->causedBy(Auth::id())
                     ->performedOn($userIp)
                     ->withProperties([
                         'ip'       => Auth::user()->last_login_ip,
-                        'target'   => $userIp->ip_address,
+                        'target'   => $userIp->ip,
                         'activity' => 'Deleted user ip',
                     ])
                     ->log('Deleted Successfully');
-                 $userIp->delete();
+                $userIp->delete();
             }
 
             DB::commit();

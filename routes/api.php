@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserIpController;
+use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -21,52 +22,65 @@ Route::group(['middleware' => ['auth:api']], function () {
      */
     Route::name('admin.')->group(function () {
         Route::apiResource('user-ip', UserIpController::class);
+        Route::delete('user-ip-delete-multiple',[UserIpController::class,'deleteMultiple'])
+            ->name('user-ip.delete-multiple');
         Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
             ->name('user-ip.multi_update');
         Route::apiResource('roles', RoleController::class);
         Route::get('logs', [ActivityLogController::class, 'index'])->name('logs.index');
-        Route::get('logs/download', [ActivityLogController::class, 'download'])->name('logs.download');
+        Route::get('logs/download', [ActivityLogController::class, 'download'])
+            ->name('logs.download');
         Route::apiResource('user', UserController::class);
-        Route::get('export-and-download-activity', [ActivityLogController::class, 'exportActivity'])->name('download.activity')->middleware('permission:user.access.user.export-activity');
-        Route::apiResource('permissions', PermissionController::class)->only('index', 'update');
-        Route::post('create-attendance', [AttendanceController::class, 'store'])->name('attendance.create')->middleware('permission:user.access.user.create-attendance');
-        Route::delete('delete-attendance', [AttendanceController::class, 'destroy'])->name('attendance.delete')->middleware('permission:user.access.user.delete-attendance');
-        Route::put('update-attendance', [AttendanceController::class, 'update'])->name('attendance.update')->middleware('permission:user.access.user.update-attendance');
-        Route::get('attendances', [AttendanceController::class, 'index'])->name('attendance.list')->middleware('permission:user.access.user.list-attendance');
+        Route::apiResource('permissions', PermissionController::class)
+            ->only('index', 'update');
+        Route::apiResource('attendances', AttendanceController::class);
+        Route::patch('attendances',[AttendanceController::class,'updateMultiple'])
+            ->name('attendances.update_multiple');
+        Route::delete('attendances-delete-many', [AttendanceController::class,'deleteMultiple'])
+            ->name('attendances.delete_multiple');
     });
-
-
 
     /**
      * Service module routes
      */
     Route::name('service.')->group(function () {
-        Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
-        Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
-        Route::put('announcements', [AnnouncementController::class, 'update'])->name('announcements.update');
-        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateAnAnnouncementStatus'])->name('announcement.status.update')->middleware('permission:user.access.user.update-announcement-status');
-        Route::delete('announcements', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
-        Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('get.announcement.data')->middleware('permission:user.access.user.view-announcement-data');
-        Route::apiResource('cashflows', CashflowController::class);
-        Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMany'])->name('cashflows.delete_many');
-        Route::apiResource('notifications',NotificationController::class);
-        Route::patch('notifications',[NotificationController::class,'updateMultiple'])->name('notifications.updateMultiple');
-        Route::delete('notifications-delete-many',[NotificationController::class,'deleteMultiple'])->name('notifications.deleteMultiple');
-        Route::get('departments',[DepartmentController::class,'index'])->name('departments.index');
-    });
+        Route::apiResource('announcements',AnnouncementController::class);
+        Route::put('announcements-update-multiple', [AnnouncementController::class, 'updateMultiple'])
+            ->name('announcements.update_multiple');
+        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateStatus'])
+            ->name('announcements.update_status');
+        Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])
+            ->name('get.announcement.data');
+        Route::delete('/announcements-delete-multiple',[AnnouncementController::class,'deleteMultiple'])
+            ->name('announcements.delete_multiple');
+        Route::get('activated-announcement',[AnnouncementController::class,'activated'])
+            ->name('announcements.activate');
 
+        Route::apiResource('cashflows', CashflowController::class);
+        Route::patch('cashflows',[CashflowController::class,'updateMultiple'])
+            ->name('cashflows.update_multiple');
+        Route::delete('cashflows-delete-many', [CashflowController::class,'deleteMultiple'])
+            ->name('cashflows.delete_multiple');
+        Route::apiResource('notifications',NotificationController::class);
+        Route::patch('notifications',[NotificationController::class,'updateMultiple'])
+            ->name('notifications.updateMultiple');
+        Route::delete('notifications-delete-many',[NotificationController::class,'deleteMultiple'])
+            ->name('notifications.delete_multiple');
+        Route::get('departments',[DepartmentController::class,'index'])
+            ->name('departments.index');
+
+        Route::get('groups',[GroupController::class,'index'])->name('groups.index');
+        Route::get('groups/{group}',[GroupController::class,'show'])->name('groups.show');
+        Route::get('groups/{group}/members',[GroupController::class,'members'])->name('groups.members');
+        Route::post('groups/{group}',[GroupController::class,'storeChat'])->name('groups.storeChat');
+        Route::get('all-users',[UserController::class,'allUser'])->name('users.all');
+    });
 
     /**
      * User Routes
      */
-
     Route::name('user.')->group(function () {
-
-        Route::apiResource('chats', ChatController::class)
-            ->middleware('permission:user.access.user.chat-agent');
-
         Route::put('change-password', [UserController::class, 'changePassword'])
-            ->name('change.password')
-            ->middleware('permission:user.access.user.change-password');
+            ->name('change.password');
     });
 });
