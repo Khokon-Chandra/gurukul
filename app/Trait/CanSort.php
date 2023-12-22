@@ -14,7 +14,6 @@ trait CanSort
             return $query->orderBy('name', $request->sort_name);
         }
 
-
         if($request->filled('sort_username')){
             return $query->orderBy('username', $request->sort_username);
         }
@@ -32,7 +31,5 @@ trait CanSort
                 ->join('roles', 'model_has_roles.role_id', 'roles.id')
                 ->orderBy('role_created_at', $request->sort_role);
             }
-
-//            dd($query->get());
         }
 }

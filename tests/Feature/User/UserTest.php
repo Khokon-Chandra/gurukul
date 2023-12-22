@@ -207,7 +207,7 @@ class UserTest extends FeatureBaseCase
         $role->permissions()->sync([1, 2, 3]);
 
         User::create([
-            'department_id'=>1,
+            'department_id' => 1,
             'username' => "test_user1",
             'name' => "Test Use1r",
             'email' => "testuser1@mail.com",
@@ -216,7 +216,7 @@ class UserTest extends FeatureBaseCase
         ]);
 
         User::create([
-            'department_id'=>1,
+            'department_id' => 1,
             'username' => "test_user2",
             'name' => "Test User2",
             'email' => "testuser2@mail.com",
@@ -249,9 +249,9 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
+            ->createQuietly()->assignRole(Role::first());
 
-    $users = User::factory(3)
+        $users = User::factory(3)
             ->sequence(...[
                 [
                     'id' => 200,
@@ -267,16 +267,10 @@ class UserTest extends FeatureBaseCase
                 ],
             ])->createQuietly();
 
-        $role = Role::create(['name' => 'Admin']);
-        $role->permissions()->sync([1, 2, 3]);
-
-
-
-        $response = $this->actingAs($user)->getJson('/api/v1/user?username=James');
+        $response = $this->actingAs($user)->getJson(route('admin.user.index', ['username' => 'James']));
         $response->assertStatus(200);
-       $response->assertSeeInOrder(['James']);
-       $response->assertDontSee(['John', 'Peter']);
-
+        $response->assertSeeInOrder(['James']);
+        $response->assertDontSee(['John', 'Peter']);
 
 
         $response->assertJsonStructure([
@@ -307,14 +301,15 @@ class UserTest extends FeatureBaseCase
         ]);
     }
 
-    public function testThatUserCanSortName(): void{
+    public function testThatUserCanSortName(): void
+    {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
+            ->createQuietly()->assignRole(Role::first());
 
         $users = User::factory(3)
             ->sequence(...[
@@ -337,7 +332,6 @@ class UserTest extends FeatureBaseCase
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
-
 
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
@@ -371,14 +365,15 @@ class UserTest extends FeatureBaseCase
         ]);
     }
 
-    public function testThatUserCanSortUserName(): void{
+    public function testThatUserCanSortUserName(): void
+    {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
+            ->createQuietly()->assignRole(Role::first());
 
         $users = User::factory(3)
             ->sequence(...[
@@ -401,7 +396,6 @@ class UserTest extends FeatureBaseCase
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
-
 
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
@@ -435,14 +429,15 @@ class UserTest extends FeatureBaseCase
         ]);
     }
 
-    public function testThatUserCanSortJoinDate(): void{
+    public function testThatUserCanSortJoinDate(): void
+    {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
+            ->createQuietly()->assignRole(Role::first());
 
         $users = User::factory(3)
             ->sequence(...[
@@ -469,7 +464,6 @@ class UserTest extends FeatureBaseCase
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
-
 
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_joindate=desc');
@@ -503,7 +497,8 @@ class UserTest extends FeatureBaseCase
         ]);
     }
 
-    public function testThatUserCanSortUserRole(): void{
+    public function testThatUserCanSortUserRole(): void
+    {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory([
@@ -551,13 +546,11 @@ class UserTest extends FeatureBaseCase
             ])->createQuietly();
 
 
-
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_role=desc');
 
         $response->assertStatus(200);
         $response->assertSee(['sneymoney', 'emoney']);
         $response->assertDontSeeText(['bello', 'funke', 'jeniffer']);
-
 
 
         $response->assertJsonStructure([
