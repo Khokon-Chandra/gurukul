@@ -19,6 +19,8 @@ trait Authorizable
 
     public function callAction($method, $parameters)
     {
+//        logger('parameters');
+//        logger($parameters);
         $abilities = config('abilities');
         $permissions = $abilities['route_permissions'];
 
@@ -30,7 +32,7 @@ trait Authorizable
             array_map(fn ($routeUrl) => url($routeUrl), $abilities['unprotected_route_url']),
         );
 
-        if (! in_array(route($routeName), $unProtectedRoutes)) {
+        if (! in_array(route($routeName, ['*']), $unProtectedRoutes)) {
             $this->authorize($permission['name']);
         }
 

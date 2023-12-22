@@ -54,7 +54,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('/announcements-delete-multiple',[AnnouncementController::class,'deleteMultiple'])
             ->name('announcements.delete_multiple');
         Route::get('activated-announcement',[AnnouncementController::class,'activated'])
-            ->name('announecements.activated');
+            ->name('announcements.activate');
 
         Route::apiResource('cashflows', CashflowController::class);
         Route::patch('cashflows',[CashflowController::class,'updateMultiple'])
