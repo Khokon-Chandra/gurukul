@@ -25,14 +25,12 @@ class RoleFeatureTest extends TestCase
             ])
             ->createQuietly();
 
-        $user->givePermissionTo('create_roles');
-
+        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.store']['name']);
 
         $response = $this->actingAs($user)->postJson(route('admin.roles.store'), [
             'name' => Str::random(10),
             'permissions' => [1, 2, 3]
         ]);
-
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -52,7 +50,6 @@ class RoleFeatureTest extends TestCase
     /**
      * Update Role
      */
-
     public function testUserRoleUpdate(): void
     {
         $this->artisan('migrate:fresh --seed');
@@ -63,20 +60,16 @@ class RoleFeatureTest extends TestCase
             ])
             ->createQuietly();
 
-        $user->givePermissionTo('update_roles');
-
-
+        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.update']['name']);
 
         $role = Role::create([
             'name' => 'Test_Role'
         ]);
 
-
         $response = $this->actingAs($user)->putJson(route('admin.roles.update', $role->id), [
             'name' => Str::random(10),
             'permissions' => [1, 2, 3]
         ]);
-
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -94,10 +87,6 @@ class RoleFeatureTest extends TestCase
         ]);
     }
 
-
-
-
-
     /**
      * Delete Role
      */
@@ -112,14 +101,11 @@ class RoleFeatureTest extends TestCase
             ])
             ->createQuietly();
 
-        $user->givePermissionTo('delete_roles');
-
-
+        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.destroy']['name']);
 
         $role = Role::create([
             'name' => 'Test_Role'
         ]);
-
 
         $response = $this->actingAs($user)->deleteJson(route('admin.roles.destroy', $role->id));
 
@@ -135,11 +121,9 @@ class RoleFeatureTest extends TestCase
     /**
      * Role List
      */
-
     public function testUserRoleList(): void
     {
         $this->artisan('migrate:fresh --seed');
-
 
         $user = User::factory()
             ->state([
@@ -147,15 +131,13 @@ class RoleFeatureTest extends TestCase
             ])
             ->createQuietly();
 
-        $user->givePermissionTo('read_roles');
+        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.index']['name']);
 
         $role = Role::create(['name' => 'Admin']);
 
         $role->permissions()->sync([1, 2, 3]);
 
-
         $response = $this->actingAs($user)->getJson(route('admin.roles.index'));
-
 
         $response->assertStatus(200);
 
@@ -173,10 +155,6 @@ class RoleFeatureTest extends TestCase
         ]);
     }
 
-
-
-
-
     /**
      * @test
      *
@@ -186,7 +164,7 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user     = User::where('username','administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('admin.roles.store'), $credentials);
 
@@ -198,10 +176,6 @@ class RoleFeatureTest extends TestCase
 
         $response->assertStatus(422);
     }
-
-
-
-
 
     public static function roleData()
     {
