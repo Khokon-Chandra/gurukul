@@ -27,7 +27,6 @@ class RoleFeatureTest extends TestCase
             'permissions' => [1, 2, 3]
         ]);
 
-
         $response->assertStatus(200);
         $response->assertJsonStructure([
             "status",
@@ -46,7 +45,6 @@ class RoleFeatureTest extends TestCase
     /**
      * Update Role
      */
-
     public function testUserRoleUpdate(): void
     {
         $this->artisan('migrate:fresh --seed');
@@ -63,7 +61,6 @@ class RoleFeatureTest extends TestCase
             'permissions' => [1, 2, 3]
         ]);
 
-
         $response->assertStatus(200);
         $response->assertJsonStructure([
             "status",
@@ -79,10 +76,6 @@ class RoleFeatureTest extends TestCase
             ]
         ]);
     }
-
-
-
-
 
     /**
      * Delete Role
@@ -113,7 +106,6 @@ class RoleFeatureTest extends TestCase
     /**
      * Role List
      */
-
     public function testUserRoleList(): void
     {
         $this->artisan('migrate:fresh --seed');
@@ -127,7 +119,6 @@ class RoleFeatureTest extends TestCase
 
 
         $response = $this->actingAs($user)->getJson(route('users.roles.index'));
-
 
         $response->assertStatus(200);
 
@@ -145,10 +136,6 @@ class RoleFeatureTest extends TestCase
         ]);
     }
 
-
-
-
-
     /**
      * @test
      *
@@ -158,7 +145,7 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user     = User::where('username','administrator')->first();
+        $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('users.roles.store'), $credentials);
 
@@ -170,10 +157,6 @@ class RoleFeatureTest extends TestCase
 
         $response->assertStatus(422);
     }
-
-
-
-
 
     public static function roleData()
     {

@@ -109,5 +109,5 @@ class ActivityLogTest extends FeatureBaseCase
         ]);
     }
 
-   
+
 }
