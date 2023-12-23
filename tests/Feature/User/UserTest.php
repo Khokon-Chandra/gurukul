@@ -263,32 +263,22 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-    $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 200,
-                    'username' => "James",
-                ],
-                [
-                    'id' => 201,
-                    'username' => "John",
-                ],
-                [
-                    'id' => 202,
-                    'username' => "Peter",
-                ],
-            ])->createQuietly();
+        $users = User::factory(3)->createQuietly();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
 
+        $searchAbleString = $users->first()->username;
+        $response = $this->actingAs($user)
+            ->getJson("/api/v1/user?username={$searchAbleString}");
 
+       $response->assertSeeInOrder([$searchAbleString]);
 
-        $response = $this->actingAs($user)->getJson('/api/v1/user?username=James');
-
-       $response->assertSeeInOrder(['James']);
-        $response->assertDontSee(['John', 'Peter']);
-
+       $response->assertDontSee(
+            $users->filter(fn ($user) => $user->username !== $searchAbleString)
+                ->pluck('username')
+                ->toArray()
+        );
 
         $response->assertStatus(200);
 
