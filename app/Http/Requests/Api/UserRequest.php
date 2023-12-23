@@ -16,6 +16,10 @@ class UserRequest extends BaseFormRequest
         'api/v1/user/{user}|put' => [
             'rules' => 'updateMethodRule',
         ],
+        'api/v1/delete-user|delete' => [
+            'rules' => 'deleteMethodRule',
+        ],
+
     ];
 
     public function storeMethodRule(): void
@@ -46,7 +50,6 @@ class UserRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'department_id' => 'required|exists:departments,id',
             'name'     => 'required|string|max:255',
             'username' => [
                 'required',
@@ -54,16 +57,14 @@ class UserRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('users','username')->ignore($this->route('user'))
             ],
+            'role' => 'required|exists:roles,id'
+        ];
+    }
 
-            'email' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('users','email')->ignore($this->route('user'))
-            ],
-
-            'role' => 'required|exists:roles,id',
-            'timezone' => 'nullable|string|max:100',
+    public function deleteMethodRule(): void
+    {
+        $this->rules = [
+            'ids.*'     => 'required|exists:users,id',
         ];
     }
 }

@@ -3,7 +3,9 @@
 namespace Tests\Feature\User;
 
 use App\Models\User;
-use Database\Factories\UserFactory;
+
+use App\Models\UserIp;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
@@ -154,10 +156,11 @@ class UserTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)->putJson('/api/v1/user/1', [
-            'department_id' => 1,
+
             'username' => "test_user",
             'name' => "Test User",
-            'email' => "testuser@mail.com",
+            'password' => "123456789",
+            'password_confirmation' => "123456789",
             'role' => 1,
         ]);
 
@@ -199,43 +202,20 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
+            ->createQuietly()->assignRole(Role::first());
 
-        $role = Role::create(['name' => 'Writer',]);
-        $role->permissions()->sync([1, 2, 3]);
 
-        User::create([
-            'department_id' => 1,
-            'username' => "test_user1",
-            'name' => "Test Use1r",
-            'email' => "testuser1@mail.com",
-            'password' => 'password',
-            'roles' => [1],
+
+        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
+        [
+            'ids' => [1,2]
         ]);
-
-        User::create([
-            'department_id' => 1,
-            'username' => "test_user2",
-            'name' => "Test User2",
-            'email' => "testuser2@mail.com",
-            'password' => 'password',
-            'roles' => [1],
-        ]);
-
-
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/user/1,2');
 
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
-            "data",
-        ]);
-
-        $response->assertJson([
-            'status' => true,
-            'message' => true,
-            'data' => false
         ]);
     }
 
@@ -249,13 +229,23 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-        UserFactory::createUsersForTest();
 
-        $response = $this->actingAs($user)->getJson('/api/v1/user?username=Queen');
+        $users = User::factory(3)->createQuietly();
 
-        $response->assertSeeInOrder(['Queen']);
-        $response->assertDontSee(['John', 'Peter']);
+        $role = Role::create(['name' => 'Admin']);
+        $role->permissions()->sync([1, 2, 3]);
 
+        $searchAbleString = $users->first()->username;
+        $response = $this->actingAs($user)
+            ->getJson("/api/v1/user?username={$searchAbleString}");
+
+       $response->assertSeeInOrder([$searchAbleString]);
+
+       $response->assertDontSee(
+            $users->filter(fn ($user) => $user->username !== $searchAbleString)
+                ->pluck('username')
+                ->toArray()
+        );
 
         $response->assertStatus(200);
 
