@@ -41,23 +41,4 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
-
-    public static function createUsersForTest()
-    {
-        return User::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 200,
-                    'username' => "Queen",
-                ],
-                [
-                    'id' => 201,
-                    'username' => "John",
-                ],
-                [
-                    'id' => 202,
-                    'username' => "Peter",
-                ],
-            ])->createQuietly();
-    }
 }
