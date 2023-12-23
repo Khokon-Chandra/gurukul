@@ -206,43 +206,9 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-
-        User::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 120,
-                    'department_id'=>1,
-                    'username' => "test_user278",
-                    'name' => "Test User2",
-                    'email' => "testuser21@mail.com",
-                    'password' => 'password',
-
-                ],
-                [
-                    'id' => 121,
-                    'department_id'=>1,
-                    'username' => "test_user21",
-                    'name' => "Test User2",
-                    'email' => "testuser24@mail.com",
-                    'password' => 'password',
-
-                ],
-                [
-                    'id' => 122,
-                    'department_id'=>1,
-                    'username' => "test_user1",
-                    'name' => "Test User2",
-                    'email' => "testuser20@mail.com",
-                    'password' => 'password',
-
-                ],
-            ])
-            ->create();
-
-
         $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
         [
-            'ids' => [120,121]
+            'ids' => [1,2]
         ]);
 
         $response->assertStatus(200);
@@ -286,7 +252,7 @@ class UserTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?username=James');
 
-       $response->assertSeeInOrder(['James']);
+        $response->assertSeeInOrder(['James']);
         $response->assertDontSee(['John', 'Peter']);
 
 

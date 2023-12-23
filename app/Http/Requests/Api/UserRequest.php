@@ -56,7 +56,6 @@ class UserRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('users','username')->ignore($this->route('user'))
             ],
-            'password'      => 'required|string|min:8|confirmed',
             'role' => 'required|exists:roles,id'
         ];
     }
