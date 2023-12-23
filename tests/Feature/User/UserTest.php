@@ -240,7 +240,6 @@ class UserTest extends FeatureBaseCase
 
        $response->assertSeeInOrder([$searchAbleString]);
 
-
        $response->assertDontSee(
             $users->filter(fn ($user) => $user->username !== $searchAbleString)
                 ->pluck('username')
