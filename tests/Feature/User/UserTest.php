@@ -44,11 +44,6 @@ class UserTest extends FeatureBaseCase
                     'last_login_ip',
                     'active',
                     'created_at',
-//                    'role' => [
-//                        'id',
-//                        'name',
-//                        'created_at',
-//                    ]
                 ]
             ],
             'meta' => [
@@ -165,21 +160,7 @@ class UserTest extends FeatureBaseCase
         $response->assertJsonStructure([
             "status",
             "message",
-            "data" => [
-                "id",
-                "type",
-                "name",
-                "username",
-                "email",
-                "email_verified_at",
-                "active",
-                "join_date",
-                "last_login_ip",
-                "timezone",
-                "created_at",
-                "last_login_at",
-                "role",
-            ]
+
         ]);
 
         $response->assertJson([
