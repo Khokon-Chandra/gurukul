@@ -40,7 +40,7 @@ class UserUpdatePasswordTest extends FeatureBaseCase
             ->assignRole(Role::first());
 
         $response = $this->actingAs($user)
-            ->putJson(route('user.change.password', ['user' => $user->id]), [
+            ->putJson(route('user.change.password', ['user' => $user]), [
             'password' => "Password#222",
             'password_confirmation' => "Password#222"
         ]);
