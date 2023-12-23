@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Events\UserStatusEvent;
 use App\Models\User;
 use Carbon\Carbon;
 use Closure;
@@ -22,10 +23,17 @@ class UserAction
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+
+                $prevStatus = Auth::user()->status;
+
                 User::where('id',Auth::id())->update([
                     'last_performed_at' => Carbon::now(),
                     'status'            => 1,
                 ]);
+
+                if(!$prevStatus){
+                    UserStatusEvent::dispatch(Auth::user());
+                }
             }
         }
 

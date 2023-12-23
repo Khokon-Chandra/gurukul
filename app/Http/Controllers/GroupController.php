@@ -32,7 +32,7 @@ class GroupController extends Controller
     public function show($id): GroupDetailsResource
     {
         $group = Group::with([
-            'chats' => function($query){
+            'chats' => function ($query) {
                 $query->with('user');
             }
         ])->findOrFail($id);
@@ -59,12 +59,23 @@ class GroupController extends Controller
 
         $group->chats()->save($chat);
 
+
+        activity("group chat created")
+            ->causedBy(auth()->user())
+            ->performedOn($group)
+            ->withProperties([
+                'ip'       => Auth::user()->last_login_ip,
+                'activity' => "Group chat created",
+                'target'   => "{$request->message}",
+            ])
+            ->log(":causer.name text in group {$request->message}.");
+
         GroupChatEvent::dispatch($group, $request->message);
 
         return response()->json([
             'status'  => 'success',
             'message' => 'successfully chat created',
             'chats'   => ChatResource::collection($group->chats()->get()),
-        ],200);
+        ], 200);
     }
 }
