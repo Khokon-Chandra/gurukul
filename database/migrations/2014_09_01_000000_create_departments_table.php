@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name',190)->index();
             $table->text('description')->nullable();
+            $table->string('menu',190)->nullable()->index();
+            $table->string('route',190)->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
         });
