@@ -19,7 +19,7 @@ class PermissionTest extends FeatureBaseCase
 
         $user = User::factory()->create();
 
-        $user->givePermissionTo('user.access.users.permissions.index');
+        $user->givePermissionTo('user.access.users.permissions');
 
         $response = $this->actingAs($user)->getJson(route('users.permissions.index'));
 
