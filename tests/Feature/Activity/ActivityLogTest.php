@@ -24,7 +24,7 @@ class ActivityLogTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-        $user->givePermissionTo('read_logs');
+        $user->givePermissionTo(config('abilities')['route_permissions']['admin.logs.index']['name']);
 
 
         $response = $this->actingAs($user)->getJson(route('admin.logs.index'));
@@ -85,10 +85,8 @@ class ActivityLogTest extends FeatureBaseCase
 
         $user = User::factory()->create();
 
-        $user->revokePermissionTo('download_logs');
-
-
-        $response = $this->actingAs($user)->getJson(route('admin.logs.download'));
+        $response = $this->actingAs($user)
+            ->getJson(route('admin.logs.download'));
 
 
         $response->assertStatus(403);
@@ -123,5 +121,5 @@ class ActivityLogTest extends FeatureBaseCase
         ]);
     }
 
-   
+
 }
