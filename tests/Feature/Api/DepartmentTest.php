@@ -27,6 +27,8 @@ class DepartmentTest extends FeatureBaseCase
                 '*' => [
                     'name',
                     'description',
+                    'menu',
+                    'route',
                     'created_at',
                 ]
             ]
