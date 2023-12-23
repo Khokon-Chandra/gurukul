@@ -6,20 +6,6 @@
  */
 
 return [
-    ''           => 'read',
-    'index'      => 'read',
-    'index_data' => 'read',
-    'index_list' => 'read',
-    'show'       => 'show',
-    'update'     => 'update',
-    'store'      => 'create',
-    'destroy'    => 'delete',
-    'delete'     => 'delete',
-    'restore'    => 'restore',
-    'trashed'    => 'restore',
-    'updateMultiple' => 'update multiple',
-    'multiUpdate'    => 'update multiple',
-    'deleteMultiple' => 'delete multiple',
     'unprotected_route_names' => [
 
     ],

@@ -19,18 +19,23 @@ trait Authorizable
 
     public function callAction($method, $parameters)
     {
-        if ($ability = $this->getAbility()) {
-            $this->authorize($ability);
+//        logger('parameters');
+//        logger($parameters);
+        $abilities = config('abilities');
+        $permissions = $abilities['route_permissions'];
+
+        $routeName = Request::route()->getName();
+        $permission = $permissions[$routeName];
+
+        $unProtectedRoutes = array_merge(
+            array_map(fn ($routeName) => route($routeName), $abilities['unprotected_route_names']),
+            array_map(fn ($routeUrl) => url($routeUrl), $abilities['unprotected_route_url']),
+        );
+
+        if (! in_array(route($routeName, ['*']), $unProtectedRoutes)) {
+            $this->authorize($permission['name']);
         }
 
         return parent::callAction($method, $parameters);
     }
-
-    public function getAbility()
-    {
-        return "user.access.".Request::route()->getName();
-        
-    }
-
-   
 }
