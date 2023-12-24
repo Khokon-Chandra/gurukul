@@ -98,14 +98,14 @@ class UserIpController extends Controller
     /**
      * @throws ValidationException
      */
-    public function update(UserIpRequest $request, UserIp $userIp): JsonResponse
+    public function update(UserIpRequest $request, $id)
     {
-
+        $userIp = UserIp::findOrFail($id);
         if ($request->number3 === null && $request->number4 !== null) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Format IP Invalid!.',
-            ], 400);
+            ], 422);
         }
 
         DB::beginTransaction();
@@ -127,7 +127,7 @@ class UserIpController extends Controller
                     'status' => 'error',
                     'message' => 'User Ip already exist',
                     'ip_whitelist' => $ip,
-                ], 400);
+                ], 422);
             }
 
 
@@ -169,15 +169,16 @@ class UserIpController extends Controller
             DB::commit();
 
             return response()->json([
-                'status' => 'successful',
+                'status'  => 'successful',
                 'message' => 'User Ip Updated Successfully',
-                'data' => new UserIpResource($userIp),
+                'data'    => new UserIpResource($userIp),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error($e);
-
-            throw ValidationException::withMessages([$e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
