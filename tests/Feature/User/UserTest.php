@@ -70,7 +70,7 @@ class UserTest extends FeatureBaseCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.users.all'));
+        $response = $this->actingAs($user)->getJson(route('social.users.all'));
 
         $response->assertStatus(200);
 

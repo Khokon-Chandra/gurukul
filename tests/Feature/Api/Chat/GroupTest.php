@@ -16,7 +16,7 @@ class GroupTest extends FeatureBaseCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.groups.index'));
+        $response = $this->actingAs($user)->getJson(route('social.groups.index'));
 
         $response->assertStatus(200);
 
@@ -40,7 +40,7 @@ class GroupTest extends FeatureBaseCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.groups.members',1));
+        $response = $this->actingAs($user)->getJson(route('social.groups.members',1));
 
         $response->assertStatus(200);
 
@@ -65,7 +65,7 @@ class GroupTest extends FeatureBaseCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.groups.show', 1));
+        $response = $this->actingAs($user)->getJson(route('social.groups.show', 1));
 
         $response->assertStatus(200);
 
@@ -88,7 +88,7 @@ class GroupTest extends FeatureBaseCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.groups.storeChat', 1), [
+        $response = $this->actingAs($user)->postJson(route('social.groups.storeChat', 1), [
             'message' => "Hello world !!"
         ]);
 

@@ -42,7 +42,7 @@ class RouteServiceProvider extends ServiceProvider
              * All api's routes are goes here
              */
 
-            Route::middleware('api')
+            Route::middleware('api','auth:api')
                 ->prefix('api/' . config('app.api_version')) // -> api/v1
                 ->group(base_path('routes/api.php'));
 
