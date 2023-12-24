@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class UserRequest extends BaseFormRequest
 {
-    
+
     protected array $routeRequest = [
         'api/v1/user|post' => [
             'rules' => 'storeMethodRule',
@@ -16,8 +16,9 @@ class UserRequest extends BaseFormRequest
         'api/v1/user/{user}|put' => [
             'rules' => 'updateMethodRule',
         ],
-
-       
+        'api/v1/change-password/{user}|put' => [
+            'rules' => 'passwordUpdateMethodRule',
+        ],
     ];
 
     public function storeMethodRule(): void
@@ -31,7 +32,7 @@ class UserRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('users','username')
             ],
-            
+
             'email' => [
                 'required',
                 'string',
@@ -56,16 +57,22 @@ class UserRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('users','username')->ignore($this->route('user'))
             ],
-            
+
             'email' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('users','email')->ignore($this->route('user'))
             ],
-            
+
             'role' => 'required|exists:roles,id',
             'timezone' => 'nullable|string|max:100',
+        ];
+    }
+
+    public function passwordUpdateMethodRule(): void {
+        $this->rules = [
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }

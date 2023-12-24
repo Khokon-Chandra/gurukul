@@ -25,6 +25,7 @@ class PermissionResource extends JsonResource
 
     return [
 
+
         ];
 
     }

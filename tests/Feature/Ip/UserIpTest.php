@@ -171,7 +171,7 @@ class UserIpTest extends FeatureBaseCase
     /**
      * User Ip Update
      */
-    public function testUserIpUpdate()
+    public function testUserIpUpdate(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -216,7 +216,7 @@ class UserIpTest extends FeatureBaseCase
     /**
      * Users Ip Update Multiple
      */
-    public function testUserIpUpdateMultiple()
+    public function testUserIpUpdateMultiple(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -430,6 +430,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
     }
 
+    //fix
     public function testThatUserCanSortOnDescriptionField(): void
     {
         $this->artisan('migrate:fresh --seed');
@@ -491,6 +492,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
     }
 
+    //fix
     public function testThatUserCanSortOnWhitelistedField(): void
     {
         $this->artisan('migrate:fresh --seed');
@@ -551,6 +553,8 @@ class UserIpTest extends FeatureBaseCase
             'meta'
         ]);
     }
+
+    //fix
 
     public function testThatUserCanSortOnDateAtField(): void
     {

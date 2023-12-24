@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+
+use App\Http\Resources\Api\UserResource;
 use App\Http\Requests\Api\UserRequest;
 use App\Http\Resources\Api\GroupMemberResource;
-use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,7 +44,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-       
+
         $input = $request->validated();
 
         $input['created_by'] = Auth::id();
@@ -71,7 +72,7 @@ class UserController extends Controller
             ])
             ->log('Created user successfully');
         return response()->json([
-            'status' => 'successful',                                                                                                                                                       
+            'status' => 'successful',
             'message' => 'User Created Sucessfully',
             'data' => $user->load('roles'),
         ]);
@@ -156,15 +157,8 @@ class UserController extends Controller
     /**
      * @throws ValidationException
      */
-    public function changePassword(Request $request): JsonResponse
+    public function changePassword(UserRequest $request, User $user): JsonResponse
     {
-
-        $this->validate($request, [
-            'password' => ['required', 'string', 'min:8', 'confirmed']
-        ]);
-
-        $user = Auth::user();
-
         $user->update([
             'password' => Hash::make($request->password)
         ]);
@@ -178,10 +172,9 @@ class UserController extends Controller
             ])
             ->log(":causer.name updated Password");
 
-
-        return response()->json([
-            'status' => "successful",
-            'message' => "Password Update Successful"
-        ]);
+       return response()->json([
+           'status' => "successful",
+           'message' => "Password Update Successful"
+       ]);
     }
 }
