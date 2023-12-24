@@ -14,7 +14,7 @@ class NotificationTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('service.notifications.index'));
+        $response = $this->actingAs($user)->getJson(route('social.notifications.index'));
 
         $response->assertStatus(200);
 
@@ -40,7 +40,7 @@ class NotificationTest extends FeatureBaseCase
 
         $user     = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.notifications.store'), [
+        $response = $this->actingAs($user)->postJson(route('social.notifications.store'), [
             'name'    => 'name of notification',
             'amount'  => 20000.1003,
         ]);
@@ -79,7 +79,7 @@ class NotificationTest extends FeatureBaseCase
 
         $user     = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('service.notifications.store'), $credentials);
+        $response = $this->actingAs($user)->postJson(route('social.notifications.store'), $credentials);
 
         $response->assertJsonValidationErrors($errorKeys);
 
@@ -98,7 +98,7 @@ class NotificationTest extends FeatureBaseCase
 
         $notification = Notification::factory()->createQuietly();
 
-        $response = $this->actingAs($user)->putJson(route('service.notifications.update', $notification->id), [
+        $response = $this->actingAs($user)->putJson(route('social.notifications.update', $notification->id), [
             'name' => 'Dummy text for update',
             'amount'    => 20000,
         ]);
@@ -126,7 +126,7 @@ class NotificationTest extends FeatureBaseCase
         $user         = User::where('username','administrator')->first();
 
 
-        $response = $this->actingAs($user)->patchJson(route('service.notifications.updateMultiple'), [
+        $response = $this->actingAs($user)->patchJson(route('social.notifications.updateMultiple'), [
             "notifications" => [
                 [
                     'id' => 1,
@@ -164,7 +164,7 @@ class NotificationTest extends FeatureBaseCase
 
         $user         = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('service.notifications.destroy',1));
+        $response = $this->actingAs($user)->deleteJson(route('social.notifications.destroy',1));
 
         $response->assertStatus(200);
 
@@ -182,7 +182,7 @@ class NotificationTest extends FeatureBaseCase
 
         $user         = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('service.notifications.delete_multiple'),[
+        $response = $this->actingAs($user)->deleteJson(route('social.notifications.delete_multiple'),[
             'notifications' => [
                 1,2,3,4,5
             ]

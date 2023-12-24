@@ -18,6 +18,8 @@ class DepartmentResource extends JsonResource
             'id'          => $this->id,
             'name'        => $this->name,
             'description' => $this->description,
+            'menu'        => $this->menu,
+            'route'       => $this->route,
             'created_at'  => $this->created_at->format('d-M-Y h:i A')
         ];
     }

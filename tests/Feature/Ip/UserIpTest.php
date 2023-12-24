@@ -26,7 +26,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
 
-        $response = $this->actingAs($user)->getJson('/api/v1/user-ip');
+        $response = $this->actingAs($user)->getJson('/api/v1/ip');
 
 
         $response->assertStatus(200);
@@ -77,7 +77,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', ['ip' => '103.15.245.75']));
+            ->getJson(route('users.ip.index', ['ip' => '103.15.245.75']));
 
         $response->assertStatus(200);
 
@@ -129,7 +129,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         $response = $this->actingAs($user)
-            ->postJson('/api/v1/user-ip', [
+            ->postJson('/api/v1/ip', [
                 'number1' => 103,
                 'number2' => 15,
                 'number3' => 245,
@@ -175,20 +175,11 @@ class UserIpTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-
-        $user->assignRole(Role::where('name', 'Administrator')->first());
-
+        $user   = User::where('username', 'administrator')->first();
 
         $userIp = UserIp::factory()->create();
 
-
-        $response = $this->actingAs($user)->putJson('/api/v1/user-ip/' . $userIp->id . '', [
+        $response = $this->actingAs($user)->putJson(route('users.ip.update',$userIp->id), [
             'number1' => 103,
             'number2' => 15,
             'number3' => 245,
@@ -198,6 +189,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
@@ -215,9 +207,9 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
         $response->assertJson([
-            'status' => true,
+            'status'  => true,
             'message' => true,
-            'data' => true
+            'data'    => true
         ]);
     }
 
@@ -315,7 +307,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
 
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/user-ip/1');
+        $response = $this->actingAs($user)->DeleteJson('/api/v1/ip/1');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -405,7 +397,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.ip.index', [
                 'sort_by' => 'ip',
                 'sort_type' => 'ASC',
             ]),);
@@ -466,7 +458,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.ip.index', [
                 'sort_by' => 'description',
                 'sort_type' => 'ASC',
             ]));
@@ -527,7 +519,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.ip.index', [
                 'sort_by' => 'status',
                 'sort_type' => 'DESC'
             ]));
@@ -588,7 +580,7 @@ class UserIpTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)
-            ->getJson(route('admin.user-ip.index', [
+            ->getJson(route('users.ip.index', [
                 'sort_by'   => 'date',
                 'sort_type' => 'ASC',
             ]));
