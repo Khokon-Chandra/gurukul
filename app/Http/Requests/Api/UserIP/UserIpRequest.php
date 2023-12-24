@@ -9,23 +9,27 @@ class UserIpRequest extends BaseFormRequest
 {
     protected array $routeRequest = [
 
-        'api/v1/user-ip|get' => [
+        'api/v1/ip|get' => [
             'rules' => 'indexMethod',
             'prepareForValidation' => 'indexPrepareForSearch',
         ],  
 
-        'api/v1/user-ip|post' => [
+        'api/v1/ip|post' => [
             'rules' => 'storeMethodRule',
         ],
-        'api/v1/user-ip/{user_ip}|put' => [
+
+        'api/v1/ip/{ip}|put' => [
             'rules' => 'updateMethodRule',
         ],
-        'api/v1/user-ip/{user_ip}|patch' => [
+
+        'api/v1/ip/{ip}|patch' => [
             'rules' => 'updateMethodRule',
         ],
+
         'api/v1/user-ips|put' => [
             'rules' => 'multipleUpdateMethodRule',
         ],
+
         'api/v1/user-ip-delete-multiple|delete' => [
             'rules' => 'deleteMethodRule',
         ]
