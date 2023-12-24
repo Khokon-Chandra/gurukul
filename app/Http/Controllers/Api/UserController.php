@@ -157,12 +157,8 @@ class UserController extends Controller
     /**
      * @throws ValidationException
      */
-    public function changePassword(Request $request, User $user): JsonResponse
+    public function changePassword(UserRequest $request, User $user): JsonResponse
     {
-        $this->validate($request, [
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
         $user->update([
             'password' => Hash::make($request->password)
         ]);
@@ -178,6 +174,7 @@ class UserController extends Controller
 
        return response()->json([
            'status' => "successful",
+           'message' => "Password Update Successful"
        ]);
     }
 }
