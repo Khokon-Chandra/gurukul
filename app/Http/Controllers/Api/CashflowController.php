@@ -22,7 +22,7 @@ class CashflowController extends Controller
      */
     public function index(CashflowRequest $request): AnonymousResourceCollection
     {
-        $data = Cashflow::with('createdBy')
+        $data = Cashflow::with('createdBy','department')
             ->filter($request)
             ->latest()
             ->paginate(AppConstant::PAGINATION);

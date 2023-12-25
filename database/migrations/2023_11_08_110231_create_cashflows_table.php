@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('cashflows', function (Blueprint $table) {
             $table->id();
-            $table->string('name',255)->index('cashflow_name_index');
-            $table->decimal('amount',16)->index('cashflow_amount_index');
+            $table->foreignId('department_id')->index();
+            $table->string('name', 255)->index('cashflow_name_index');
+            $table->decimal('amount', 16)->index('cashflow_amount_index');
             $table->foreignId('created_by')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -17,9 +17,10 @@ class CashflowFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->sentence(),
-            'amount'    => $this->faker->randomFloat(),
-            'created_at' => $this->faker->dateTime(),
+            'department_id' => rand(1,10),
+            'name'          => $this->faker->sentence(),
+            'amount'        => $this->faker->randomFloat(),
+            'created_at'    => $this->faker->dateTime(),
         ];
     }
 }
