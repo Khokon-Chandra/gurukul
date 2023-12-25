@@ -14,7 +14,7 @@ class AttendanceTest extends FeatureBaseCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('admin.attendances.index'));
+        $response = $this->actingAs($user)->getJson(route('users.attendances.index'));
 
         $response->assertStatus(200);
 
@@ -34,13 +34,13 @@ class AttendanceTest extends FeatureBaseCase
     }
 
 
-    public function testStoreAttendance()
+    public function testStoreAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user     = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('admin.attendances.store'), [
+        $response = $this->actingAs($user)->postJson(route('users.attendances.store'), [
             'name'    => 'name of attendance',
             'amount'  => 20000.1003,
         ]);
@@ -71,13 +71,13 @@ class AttendanceTest extends FeatureBaseCase
      *
      * @dataProvider attendanceData
      */
-    public function testAttendanceInputValidation($credentials, $errors, $errorKeys)
+    public function testAttendanceInputValidation($credentials, $errors, $errorKeys): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user     = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('admin.attendances.store'), $credentials);
+        $response = $this->actingAs($user)->postJson(route('users.attendances.store'), $credentials);
 
         $response->assertJsonValidationErrors($errorKeys);
 
@@ -88,7 +88,7 @@ class AttendanceTest extends FeatureBaseCase
         $response->assertStatus(422);
     }
 
-    public function testUpdateAttendance()
+    public function testUpdateAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -96,7 +96,7 @@ class AttendanceTest extends FeatureBaseCase
 
         $attendance = Attendance::factory()->createQuietly();
 
-        $response = $this->actingAs($user)->putJson(route('admin.attendances.update', $attendance->id), [
+        $response = $this->actingAs($user)->putJson(route('users.attendances.update', $attendance->id), [
             'name' => 'Dummy text for update',
             'amount'    => 20000,
         ]);
@@ -117,14 +117,14 @@ class AttendanceTest extends FeatureBaseCase
 
 
 
-    public function testUpdateMultipleAttendance()
+    public function testUpdateMultipleAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user         = User::where('username', 'administrator')->first();
 
 
-        $response = $this->actingAs($user)->patchJson(route('admin.attendances.update_multiple'), [
+        $response = $this->actingAs($user)->patchJson(route('users.attendances.update_multiple'), [
             "attendances" => [
                 [
                     'id' => 1,
@@ -156,13 +156,13 @@ class AttendanceTest extends FeatureBaseCase
     }
 
 
-    public function testDestroyAttendance()
+    public function testDestroyAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user         = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('admin.attendances.destroy', 1));
+        $response = $this->actingAs($user)->deleteJson(route('users.attendances.destroy', 1));
 
         $response->assertStatus(200);
 
@@ -173,13 +173,13 @@ class AttendanceTest extends FeatureBaseCase
     }
 
 
-    public function testDeleteMultipleAttendance()
+    public function testDeleteMultipleAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user         = User::where('username', 'administrator')->first();
 
-        $response = $this->actingAs($user)->deleteJson(route('admin.attendances.delete_multiple'), [
+        $response = $this->actingAs($user)->deleteJson(route('users.attendances.delete_multiple'), [
             'attendances' => [
                 1, 2, 3, 4, 5
             ]
@@ -195,7 +195,7 @@ class AttendanceTest extends FeatureBaseCase
 
 
 
-    public static function attendanceData()
+    public static function attendanceData(): array
     {
         return [
             [

@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\UserStatusEvent;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\PermissionChildResource;
-use App\Http\Resources\Api\PermissionResource;
-use App\Http\Resources\Api\RoleResource;
 use App\Http\Resources\Api\UserResource;
-use App\Models\Permission;
-use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -100,6 +96,8 @@ class AuthController extends Controller
             ])
             ->log(Auth::user()->username." Logout successfully");
 
+            $this->triggerUserOfflineMode();
+
             $token = auth()->user();
 
             JWTAuth::parseToken()->invalidate($token);
@@ -121,6 +119,19 @@ class AuthController extends Controller
                 'message' => $th->getMessage(),
             ], 500);
         }
+    }
+
+
+    /**
+     * When logout user : set active status as offline
+     */
+    private function triggerUserOfflineMode()
+    {
+        User::where('id',Auth::id())->update([
+            'status' => false
+        ]);
+
+        UserStatusEvent::dispatch(Auth::user());
     }
 
 
