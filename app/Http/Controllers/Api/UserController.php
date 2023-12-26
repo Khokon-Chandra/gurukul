@@ -7,9 +7,12 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Resources\Api\UserResource;
 use App\Http\Requests\Api\UserRequest;
+use App\Http\Resources\Api\PermissionChildResource;
+use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\GroupMemberResource;
 use App\Models\User;
 use App\Trait\CanSort;
+use App\Trait\HasPermissionsStructure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -22,7 +25,7 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    use CanSort;
+    use CanSort, HasPermissionsStructure;
     /**
      * Display a listing of the resource.
      */
@@ -119,23 +122,16 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      * @throws ValidationException
      */
-    public function destroy($ids)
+    public function deleteUser(UserRequest $request): JsonResponse
     {
         try {
-            $ids = explode(',', $ids);
-
-            foreach ($ids as $id_check) {
-                $user = User::find($id_check);
-                if (!$user) {
-                    throw ValidationException::withMessages(["With Id $id_check Not Found, Please Send Valid data"]);
-                }
-            }
+            $ids = $request->ids;
 
             foreach ($ids as $id) {
-                $user = User::find($id);
+                $user = User::findOrFail($id);
+
                 $user->update([
                     'deleted_by' => Auth::user()->id,
-                    'deleted_at' => now(),
                 ]);
 
                 activity('user')->causedBy(Auth::user()->id)
@@ -152,11 +148,13 @@ class UserController extends Controller
 
             return response()->json([
                 'status' => 'successful',
-                'message' => 'User Successfully Deleted',
-                'data' => null,
+                'message' => 'Delete Operation Successful',
             ]);
         } catch (\Exception $e) {
-            throw ValidationException::withMessages([$e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 

@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Models\User;
+use App\Models\UserIp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
@@ -150,10 +151,11 @@ class UserTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)->putJson('/api/v1/user/1', [
-            'department_id' => 1,
+
             'username' => "test_user",
             'name' => "Test User",
-            'email' => "testuser@mail.com",
+            'password' => "123456789",
+            'password_confirmation' => "123456789",
             'role' => 1,
         ]);
 
@@ -182,43 +184,19 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
-
-        $role = Role::create(['name' => 'Writer',]);
-        $role->permissions()->sync([1, 2, 3]);
-
-        User::create([
-            'department_id' => 1,
-            'username' => "test_user1",
-            'name' => "Test Use1r",
-            'email' => "testuser1@mail.com",
-            'password' => 'password',
-            'roles' => [1],
-        ]);
-
-        User::create([
-            'department_id' => 1,
-            'username' => "test_user2",
-            'name' => "Test User2",
-            'email' => "testuser2@mail.com",
-            'password' => 'password',
-            'roles' => [1],
-        ]);
+            ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/user/1,2');
+        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
+            [
+                'ids' => [1, 2]
+            ]);
 
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
-            "data",
-        ]);
-
-        $response->assertJson([
-            'status' => true,
-            'message' => true,
-            'data' => false
         ]);
     }
 
@@ -232,26 +210,16 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-        $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 200,
-                    'username' => "James",
-                ],
-                [
-                    'id' => 201,
-                    'username' => "John",
-                ],
-                [
-                    'id' => 202,
-                    'username' => "Peter",
-                ],
-            ])->createQuietly();
+        $users = User::factory(3)->create();
 
-        $response = $this->actingAs($user)->getJson(route('admin.user.index', ['username' => 'James']));
+        $searchableString = $users->first()->username;
+
+        $response = $this->actingAs($user)->getJson(route('admin.user.index', ['username' => $searchableString]));
         $response->assertStatus(200);
-        $response->assertSeeInOrder(['James']);
-        $response->assertDontSee(['John', 'Peter']);
+        $response->assertSeeInOrder([$searchableString]);
+        $response->assertDontSee($users->filter(fn($user) => $user->username !== $searchableString)
+            ->pluck('username')->toArray()
+        );
 
 
         $response->assertJsonStructure([
@@ -292,27 +260,27 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-        $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 200,
-                    'username' => "James",
-                    'name' => "funke"
-                ],
-                [
-                    'id' => 201,
-                    'username' => "John",
-                    'name' => 'emeka'
-                ],
-                [
-                    'id' => 202,
-                    'username' => "Peter",
-                    'name' => 'jeniffer'
-                ],
-            ])->createQuietly();
+
+        $users = User::factory(3)->createQuietly();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
+
+        $users = User::factory(3)
+            ->sequence(...[
+                [
+                    'username' => "Abel",
+                    'name' => "funke"
+                ],
+                [
+                    'username' => "Cain",
+                    'name' => 'emeka'
+                ],
+                [
+                    'username' => "Bello",
+                    'name' => 'jeniffer'
+                ],
+            ])->createQuietly();
 
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
@@ -356,20 +324,18 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
+
         $users = User::factory(3)
             ->sequence(...[
                 [
-                    'id' => 200,
                     'username' => "Abel",
                     'name' => "funke"
                 ],
                 [
-                    'id' => 201,
                     'username' => "Cain",
                     'name' => 'emeka'
                 ],
                 [
-                    'id' => 202,
                     'username' => "Bello",
                     'name' => 'jeniffer'
                 ],
@@ -423,19 +389,16 @@ class UserTest extends FeatureBaseCase
         $users = User::factory(3)
             ->sequence(...[
                 [
-                    'id' => 200,
                     'username' => "Abel",
                     'name' => "funke",
                     'created_at' => '2023-12-17'
                 ],
                 [
-                    'id' => 201,
                     'username' => "Cain",
                     'name' => 'emeka',
                     'created_at' => '2023-12-18'
                 ],
                 [
-                    'id' => 202,
                     'username' => "Bello",
                     'name' => 'jeniffer',
                     'created_at' => '2023-12-19'
@@ -493,7 +456,6 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
         $userWithRole = User::factory([
-            'id' => 302,
             'username' => "emoney1",
             'name' => "emoney",
         ])
@@ -506,19 +468,16 @@ class UserTest extends FeatureBaseCase
         $usersWithoutRole = User::factory(3)
             ->sequence(...[
                 [
-                    'id' => 200,
                     'username' => "Abel",
                     'name' => "funke",
                     'created_at' => '2023-12-17'
                 ],
                 [
-                    'id' => 201,
                     'username' => "Cain",
                     'name' => 'emeka',
                     'created_at' => '2023-12-18'
                 ],
                 [
-                    'id' => 202,
                     'username' => "Bello",
                     'name' => 'jeniffer',
                     'created_at' => '2023-12-19'
