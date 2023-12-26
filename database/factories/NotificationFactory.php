@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,6 +18,7 @@ class NotificationFactory extends Factory
     public function definition(): array
     {
         return [
+            'department_id' => Department::all()->random()->id,
             'name' => $this->faker->sentence(),
             'amount'    => $this->faker->randomFloat(),
             'created_at' => $this->faker->dateTime(),

@@ -17,13 +17,14 @@ class NotificationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'amount'     => number_format($this->amount,2),
-            'date'       => $this->created_at->format('d-M-Y h:i A'),
-            'created_by' => new UserResource($this->createdBy),
+            'id'            => $this->id,
+            'department'    => $this->department->name,
+            'name'          => $this->name,
+            'amount'        => number_format($this->amount,2),
+            'date'          => $this->created_at->format('d-M-Y h:i A'),
+            'created_by'    => new UserResource($this->createdBy),
         ];
     }
 
-    
+
 }

@@ -31,6 +31,7 @@ class NotificationRequest extends BaseFormRequest
     public function indexMethodRule(): void
     {
         $this->rules = [
+            'department_id'         => 'required|numeric',
             'name'                  => 'nullable',
             'amount'                => 'nullable|numeric',
             'from_date'             => 'nullable|date',
@@ -51,26 +52,29 @@ class NotificationRequest extends BaseFormRequest
     public function storeMethodRule(): void
     {
         $this->rules = [
-            'name'       => 'required|min:1|max:255|string',
-            'amount'     => 'required|numeric|decimal:0,8',
+            'department_id' => 'required|numeric',
+            'name'          => 'required|min:1|max:255|string',
+            'amount'        => 'required|numeric|decimal:0,8',
         ];
     }
 
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'name'       => 'required|min:1|max:255|string',
-            'amount'     => 'required|numeric|decimal:0,8',
+            'department_id' => 'required|numeric',
+            'name'          => 'required|min:1|max:255|string',
+            'amount'        => 'required|numeric|decimal:0,8',
         ];
     }
 
     public function updateMultipleMethodRule(): void
     {
         $this->rules = [
-            'notifications'          => 'required|array|min:1',
-            'notifications.*.id'     => 'required|exists:notifications,id',
-            'notifications.*.name'   => 'required|min:1|max:255|string',
-            'notifications.*.amount' => 'required|numeric|decimal:0,8',
+            'notifications'                 => 'required|array|min:1',
+            'notifications.*.id'            => 'required|exists:notifications,id',
+            'notifications.*.department_id' => 'required|numeric',
+            'notifications.*.name'          => 'required|min:1|max:255|string',
+            'notifications.*.amount'        => 'required|numeric|decimal:0,8',
         ];
     }
 
@@ -116,5 +120,5 @@ class NotificationRequest extends BaseFormRequest
     }
 
 
-    
+
 }
