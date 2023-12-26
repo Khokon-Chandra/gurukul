@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs/download', [ActivityLogController::class, 'download'])
             ->name('logs.download');
         Route::apiResource('user', UserController::class);
+
         Route::apiResource('permissions', PermissionController::class)
             ->only('index', 'update');
         Route::apiResource('attendances', AttendanceController::class);
@@ -53,7 +54,6 @@ Route::group(['middleware' => ['auth:api']], function () {
      * user module routes
      */
     Route::name('users.')->group(function () {
-        Route::apiResource('user', UserController::class);
         Route::apiResource('ip', UserIpController::class)->except('show');
         Route::delete('user-ip-delete-multiple', [UserIpController::class, 'deleteMultiple'])->name('ip.delete-multiple');
         Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
@@ -108,5 +108,4 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('/announcements-delete-multiple', [AnnouncementController::class, 'deleteMultiple'])->name('announcements.delete_multiple');
         Route::get('activated-announcement', [AnnouncementController::class, 'activated'])->name('announcements.activated');
     });
-
 });
