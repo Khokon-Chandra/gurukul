@@ -18,7 +18,9 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'username' => $this->username,
+            'type' => $this->type,
             'email' => $this->email,
+            'join_date' => $this->created_at,
             'active' => $this->active,
             'last_login_ip' => $this->last_login_ip,
             'timezone' => $this->timezone,
@@ -27,6 +29,7 @@ class UserResource extends JsonResource
             'created_by' => $this->created_by,
             'last_login_at' => $this->last_login_at,
             'department_id' => $this->department_id,
+            'role' => $this->loadMissing('rules')
         ];
     }
 }
