@@ -7,8 +7,12 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Resources\Api\UserResource;
 use App\Http\Requests\Api\UserRequest;
+use App\Http\Resources\Api\PermissionChildResource;
+use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\GroupMemberResource;
 use App\Models\User;
+use App\Trait\CanSort;
+use App\Trait\HasPermissionsStructure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -21,13 +25,18 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    use CanSort, HasPermissionsStructure;
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $users = User::with('roles')->latest()->filter($request)->paginate(AppConstant::PAGINATION);
+        $query = User::with('roles')->filter($request);
+        $this->sortUserData($request, $query);
+        $users = $query->latest()->paginate(AppConstant::PAGINATION);
+
         return UserResource::collection($users);
+
     }
 
 
@@ -42,40 +51,43 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function storeUser(UserRequest $request): JsonResponse
     {
 
-        $input = $request->validated();
-
-        $input['created_by'] = Auth::id();
-        $input['password'] = Hash::make($request->password);
+        DB::beginTransaction();
 
         try {
-            DB::beginTransaction();
+            $input = $request->validated();
+            $input['created_by'] = Auth::id();
+            $input['password'] = Hash::make($request->password);
             $user = User::create($input);
             $user->roles()->sync([$request->role]);
+
+            activity('create_user')->causedBy(Auth::user()->id ?? 1)
+                ->performedOn($user)
+                ->withProperties([
+                    'ip' => Auth::user()->last_login_ip ?? $request->ip(),
+                    'target' => $request->username,
+                    'activity' => 'Created user successfully',
+                ])
+                ->log('Created user successfully');
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'successful',
+                'message' => 'User Created Successfully',
+                'data' => $user->load('roles'),
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
-
-            throw ValidationException::withMessages([$e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        DB::commit();
-        # log activity
-        activity('create_user')->causedBy(Auth::user()->id ?? 1)
-            ->performedOn($user)
-            ->withProperties([
-                'ip' => Auth::user()->last_login_ip ?? $request->ip(),
-                'target' => $request->username,
-                'activity' => 'Created user successfully',
-            ])
-            ->log('Created user successfully');
-        return response()->json([
-            'status' => 'successful',
-            'message' => 'User Created Sucessfully',
-            'data' => $user->load('roles'),
-        ]);
     }
 
 
@@ -113,23 +125,16 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      * @throws ValidationException
      */
-    public function destroy($ids)
+    public function deleteUser(UserRequest $request): JsonResponse
     {
         try {
-            $ids = explode(',', $ids);
-
-            foreach ($ids as $id_check) {
-                $user = User::find($id_check);
-                if (!$user) {
-                    throw ValidationException::withMessages(["With Id $id_check Not Found, Please Send Valid data"]);
-                }
-            }
+            $ids = $request->ids;
 
             foreach ($ids as $id) {
-                $user = User::find($id);
+                $user = User::findOrFail($id);
+
                 $user->update([
                     'deleted_by' => Auth::user()->id,
-                    'deleted_at' => now(),
                 ]);
 
                 activity('user')->causedBy(Auth::user()->id)
@@ -146,11 +151,13 @@ class UserController extends Controller
 
             return response()->json([
                 'status' => 'successful',
-                'message' => 'User Successfully Deleted',
-                'data' => null,
+                'message' => 'Delete Operation Successful',
             ]);
         } catch (\Exception $e) {
-            throw ValidationException::withMessages([$e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -177,4 +184,6 @@ class UserController extends Controller
            'message' => "Password Update Successful"
        ]);
     }
+
+
 }

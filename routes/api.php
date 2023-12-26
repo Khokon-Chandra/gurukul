@@ -31,6 +31,11 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs/download', [ActivityLogController::class, 'download'])
             ->name('logs.download');
         Route::apiResource('user', UserController::class);
+
+        Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store');
+
+        Route::delete('delete-user', [UserController::class, 'deleteUser'])->name('delete.user');
+
         Route::apiResource('permissions', PermissionController::class)
             ->only('index', 'update');
         Route::apiResource('attendances', AttendanceController::class);
@@ -50,10 +55,20 @@ Route::group(['middleware' => ['auth:api']], function () {
 
 
     /**
+     * User Routes
+     */
+    Route::name('user.')->group(function () {
+        Route::put('change-password/{user}', [UserController::class, 'changePassword'])
+            ->name('change.password');
+    });
+
+
+
+
+    /**
      * user module routes
      */
     Route::name('users.')->group(function () {
-        Route::apiResource('user', UserController::class);
         Route::apiResource('ip', UserIpController::class)->except('show');
         Route::delete('user-ip-delete-multiple', [UserIpController::class, 'deleteMultiple'])->name('ip.delete-multiple');
         Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
@@ -68,9 +83,6 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('attendances.update_multiple');
         Route::delete('attendances-delete-many', [AttendanceController::class, 'deleteMultiple'])
             ->name('attendances.delete_multiple');
-
-        Route::put('change-password/{user}', [UserController::class, 'changePassword'])
-            ->name('change.password');
     });
 
 
