@@ -99,7 +99,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Update multiple 
+     * Update multiple
      */
 
     public function updateMultiple(NotificationRequest $request): JsonResponse

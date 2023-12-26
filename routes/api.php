@@ -31,6 +31,8 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('logs/download', [ActivityLogController::class, 'download'])
             ->name('logs.download');
         Route::apiResource('user', UserController::class);
+        Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store');
+
         Route::delete('delete-user', [UserController::class, 'deleteUser'])->name('delete.user');
         Route::apiResource('permissions', PermissionController::class)
             ->only('index', 'update');
