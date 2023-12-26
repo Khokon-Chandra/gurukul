@@ -34,7 +34,6 @@ Route::group(['middleware' => ['auth:api']], function () {
 
         Route::delete('delete-user', [UserController::class, 'deleteUser'])->name('delete.user');
 
-
         Route::apiResource('permissions', PermissionController::class)
             ->only('index', 'update');
         Route::apiResource('attendances', AttendanceController::class);
@@ -52,6 +51,7 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('departments.index');
     });
 
+
     /**
      * User Routes
      */
@@ -61,12 +61,12 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
 
 
+
+
     /**
      * user module routes
      */
     Route::name('users.')->group(function () {
-        Route::apiResource('user', UserController::class);
-
         Route::apiResource('ip', UserIpController::class)->except('show');
         Route::delete('user-ip-delete-multiple', [UserIpController::class, 'deleteMultiple'])->name('ip.delete-multiple');
         Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
@@ -81,7 +81,6 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('attendances.update_multiple');
         Route::delete('attendances-delete-many', [AttendanceController::class, 'deleteMultiple'])
             ->name('attendances.delete_multiple');
-
     });
 
 

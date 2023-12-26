@@ -19,6 +19,10 @@ class UserRequest extends BaseFormRequest
         'api/v1/delete-user|delete' => [
             'rules' => 'deleteMethodRule',
         ],
+        'api/v1/change-password/{user}|put' => [
+            'rules' => 'passwordUpdateMethodRule',
+
+        ],
     ];
 
     public function storeMethodRule(): void
@@ -64,6 +68,12 @@ class UserRequest extends BaseFormRequest
     {
         $this->rules = [
             'ids.*'     => 'required|exists:users,id',
+        ];
+    }
+
+    public function passwordUpdateMethodRule(): void {
+        $this->rules = [
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }

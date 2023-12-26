@@ -327,7 +327,7 @@ class AnnouncementTest extends FeatureBaseCase
     }
 
 
-    public function testUserCanActivateAnnouncement()
+    public function testUserCanActivateAnnouncement(): void
     {
         $this->artisan('migrate:fresh --seed');
 

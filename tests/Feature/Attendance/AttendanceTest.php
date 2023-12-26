@@ -34,7 +34,7 @@ class AttendanceTest extends FeatureBaseCase
     }
 
 
-    public function testStoreAttendance()
+    public function testStoreAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -71,7 +71,7 @@ class AttendanceTest extends FeatureBaseCase
      *
      * @dataProvider attendanceData
      */
-    public function testAttendanceInputValidation($credentials, $errors, $errorKeys)
+    public function testAttendanceInputValidation($credentials, $errors, $errorKeys): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -88,7 +88,7 @@ class AttendanceTest extends FeatureBaseCase
         $response->assertStatus(422);
     }
 
-    public function testUpdateAttendance()
+    public function testUpdateAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -117,7 +117,7 @@ class AttendanceTest extends FeatureBaseCase
 
 
 
-    public function testUpdateMultipleAttendance()
+    public function testUpdateMultipleAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -156,7 +156,7 @@ class AttendanceTest extends FeatureBaseCase
     }
 
 
-    public function testDestroyAttendance()
+    public function testDestroyAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -173,7 +173,7 @@ class AttendanceTest extends FeatureBaseCase
     }
 
 
-    public function testDeleteMultipleAttendance()
+    public function testDeleteMultipleAttendance(): void
     {
         $this->artisan('migrate:fresh --seed');
 
@@ -195,7 +195,7 @@ class AttendanceTest extends FeatureBaseCase
 
 
 
-    public static function attendanceData()
+    public static function attendanceData(): array
     {
         return [
             [
