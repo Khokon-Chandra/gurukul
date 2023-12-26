@@ -19,13 +19,12 @@ trait Authorizable
 
     public function callAction($method, $parameters)
     {
-//        logger('parameters');
-//        logger($parameters);
-        $abilities = config('abilities');
+
+        $abilities   = config('abilities');
         $permissions = $abilities['route_permissions'];
 
-        $routeName = Request::route()->getName();
-        $permission = $permissions[$routeName];
+        $routeName   = Request::route()->getName();
+        $permission  = $permissions[$routeName];
 
         $unProtectedRoutes = array_merge(
             array_map(fn ($routeName) => route($routeName), $abilities['unprotected_route_names']),
@@ -33,6 +32,7 @@ trait Authorizable
         );
 
         if (! in_array(route($routeName, ['*']), $unProtectedRoutes)) {
+            
             $this->authorize($permission['name']);
         }
 

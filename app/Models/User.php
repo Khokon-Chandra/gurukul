@@ -109,6 +109,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+
     public function scopeFilter($query, $request)
     {
         $query->when(
@@ -129,4 +130,5 @@ class User extends Authenticatable implements JWTSubject
             });
 
     }
+
 }

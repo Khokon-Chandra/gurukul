@@ -19,15 +19,10 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
+        $user = User::where('username', 'administrator')->first();
 
-        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.store']['name']);
 
-        $response = $this->actingAs($user)->postJson(route('admin.roles.store'), [
+        $response = $this->actingAs($user)->postJson(route('users.roles.store'), [
             'name' => Str::random(10),
             'permissions' => [1, 2, 3]
         ]);
@@ -54,19 +49,14 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.update']['name']);
+        $user = User::where('username', 'administrator')->first();
 
         $role = Role::create([
             'name' => 'Test_Role'
         ]);
 
-        $response = $this->actingAs($user)->putJson(route('admin.roles.update', $role->id), [
+
+        $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
             'name' => Str::random(10),
             'permissions' => [1, 2, 3]
         ]);
@@ -95,19 +85,14 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
-
-        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.destroy']['name']);
+        $user = User::where('username', 'administrator')->first();
 
         $role = Role::create([
             'name' => 'Test_Role'
         ]);
 
-        $response = $this->actingAs($user)->deleteJson(route('admin.roles.destroy', $role->id));
+
+        $response = $this->actingAs($user)->deleteJson(route('users.roles.destroy', $role->id));
 
 
         $response->assertStatus(200);
@@ -125,19 +110,15 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
 
-        $user->givePermissionTo(config('abilities')['route_permissions']['admin.roles.index']['name']);
+        $user = User::where('username', 'administrator')->first();
 
         $role = Role::create(['name' => 'Admin']);
 
         $role->permissions()->sync([1, 2, 3]);
 
-        $response = $this->actingAs($user)->getJson(route('admin.roles.index'));
+
+        $response = $this->actingAs($user)->getJson(route('users.roles.index'));
 
         $response->assertStatus(200);
 
@@ -166,7 +147,7 @@ class RoleFeatureTest extends TestCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->postJson(route('admin.roles.store'), $credentials);
+        $response = $this->actingAs($user)->postJson(route('users.roles.store'), $credentials);
 
         $response->assertJsonValidationErrors($errorKeys);
 

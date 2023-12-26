@@ -35,6 +35,7 @@ class UserLoginTest extends FeatureBaseCase
                     'created_at',
                     'updated_at',
                     'created_by',
+                    'department_id',
                 ],
             ]
         ]);
