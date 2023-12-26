@@ -19,7 +19,6 @@ class UserUpdatePasswordTest extends FeatureBaseCase
     public function testThatOnlyAuthenticatedUserCanChangePassword(): void
     {
 
-
         $this->artisan('migrate:fresh --seed');
         $response = $this->putJson(route('user.change.password', ['user' => 1]));
         $response->assertStatus(401);

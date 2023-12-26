@@ -10,7 +10,7 @@ class UserRequest extends BaseFormRequest
 {
 
     protected array $routeRequest = [
-        'api/v1/user|post' => [
+        'api/v1/create-user|post' => [
             'rules' => 'storeMethodRule',
         ],
         'api/v1/user-update/{user}|put' => [
@@ -21,8 +21,8 @@ class UserRequest extends BaseFormRequest
         ],
         'api/v1/change-password/{user}|put' => [
             'rules' => 'passwordUpdateMethodRule',
-
         ],
+
     ];
 
     public function storeMethodRule(): void
