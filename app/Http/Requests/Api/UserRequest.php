@@ -21,6 +21,7 @@ class UserRequest extends BaseFormRequest
         ],
         'api/v1/change-password/{user}|put' => [
             'rules' => 'passwordUpdateMethodRule',
+
         ],
     ];
 

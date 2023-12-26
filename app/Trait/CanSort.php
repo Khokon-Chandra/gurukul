@@ -24,11 +24,6 @@ trait CanSort
         }
 
         if($request->filled('sort_role')){
-//           $data = $usersWithRoles = User::join('model_has_roles', 'users.id', '=', 'model_has_roles.role_id')
-//               ->select('users.*')
-//               ->get();
-//           dd($data);
-
             $data = $query->join('model_has_roles', 'users.id', 'model_has_roles.model_id')
                 ->join('roles', 'model_has_roles.model_id', 'roles.id')
                 ->select('user.username', 'roles.name', 'roles.guard_name');

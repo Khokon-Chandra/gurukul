@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'join_date' => $this->created_at,
             'active' => $this->active,
+            'join_date' => $this->created_at,
             'last_login_ip' => $this->last_login_ip,
             'timezone' => $this->timezone,
             'created_at' => $this->created_at,

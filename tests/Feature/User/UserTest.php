@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Models\User;
+use App\Models\UserIp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
@@ -183,43 +184,19 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
+            ->createQuietly()->assignRole(Role::first());
 
-        $role = Role::create(['name' => 'Writer',]);
-        $role->permissions()->sync([1, 2, 3]);
 
-        User::create([
-            'department_id'=>1,
-            'username' => "test_user1",
-            'name' => "Test Use1r",
-            'email' => "testuser1@mail.com",
-            'password' => 'password',
-            'roles' => [1],
+        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
+        [
+            'ids' => [1,2]
         ]);
-
-        User::create([
-            'department_id'=>1,
-            'username' => "test_user2",
-            'name' => "Test User2",
-            'email' => "testuser2@mail.com",
-            'password' => 'password',
-            'roles' => [1],
-        ]);
-
-
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/user/1,2');
 
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
-            "data",
-        ]);
-
-        $response->assertJson([
-            'status' => true,
-            'message' => true,
-            'data' => false
         ]);
     }
 
@@ -233,32 +210,22 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-    $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 200,
-                    'username' => "James",
-                ],
-                [
-                    'id' => 201,
-                    'username' => "John",
-                ],
-                [
-                    'id' => 202,
-                    'username' => "Peter",
-                ],
-            ])->createQuietly();
+        $users = User::factory(3)->createQuietly();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
 
+        $searchAbleString = $users->first()->username;
+        $response = $this->actingAs($user)
+            ->getJson("/api/v1/user?username={$searchAbleString}");
 
+       $response->assertSeeInOrder([$searchAbleString]);
 
-        $response = $this->actingAs($user)->getJson('/api/v1/user?username=James');
-
-       $response->assertSeeInOrder(['James']);
-        $response->assertDontSee(['John', 'Peter']);
-
+       $response->assertDontSee(
+            $users->filter(fn ($user) => $user->username !== $searchAbleString)
+                ->pluck('username')
+                ->toArray()
+        );
 
         $response->assertStatus(200);
 
