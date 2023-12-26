@@ -29,7 +29,7 @@ class UserResource extends JsonResource
             'created_by' => $this->created_by,
             'last_login_at' => $this->last_login_at,
             'department_id' => $this->department_id,
-            'role' => $this->loadMissing('rules')
+            'role' => $this->loadMissing('roles')
         ];
     }
 }

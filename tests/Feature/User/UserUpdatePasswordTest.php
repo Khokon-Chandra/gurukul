@@ -20,7 +20,7 @@ class UserUpdatePasswordTest extends FeatureBaseCase
     {
 
         $this->artisan('migrate:fresh --seed');
-        $response = $this->putJson(route('users.change.password', ['user' => 1]));
+        $response = $this->putJson(route('user.change.password', ['user' => 1]));
         $response->assertStatus(401);
     }
 
@@ -37,14 +37,15 @@ class UserUpdatePasswordTest extends FeatureBaseCase
             ->create()
             ->assignRole(Role::first());
 
-        $response = $this->actingAs($user)->putJson(route('users.change.password', ['user' => $user]), [
-            'password' => "Password#222",
-            'password_confirmation' => "Password#222"
+        $response = $this->actingAs($user)->putJson(route('user.change.password', ['user' => $user]), [
+            'password' => "UserPassword#222",
+            'password_confirmation' => "UserPassword#222"
         ]);
 
 
         $user = $user->refresh();
-        $this->assertTrue(Hash::check('Password#222', $user->password));
+
+        $this->assertTrue(Hash::check('UserPassword#222', $user->password));
         $this->assertFalse(Hash::check('password', $user->password));
 
 
