@@ -3,6 +3,7 @@
 namespace App\Trait;
 
 use App\Models\Permission;
+use App\Models\User;
 
 trait HasPermissionsStructure
 {
@@ -42,4 +43,5 @@ trait HasPermissionsStructure
         );
 
     }
+
 }
