@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+
+use App\Http\Resources\Api\UserResource;
 use App\Http\Requests\Api\UserRequest;
 use App\Http\Resources\Api\GroupMemberResource;
-use App\Http\Resources\Api\User\UserResource;
 use App\Models\User;
 use App\Trait\CanSort;
 use Illuminate\Http\JsonResponse;
@@ -166,15 +167,8 @@ class UserController extends Controller
     /**
      * @throws ValidationException
      */
-    public function changePassword(Request $request): JsonResponse
+    public function changePassword(UserRequest $request, User $user): JsonResponse
     {
-
-        $this->validate($request, [
-            'password' => ['required', 'string', 'min:8', 'confirmed']
-        ]);
-
-        $user = Auth::user();
-
         $user->update([
             'password' => Hash::make($request->password)
         ]);
@@ -188,11 +182,10 @@ class UserController extends Controller
             ])
             ->log(":causer.name updated Password");
 
-
-        return response()->json([
-            'status' => "successful",
-            'message' => "Password Update Successful"
-        ]);
+       return response()->json([
+           'status' => "successful",
+           'message' => "Password Update Successful"
+       ]);
     }
 
 

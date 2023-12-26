@@ -18,17 +18,9 @@ class ActivityLogTest extends FeatureBaseCase
 
         $this->artisan("db:seed --class=ActivityLogSeeder");
 
-        $user = User::factory()
-            ->state([
-                'active' => true
-            ])
-            ->createQuietly();
+        $user     = User::where('username','administrator')->first();
 
-        $user->givePermissionTo(config('abilities')['route_permissions']['admin.logs.index']['name']);
-
-
-        $response = $this->actingAs($user)->getJson(route('admin.logs.index'));
-
+        $response = $this->actingAs($user)->getJson(route('users.activities.index'));
 
         $response->assertStatus(200);
 
@@ -68,10 +60,8 @@ class ActivityLogTest extends FeatureBaseCase
             ])
             ->createQuietly();
 
-
         $response = $this->actingAs($user)
-            ->getJson(route('admin.logs.index'));
-
+            ->getJson(route('users.activities.index'));
 
         $response->assertStatus(403);
     }
@@ -85,9 +75,7 @@ class ActivityLogTest extends FeatureBaseCase
 
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
-            ->getJson(route('admin.logs.download'));
-
+        $response = $this->actingAs($user)->getJson(route('users.activities.download'));
 
         $response->assertStatus(403);
     }
@@ -102,7 +90,7 @@ class ActivityLogTest extends FeatureBaseCase
 
         $user = User::where('username','administrator')->first();
 
-        $response = $this->actingAs($user)->getJson(route('admin.logs.download'));
+        $response = $this->actingAs($user)->getJson(route('users.activities.download'));
 
         $response->assertStatus(200);
 

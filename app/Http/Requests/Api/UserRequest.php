@@ -13,11 +13,16 @@ class UserRequest extends BaseFormRequest
         'api/v1/user|post' => [
             'rules' => 'storeMethodRule',
         ],
-        'api/v1/user-update/{user}|put' => [
+        'api/v1/user/{user}|put' => [
             'rules' => 'updateMethodRule',
         ],
+        'api/v1/delete-user|delete' => [
+            'rules' => 'deleteMethodRule',
+        ],
+        'api/v1/change-password/{user}|put' => [
+            'rules' => 'passwordUpdateMethodRule',
 
-
+        ],
     ];
 
     public function storeMethodRule(): void
@@ -55,8 +60,20 @@ class UserRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('users','username')->ignore($this->route('user'))
             ],
-            'password'      => 'required|string|min:8|confirmed',
             'role' => 'required|exists:roles,id'
+        ];
+    }
+
+    public function deleteMethodRule(): void
+    {
+        $this->rules = [
+            'ids.*'     => 'required|exists:users,id',
+        ];
+    }
+
+    public function passwordUpdateMethodRule(): void {
+        $this->rules = [
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }

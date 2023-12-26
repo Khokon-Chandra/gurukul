@@ -26,6 +26,7 @@ class UserResource extends JsonResource
             'updated_at' => $this->updated_at,
             'created_by' => $this->created_by,
             'last_login_at' => $this->last_login_at,
+            'department_id' => $this->department_id,
         ];
     }
 }
