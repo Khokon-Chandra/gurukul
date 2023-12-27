@@ -19,6 +19,7 @@ class UserIpTest extends FeatureBaseCase
         $user = User::where('username', 'administrator')->first();
 
         UserIp::create([
+            'department_id' => 1,
             'ip' => '103.15.245.75',
             'description' => 'testing Ip',
             'whitelisted' => 1,
@@ -26,7 +27,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
 
-        $response = $this->actingAs($user)->getJson('/api/v1/ip');
+        $response = $this->actingAs($user)->json('GET', '/api/v1/ip', ['department_id' => 1]);
 
 
         $response->assertStatus(200);
@@ -40,6 +41,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'description',
                     'status',
                     'date',
@@ -63,12 +65,15 @@ class UserIpTest extends FeatureBaseCase
         UserIp::factory(3)
             ->sequence(...[
                 [
+                    'department_id' => 1,
                     'ip' => '103.15.245.75',
                 ],
                 [
+                    'department_id' => 1,
                     'ip' => '109.15.245.75',
                 ],
                 [
+                    'department_id' => 1,
                     'ip' => '107.15.245.75',
                 ],
             ])
@@ -77,7 +82,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         $response = $this->actingAs($user)
-            ->getJson(route('users.ip.index', ['ip' => '103.15.245.75']));
+            ->getJson(route('users.ip.index', ['department_id' => 1, 'ip' => '103.15.245.75']));
 
         $response->assertStatus(200);
 
@@ -103,6 +108,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'description',
                     'status',
                     'date',
@@ -130,6 +136,7 @@ class UserIpTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)
             ->postJson('/api/v1/ip', [
+                'department_id' => 1,
                 'number1' => 103,
                 'number2' => 15,
                 'number3' => 245,
@@ -141,6 +148,7 @@ class UserIpTest extends FeatureBaseCase
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('user_ips', [
+            'department_id' => 1,
             'ip' => '103.15.245.75',
             'whitelisted' => 1,
         ]);
@@ -155,6 +163,7 @@ class UserIpTest extends FeatureBaseCase
                 'ip3',
                 'ip4',
                 'ip',
+                'department',
                 'description',
                 'status',
                 'date',
@@ -180,6 +189,7 @@ class UserIpTest extends FeatureBaseCase
         $userIp = UserIp::factory()->create();
 
         $response = $this->actingAs($user)->putJson(route('users.ip.update',$userIp->id), [
+            'department_id' => 1,
             'number1' => 103,
             'number2' => 15,
             'number3' => 245,
@@ -200,6 +210,7 @@ class UserIpTest extends FeatureBaseCase
                 'ip3',
                 'ip4',
                 'ip',
+                'department',
                 'description',
                 'status',
                 'date',
@@ -235,6 +246,7 @@ class UserIpTest extends FeatureBaseCase
                 [
                     "id" => 1,
                     "item" => [
+                        'department_id' => 1,
                         "number1" => "103",
                         "number2" => "15",
                         "number3" => "245",
@@ -246,6 +258,7 @@ class UserIpTest extends FeatureBaseCase
                 [
                     "id" => 2,
                     "item" => [
+                        'department_id' => 1,
                         "number1" => "103",
                         "number2" => "15",
                         "number3" => "245",
@@ -291,6 +304,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         UserIp::create([
+            'department_id' => 1,
             'ip' => '103.15.245.74',
             'whitelisted' => 1,
             'description' => 'testing ip update',
@@ -299,6 +313,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
         UserIp::create([
+            'department_id' => 1,
             'ip' => '103.15.245.75',
             'whitelisted' => 1,
             'description' => 'testing ip update',
@@ -337,6 +352,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         UserIp::create([
+            'department_id' => 1,
             'ip' => '103.15.245.74',
             'whitelisted' => 1,
             'description' => 'testing ip update',
@@ -345,6 +361,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
         UserIp::create([
+            'department_id' => 1,
             'ip' => '103.15.245.75',
             'whitelisted' => 1,
             'description' => 'testing ip update',
@@ -382,14 +399,17 @@ class UserIpTest extends FeatureBaseCase
             ->sequence(...[
                 [
                     'id' => 1,
+                    'department_id' => 1,
                     'ip' => '103.15.245.75',
                 ],
                 [
                     'id' => 2,
+                    'department_id' => 1,
                     'ip' => '109.15.245.75',
                 ],
                 [
                     'id' => 3,
+                    'department_id' => 1,
                     'ip' => '107.15.245.75',
                 ],
             ])
@@ -398,6 +418,7 @@ class UserIpTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => 1,
                 'sort_by' => 'ip',
                 'sort_type' => 'ASC',
             ]),);
@@ -420,6 +441,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',
@@ -441,16 +463,19 @@ class UserIpTest extends FeatureBaseCase
             ->sequence(...[
                 [
                     'id' => 1,
+                    'department_id' => 1,
                     'description' => 'demas',
                     'ip' => '103.15.245.75',
                 ],
                 [
                     'id' => 2,
+                    'department_id' => 1,
                     'description' => 'emeka',
                     'ip' => '109.15.245.75',
                 ],
                 [
                     'id' => 3,
+                    'department_id' => 1,
                     'description' => 'favour',
                     'ip' => '107.15.245.75',
                 ],
@@ -460,6 +485,7 @@ class UserIpTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => 1,
                 'sort_by' => 'description',
                 'sort_type' => 'ASC',
             ]));
@@ -482,6 +508,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',
@@ -503,16 +530,19 @@ class UserIpTest extends FeatureBaseCase
             ->sequence(...[
                 [
                     'id' => 1,
+                    'department_id' => 1,
                     'whitelisted' => true,
                     'ip' => '103.15.245.75',
                 ],
                 [
                     'id' => 2,
+                    'department_id' => 1,
                     'whitelisted' => false,
                     'ip' => '109.15.245.75',
                 ],
                 [
                     'id' => 3,
+                    'department_id' => 1,
                     'whitelisted' => true,
                     'ip' => '107.15.245.75',
                 ],
@@ -522,6 +552,7 @@ class UserIpTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => 1,
                 'sort_by' => 'status',
                 'sort_type' => 'DESC'
             ]));
@@ -544,6 +575,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',
@@ -566,16 +598,19 @@ class UserIpTest extends FeatureBaseCase
             ->sequence(...[
                 [
                     'id' => 1,
+                    'department_id' => 1,
                     'updated_at' => '2023-12-06 01:24:18',
                     'ip' => '103.15.245.75',
                 ],
                 [
                     'id' => 2,
+                    'department_id' => 1,
                     'updated_at' => '2023-12-05 01:24:18',
                     'ip' => '109.15.245.75',
                 ],
                 [
                     'id' => 3,
+                    'department_id' => 1,
                     'updated_at' => '2023-12-04 01:24:18',
                     'ip' => '107.15.245.75',
                 ],
@@ -585,6 +620,7 @@ class UserIpTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => 1,
                 'sort_by'   => 'date',
                 'sort_type' => 'ASC',
             ]));
@@ -607,6 +643,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',

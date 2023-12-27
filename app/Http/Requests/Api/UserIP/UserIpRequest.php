@@ -12,7 +12,7 @@ class UserIpRequest extends BaseFormRequest
         'api/v1/ip|get' => [
             'rules' => 'indexMethod',
             'prepareForValidation' => 'indexPrepareForSearch',
-        ],  
+        ],
 
         'api/v1/ip|post' => [
             'rules' => 'storeMethodRule',
@@ -38,6 +38,7 @@ class UserIpRequest extends BaseFormRequest
     public function indexMethod(): void
     {
         $this->rules = [
+            'department_id' => 'required|numeric',
             'ip' => 'nullable|string|max:255',
             'sort_by'               => [
                 'nullable',
@@ -53,6 +54,7 @@ class UserIpRequest extends BaseFormRequest
     public function storeMethodRule(): void
     {
         $this->rules = [
+            'department_id' => 'required|numeric',
             'number1' => 'required|min:1|max:255|numeric',
             'number2' => 'required|min:0|max:255|numeric',
             'number3' => 'required|min:0|max:255|numeric',
@@ -64,6 +66,7 @@ class UserIpRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
+            'department_id' => 'required|numeric',
             'number1' => 'required|min:1|max:255|numeric',
             'number2' => 'required|min:0|max:255|numeric',
             'number3' => 'required|min:0|max:255|numeric',
@@ -79,6 +82,7 @@ class UserIpRequest extends BaseFormRequest
             'items' => 'required|array',
             'items.*.id' => 'required|integer',
             'items.*.item' => 'required|array',
+            'items.*.item.department_id' => 'required|numeric',
             'items.*.item.number1' => 'required|integer',
             'items.*.item.number2' => 'required|integer',
             'items.*.item.number3' => 'required|integer',
@@ -134,7 +138,7 @@ class UserIpRequest extends BaseFormRequest
 
     public function indexPrepareForSearch(): void
     {
-        
+
         $this->prepareForValidationRules = [
             'ip' => $this->ip,
             'sort_by' => $this->sort_by == 'status' ? 'whitelisted' : ($this->sort_by == 'date' ? 'updated_at' : $this->sort_by),

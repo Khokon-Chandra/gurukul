@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_ips', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('department_id')->index();
             $table->string('ip')->nullable()->index();
             $table->string('description')->nullable()->index();
             $table->boolean('whitelisted')->default(1)->index();
