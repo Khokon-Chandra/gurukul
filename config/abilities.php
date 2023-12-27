@@ -15,7 +15,7 @@ return [
     ],
 
     'route_permissions' => [
-        
+
         'users.user.index' => [
             'module_name' => 'user.access.users.user_list',
             'name' => 'user.access.users.user_list',
@@ -431,14 +431,14 @@ return [
             'group_by' => 'permissions',
             'sort' => 1,
         ],
-        'users.permissions.store' =>[
+        'users.permissions.store' => [
             'module_name' => 'user.access.users.permissions.store',
             'name' => 'user.access.users.permissions.store',
             'display_name' => 'User Can Store Permissions',
             'group_by' => 'permissions',
             'sort' => 2,
         ],
-        'users.permissions.update' =>[
+        'users.permissions.update' => [
             'module_name' => 'user.access.users.permissions.update',
             'name' => 'user.access.users.permissions.update',
             'display_name' => 'User Can Update Permissions',
