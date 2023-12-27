@@ -12,8 +12,12 @@ trait ParrentBoot
     {
         parent::boot();
 
-        static::deleting(function ($ip) {
-            $ip->deleted_by = Auth::id();
+        static::saving(function ($query) {
+            $query->created_by = Auth::id();
+        });
+
+        static::deleting(function ($query) {
+            $query->deleted_by = Auth::id();
         });
     }
 
