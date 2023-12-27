@@ -29,9 +29,10 @@ class Notification extends Model
 
     public function scopeFilter($query, $request)
     {
-        $query->when($request->name ?? false, fn ($query, $name) => $query
+        $query->where('department_id', $request->department_id)
+            ->when($request->name ?? false, fn ($query, $name) => $query
             ->where('name', 'like', "%$name%"))
-            ->when($request->amount ?? false, fn ($query, $amount) =>$query->where('amount', $amount))
+            ->when($request->amount ?? false, fn ($query, $amount) => $query->where('amount', $amount))
             ->when($request->searchable_date_range ?? false, fn ($query, $dates) => $query->whereBetween('created_at', $dates))
             ->when($request->sort_by ?? false, fn($query, $column) => $query->orderBy($column,$request->sort_type));
     }
@@ -40,5 +41,10 @@ class Notification extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'id');
     }
 }
