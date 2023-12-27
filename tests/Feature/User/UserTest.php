@@ -145,12 +145,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $userToUpdate = User::factory()->create([
-            'id' => 200
-        ]);
-
-
-        $response = $this->actingAs($user)->putJson(route('admin.update.user', ['user' =>  $userToUpdate->id]), [
+        $response = $this->actingAs($user)->putJson(route('admin.update.user', ['user' =>  2]), [
             'username' => "test_user",
             'name' => "Test User Updated",
             'password' => "123456789",
@@ -160,15 +155,14 @@ class UserTest extends FeatureBaseCase
 
         $response->assertStatus(200);
 
-        $UpdatedUser = User::find($userToUpdate->id);
+        $UpdatedUser = User::find(2);
 
         $this->assertEquals('test_user',  $UpdatedUser->username);
         $this->assertEquals('Test User Updated',  $UpdatedUser->name);
 
         $response->assertJsonStructure([
             "status",
-            "message",
-
+            "message"
         ]);
     }
 
