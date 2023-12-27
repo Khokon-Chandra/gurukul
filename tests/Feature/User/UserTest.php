@@ -98,7 +98,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->postJson(route('admin.user.store'), [
+        $response = $this->actingAs($user)->postJson(route('users.user.store'), [
             'department_id' => 1,
             'username' => "test_user",
             'name' => "Test User",
@@ -145,7 +145,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->putJson(route('admin.update.user', ['user' =>  2]), [
+        $response = $this->actingAs($user)->putJson(route('users.update.user', ['user' =>  2]), [
             'username' => "test_user",
             'name' => "Test User Updated",
             'password' => "123456789",
@@ -181,7 +181,7 @@ class UserTest extends FeatureBaseCase
 
 
 
-        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
+        $response = $this->actingAs($user)->DeleteJson(route('users.delete.user'),
         [
             'ids' => [1,2]
         ]);
