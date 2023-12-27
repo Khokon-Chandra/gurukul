@@ -17,32 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['middleware' => ['auth:api']], function () {
-    /**
-     * Admin module routes
-     */
-    Route::name('admin.')->group(function () {
-        Route::apiResource('user-ip', UserIpController::class);
-        Route::delete('user-ip-delete-multiple', [UserIpController::class, 'deleteMultiple'])
-            ->name('user-ip.delete-multiple');
-        Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
-            ->name('user-ip.multi_update');
-        Route::apiResource('roles', RoleController::class);
-        Route::get('logs', [ActivityLogController::class, 'index'])->name('logs.index');
-        Route::get('logs/download', [ActivityLogController::class, 'download'])
-            ->name('logs.download');
-        Route::apiResource('user', UserController::class);
-
-        Route::put('user-update/{user}', [UserController::class, 'updateUser'])->name('update.user');
-        Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store');
-        Route::delete('delete-user', [UserController::class, 'deleteUser'])->name('delete.user');
-        Route::apiResource('permissions', PermissionController::class)
-            ->only('index', 'update');
-        Route::apiResource('attendances', AttendanceController::class);
-        Route::patch('attendances', [AttendanceController::class, 'updateMultiple'])
-            ->name('attendances.update_multiple');
-        Route::delete('attendances-delete-many', [AttendanceController::class, 'deleteMultiple'])
-            ->name('attendances.delete_multiple');
-    });
 
     /**
      * Service module routes
@@ -60,8 +34,6 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::put('change-password/{user}', [UserController::class, 'changePassword'])
             ->name('change.password');
     });
-
-
 
 
     /**
@@ -83,6 +55,11 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('attendances-delete-many', [AttendanceController::class, 'deleteMultiple'])
             ->name('attendances.delete_multiple');
 
+        Route::apiResource('user', UserController::class);
+
+        Route::put('user-update/{user}', [UserController::class, 'updateUser'])->name('update.user');
+        Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store');
+        Route::delete('delete-user', [UserController::class, 'deleteUser'])->name('delete.user');
     });
 
     Route::name('user.')->group(function(){
