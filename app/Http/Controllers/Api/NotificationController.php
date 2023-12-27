@@ -21,7 +21,7 @@ class NotificationController extends Controller
      */
     public function index(NotificationRequest $request): AnonymousResourceCollection
     {
-        $data = Notification::with('createdBy')
+        $data = Notification::with(['createdBy', 'department'])
             ->filter($request)
             ->latest()
             ->paginate(AppConstant::PAGINATION);
@@ -99,7 +99,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Update multiple 
+     * Update multiple
      */
 
     public function updateMultiple(NotificationRequest $request): JsonResponse
