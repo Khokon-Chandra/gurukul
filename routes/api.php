@@ -32,10 +32,9 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('logs.download');
         Route::apiResource('user', UserController::class);
 
+        Route::put('user-update/{user}', [UserController::class, 'updateUser'])->name('update.user');
         Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store');
-
         Route::delete('delete-user', [UserController::class, 'deleteUser'])->name('delete.user');
-
         Route::apiResource('permissions', PermissionController::class)
             ->only('index', 'update');
         Route::apiResource('attendances', AttendanceController::class);
@@ -83,8 +82,13 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('attendances.update_multiple');
         Route::delete('attendances-delete-many', [AttendanceController::class, 'deleteMultiple'])
             ->name('attendances.delete_multiple');
+
     });
 
+    Route::name('user.')->group(function(){
+        Route::put('change-password/{user}', [UserController::class, 'changePassword'])
+            ->name('change.password');
+    });
 
     /**
      * Finance routes
