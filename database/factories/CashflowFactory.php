@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,7 @@ class CashflowFactory extends Factory
     public function definition(): array
     {
         return [
-            'department_id' => rand(1,10),
+            'department_id' => Department::inRandomOrder()->first()->id,
             'name'          => $this->faker->sentence(),
             'amount'        => $this->faker->randomFloat(),
             'created_at'    => $this->faker->dateTime(),
