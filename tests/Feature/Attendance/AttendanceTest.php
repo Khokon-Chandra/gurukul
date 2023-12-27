@@ -4,6 +4,7 @@ namespace Tests\Feature\Attendance;
 
 use App\Models\Attendance;
 use App\Models\User;
+use Illuminate\Support\Facades\Notification;
 use Tests\FeatureBaseCase;
 
 class AttendanceTest extends FeatureBaseCase
@@ -95,7 +96,9 @@ class AttendanceTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user       = User::where('username', 'administrator')->first();
+        Notification::fake();
+
+        $user = User::where('username', 'administrator')->first();
 
         $attendance = Attendance::factory()->createQuietly();
 
