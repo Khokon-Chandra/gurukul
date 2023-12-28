@@ -13,11 +13,11 @@ trait ParrentBoot
         parent::boot();
 
         static::saving(function ($query) {
-            $query->created_by = Auth::id();
+            $query->created_by = Auth::id() ?? null;
         });
 
         static::deleting(function ($query) {
-            $query->deleted_by = Auth::id();
+            $query->deleted_by = Auth::id() ?? null;
         });
     }
 
