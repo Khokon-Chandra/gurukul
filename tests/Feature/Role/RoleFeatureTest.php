@@ -4,6 +4,7 @@ namespace Tests\Feature\Role;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -143,6 +144,8 @@ class RoleFeatureTest extends TestCase
      */
     public function testRoleInputValidation($credentials, $errors, $errorKeys)
     {
+        Notification::fake();
+
         $this->artisan('migrate:fresh --seed');
 
         $user = User::where('username','administrator')->first();
