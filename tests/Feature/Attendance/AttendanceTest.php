@@ -26,6 +26,7 @@ class AttendanceTest extends FeatureBaseCase
                     'name',
                     'amount',
                     'date',
+                    'department',
                     'created_by' => [],
                 ]
             ],
@@ -42,6 +43,7 @@ class AttendanceTest extends FeatureBaseCase
         $user     = User::where('username', 'administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('users.attendances.store'), [
+            'department_id' => 1,
             'name'    => 'name of attendance',
             'amount'  => 20000.1003,
         ]);
@@ -55,6 +57,7 @@ class AttendanceTest extends FeatureBaseCase
                 'name',
                 'amount',
                 'date',
+                'department',
                 'created_by' => [],
             ]
         ]);
@@ -100,6 +103,7 @@ class AttendanceTest extends FeatureBaseCase
         $attendance = Attendance::factory()->createQuietly();
 
         $response = $this->actingAs($user)->putJson(route('users.attendances.update', $attendance->id), [
+            'department_id' => 1,
             'name' => 'Dummy text for update',
             'amount'    => 20000,
         ]);
@@ -113,6 +117,7 @@ class AttendanceTest extends FeatureBaseCase
                 'name',
                 'amount',
                 'date',
+                'department',
                 'created_by' => [],
             ]
         ]);
@@ -124,17 +129,18 @@ class AttendanceTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user         = User::where('username', 'administrator')->first();
-
+        $user = User::where('username', 'administrator')->first();
 
         $response = $this->actingAs($user)->patchJson(route('users.attendances.update_multiple'), [
             "attendances" => [
                 [
+                    'department_id' => 1,
                     'id' => 1,
                     'name' => 'update 1',
                     'amount' => 10000,
                 ],
                 [
+                    'department_id' => 2,
                     'id' => 2,
                     'name' => 'update 2',
                     'amount' => 20000,
@@ -152,6 +158,7 @@ class AttendanceTest extends FeatureBaseCase
                     'name',
                     'amount',
                     'date',
+                    'department',
                     'created_by' => [],
                 ]
             ]
@@ -203,6 +210,7 @@ class AttendanceTest extends FeatureBaseCase
         return [
             [
                 [
+                    'department_id' => 1,
                     'amount'    => 10000,
                 ],
                 [
@@ -216,6 +224,7 @@ class AttendanceTest extends FeatureBaseCase
             ],
             [
                 [
+                    'department_id' => 1,
                     'name'    => 'Attendance name',
                 ],
                 [
@@ -225,6 +234,21 @@ class AttendanceTest extends FeatureBaseCase
                 ],
                 [
                     'amount'
+                ]
+            ],
+
+            [
+                [
+                    'name'    => 'Attendance name',
+                    'amount'  => 300000
+                ],
+                [
+                    'department_id' => [
+                        "The department id field is required."
+                    ]
+                ],
+                [
+                    'department_id'
                 ]
             ],
 

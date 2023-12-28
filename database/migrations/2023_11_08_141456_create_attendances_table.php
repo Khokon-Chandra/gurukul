@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('department_id')->constrained('departments');
             $table->string('name',255)->index('attendance_name_index');
             $table->decimal('amount',16)->index('attendance_amount_index');
             $table->foreignId('created_by')->nullable();
