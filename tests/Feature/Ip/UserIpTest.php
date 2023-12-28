@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Ip;
 
+use App\Models\Department;
 use App\Models\User;
 use App\Models\UserIp;
 use Spatie\Permission\Models\Role;
@@ -19,6 +20,7 @@ class UserIpTest extends FeatureBaseCase
         $user = User::where('username', 'administrator')->first();
 
         UserIp::create([
+            'department_id' => 1,
             'ip' => '103.15.245.75',
             'description' => 'testing Ip',
             'whitelisted' => 1,
@@ -26,7 +28,7 @@ class UserIpTest extends FeatureBaseCase
         ]);
 
 
-        $response = $this->actingAs($user)->getJson('/api/v1/ip');
+        $response = $this->actingAs($user)->json('GET', '/api/v1/ip', ['department_id' => 1]);
 
 
         $response->assertStatus(200);
@@ -40,6 +42,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'description',
                     'status',
                     'date',
@@ -63,12 +66,15 @@ class UserIpTest extends FeatureBaseCase
         UserIp::factory(3)
             ->sequence(...[
                 [
+                    'department_id' => 1,
                     'ip' => '103.15.245.75',
                 ],
                 [
+                    'department_id' => 1,
                     'ip' => '109.15.245.75',
                 ],
                 [
+                    'department_id' => 1,
                     'ip' => '107.15.245.75',
                 ],
             ])
@@ -77,7 +83,7 @@ class UserIpTest extends FeatureBaseCase
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
         $response = $this->actingAs($user)
-            ->getJson(route('users.ip.index', ['ip' => '103.15.245.75']));
+            ->getJson(route('users.ip.index', ['department_id' => 1, 'ip' => '103.15.245.75']));
 
         $response->assertStatus(200);
 
@@ -103,6 +109,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'description',
                     'status',
                     'date',
@@ -130,6 +137,7 @@ class UserIpTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)
             ->postJson('/api/v1/ip', [
+                'department_id' => 1,
                 'number1' => 103,
                 'number2' => 15,
                 'number3' => 245,
@@ -141,6 +149,7 @@ class UserIpTest extends FeatureBaseCase
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('user_ips', [
+            'department_id' => 1,
             'ip' => '103.15.245.75',
             'whitelisted' => 1,
         ]);
@@ -155,6 +164,7 @@ class UserIpTest extends FeatureBaseCase
                 'ip3',
                 'ip4',
                 'ip',
+                'department',
                 'description',
                 'status',
                 'date',
@@ -180,6 +190,7 @@ class UserIpTest extends FeatureBaseCase
         $userIp = UserIp::factory()->create();
 
         $response = $this->actingAs($user)->putJson(route('users.ip.update',$userIp->id), [
+            'department_id' => 1,
             'number1' => 103,
             'number2' => 15,
             'number3' => 245,
@@ -200,6 +211,7 @@ class UserIpTest extends FeatureBaseCase
                 'ip3',
                 'ip4',
                 'ip',
+                'department',
                 'description',
                 'status',
                 'date',
@@ -235,6 +247,7 @@ class UserIpTest extends FeatureBaseCase
                 [
                     "id" => 1,
                     "item" => [
+                        'department_id' => 1,
                         "number1" => "103",
                         "number2" => "15",
                         "number3" => "245",
@@ -246,6 +259,7 @@ class UserIpTest extends FeatureBaseCase
                 [
                     "id" => 2,
                     "item" => [
+                        'department_id' => 1,
                         "number1" => "103",
                         "number2" => "15",
                         "number3" => "245",
@@ -290,26 +304,14 @@ class UserIpTest extends FeatureBaseCase
 
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
-        UserIp::create([
-            'ip' => '103.15.245.74',
-            'whitelisted' => 1,
-            'description' => 'testing ip update',
-            'created_by' => 1,
-            'created_at' => now(),
-        ]);
+        $userIpData = UserIp::factory(2)
+            ->create();
 
-        UserIp::create([
-            'ip' => '103.15.245.75',
-            'whitelisted' => 1,
-            'description' => 'testing ip update',
-            'created_by' => 1,
-            'created_at' => now(),
-        ]);
-
-
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/ip/1');
+        $response = $this->actingAs($user)
+            ->DeleteJson("/api/v1/ip/{$userIpData->first()->id}");
 
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
@@ -322,7 +324,6 @@ class UserIpTest extends FeatureBaseCase
             'data' => false
         ]);
     }
-
 
     public function testUserIpDeleteMultiple(): void
     {
@@ -336,28 +337,16 @@ class UserIpTest extends FeatureBaseCase
 
         $user->assignRole(Role::where('name', 'Administrator')->first());
 
-        UserIp::create([
-            'ip' => '103.15.245.74',
-            'whitelisted' => 1,
-            'description' => 'testing ip update',
-            'created_by' => 1,
-            'created_at' => now(),
-        ]);
+        $userIpData = UserIp::factory(2)
+            ->create();
 
-        UserIp::create([
-            'ip' => '103.15.245.75',
-            'whitelisted' => 1,
-            'description' => 'testing ip update',
-            'created_by' => 1,
-            'created_at' => now(),
-        ]);
-
-
-        $response = $this->actingAs($user)->DeleteJson('/api/v1/user-ip-delete-multiple',[
-            'items' => [1,2]
+        $response = $this->actingAs($user)
+            ->DeleteJson('/api/v1/user-ip-delete-multiple',[
+            'items' => $userIpData->pluck('id')->toArray()
         ]);
 
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
@@ -371,45 +360,36 @@ class UserIpTest extends FeatureBaseCase
         ]);
     }
 
-
     public function testThatUserCanSortOnIpAddressField(): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()->create()->assignRole(Role::first());
 
-        UserIp::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 1,
-                    'ip' => '103.15.245.75',
-                ],
-                [
-                    'id' => 2,
-                    'ip' => '109.15.245.75',
-                ],
-                [
-                    'id' => 3,
-                    'ip' => '107.15.245.75',
-                ],
+        $department = Department::inRandomOrder()->first();
+
+        $ips = UserIp::factory(3)
+            ->state([
+                'department_id' => $department->id
             ])
             ->create();
 
+        $ipFilters = $ips->pluck('ip')
+            ->sort()
+            ->toArray();
 
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => $department->id,
                 'sort_by' => 'ip',
                 'sort_type' => 'ASC',
-            ]),);
+            ]));
 
         $response->assertStatus(200);
 
-
         $this->assertCount(3, UserIp::all());
 
-
-        $response->assertSeeInOrder(['103.15.245.75',  '107.15.245.75', '109.15.245.75']);
-
+        $response->assertSeeInOrder($ipFilters);
 
         $response->assertJsonStructure([
             'data' => [
@@ -420,6 +400,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',
@@ -430,48 +411,32 @@ class UserIpTest extends FeatureBaseCase
         ]);
     }
 
-    //fix
     public function testThatUserCanSortOnDescriptionField(): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()->create()->assignRole(Role::first());
 
-        $datas = UserIp::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 1,
-                    'description' => 'demas',
-                    'ip' => '103.15.245.75',
-                ],
-                [
-                    'id' => 2,
-                    'description' => 'emeka',
-                    'ip' => '109.15.245.75',
-                ],
-                [
-                    'id' => 3,
-                    'description' => 'favour',
-                    'ip' => '107.15.245.75',
-                ],
+        $department = Department::inRandomOrder()->first();
+
+        $userIpData = UserIp::factory(3)
+            ->state([
+                'department_id' => $department->id
             ])
             ->create();
 
-
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => $department->id,
                 'sort_by' => 'description',
                 'sort_type' => 'ASC',
             ]));
 
         $response->assertStatus(200);
 
-
         $this->assertCount(3, UserIp::all());
 
-
-        $response->assertSeeInOrder(['demas', 'emeka', 'favour']);
-
+        $response->assertSeeInOrder($userIpData->pluck('description')->toArray());
 
         $response->assertJsonStructure([
             'data' => [
@@ -482,6 +447,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',
@@ -492,48 +458,32 @@ class UserIpTest extends FeatureBaseCase
         ]);
     }
 
-    //fix
     public function testThatUserCanSortOnWhitelistedField(): void
     {
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory()->create()->assignRole(Role::first());
 
-        $datas = UserIp::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 1,
-                    'whitelisted' => true,
-                    'ip' => '103.15.245.75',
-                ],
-                [
-                    'id' => 2,
-                    'whitelisted' => false,
-                    'ip' => '109.15.245.75',
-                ],
-                [
-                    'id' => 3,
-                    'whitelisted' => true,
-                    'ip' => '107.15.245.75',
-                ],
+        $department = Department::inRandomOrder()->first();
+
+        $userIpData = UserIp::factory(3)
+            ->state([
+                'department_id' => $department->id,
             ])
             ->create();
 
-
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => $department->id,
                 'sort_by' => 'status',
                 'sort_type' => 'DESC'
             ]));
 
         $response->assertStatus(200);
 
-
         $this->assertCount(3, UserIp::all());
 
-
-        $response->assertSeeInOrder(['false', 'false', 'true']);
-
+        $response->assertSeeInOrder($userIpData->pluck('whitelisted')->toArray());
 
         $response->assertJsonStructure([
             'data' => [
@@ -544,6 +494,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',
@@ -553,8 +504,6 @@ class UserIpTest extends FeatureBaseCase
             'meta'
         ]);
     }
-
-    //fix
 
     public function testThatUserCanSortOnDateAtField(): void
     {
@@ -562,41 +511,26 @@ class UserIpTest extends FeatureBaseCase
 
         $user = User::factory()->create()->assignRole(Role::first());
 
-        $datas = UserIp::factory(3)
-            ->sequence(...[
-                [
-                    'id' => 1,
-                    'updated_at' => '2023-12-06 01:24:18',
-                    'ip' => '103.15.245.75',
-                ],
-                [
-                    'id' => 2,
-                    'updated_at' => '2023-12-05 01:24:18',
-                    'ip' => '109.15.245.75',
-                ],
-                [
-                    'id' => 3,
-                    'updated_at' => '2023-12-04 01:24:18',
-                    'ip' => '107.15.245.75',
-                ],
+        $department = Department::inRandomOrder()->first();
+
+        $userIpData = UserIp::factory(3)
+            ->state([
+                'department_id' => $department->id,
             ])
             ->create();
 
-
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
+                'department_id' => $department->id,
                 'sort_by'   => 'date',
                 'sort_type' => 'ASC',
             ]));
 
         $response->assertStatus(200);
 
-
         $this->assertCount(3, UserIp::all());
 
-
-        $response->assertSeeInOrder(['107.15.245.75', '109.15.245.75', '103.15.245.75']);
-
+        $response->assertSeeInOrder($userIpData->pluck('ip')->toArray());
 
         $response->assertJsonStructure([
             'data' => [
@@ -607,6 +541,7 @@ class UserIpTest extends FeatureBaseCase
                     'ip3',
                     'ip4',
                     'ip',
+                    'department',
                     'status',
                     'description',
                     'date',

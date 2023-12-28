@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,6 +18,7 @@ class UserIpFactory extends Factory
     public function definition(): array
     {
         return [
+            'department_id' => Department::all()->random()->id,
             'ip'          => $this->faker->ipv4(),
             'whitelisted' => 1,
             'description' => 'testing ip update',
