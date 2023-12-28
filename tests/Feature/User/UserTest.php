@@ -109,7 +109,7 @@ class UserTest extends FeatureBaseCase
         ]);
 
         $response->assertStatus(200);
-        $this->assertDatabaseCount('users', 13);
+        $this->assertDatabaseCount('users', 114);
         $this->assertDatabaseHas('users', [
             'department_id' => 1,
             'username' => "test_user",
