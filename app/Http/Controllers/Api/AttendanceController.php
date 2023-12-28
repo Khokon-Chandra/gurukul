@@ -21,7 +21,7 @@ class AttendanceController extends Controller
      */
     public function index(AttendanceRequest $request): AnonymousResourceCollection
     {
-        $data = Attendance::with('createdBy')
+        $data = Attendance::with('createdBy','department')
             ->filter($request)
             ->latest()
             ->paginate(AppConstant::PAGINATION);

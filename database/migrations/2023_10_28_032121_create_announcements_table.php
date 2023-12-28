@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('department_id')->constrained('departments');
             $table->string('message')->nullable();
             $table->boolean('status')->default(1)->comment('0= inactive, 1=active');
             $table->foreignId('created_by')->nullable()->constrained('users','id');
