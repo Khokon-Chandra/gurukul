@@ -254,19 +254,21 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-
-
         $users = User::factory(3)->create();
+
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
 
+        $usersFilters = $users->pluck('name')
+            ->sort()
+            ->toArray();
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
+
         $response->assertStatus(200);
 
-        //Make assertions
-
+        $response->assertSeeInOrder($usersFilters);
 
         $response->assertJsonStructure([
             "data" => [
@@ -312,12 +314,10 @@ class UserTest extends FeatureBaseCase
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
 
-
+        $filteredUsers = $users->pluck('username')->sort()->toArray();
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
         $response->assertStatus(200);
-
-        //Make Assertions
-
+        $response->assertSeeInOrder($filteredUsers);
 
         $response->assertJsonStructure([
             "data" => [
@@ -363,10 +363,11 @@ class UserTest extends FeatureBaseCase
         $role->permissions()->sync([1, 2, 3]);
 
 
+        $filteredUsers = $users->pluck('created_at')->sort()->toArray();
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_joindate=desc');
         $response->assertStatus(200);
 
-        //Make assertions
+        $response->assertSeeInOrder($filteredUsers);
 
         $response->assertJsonStructure([
             "data" => [
