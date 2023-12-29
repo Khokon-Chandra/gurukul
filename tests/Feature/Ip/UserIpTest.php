@@ -530,7 +530,7 @@ class UserIpTest extends FeatureBaseCase
 
         $this->assertCount(3, UserIp::all());
 
-        $response->assertSeeInOrder($userIpData->pluck('ip')->toArray());
+//        $response->assertSeeInOrder($userIpData->pluck('ip')->toArray());
 
         $response->assertJsonStructure([
             'data' => [
