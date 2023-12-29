@@ -307,21 +307,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'username' => "Abel",
-                    'name' => "funke"
-                ],
-                [
-                    'username' => "Cain",
-                    'name' => 'emeka'
-                ],
-                [
-                    'username' => "Bello",
-                    'name' => 'jeniffer'
-                ],
-            ])->create();
+        $users = User::factory(3)->create();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
