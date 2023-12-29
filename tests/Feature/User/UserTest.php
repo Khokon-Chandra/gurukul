@@ -331,7 +331,7 @@ class UserTest extends FeatureBaseCase
         $response->assertStatus(200);
 
         //Make Assertions
-        $this->assertD
+
 
         $response->assertJsonStructure([
             "data" => [
@@ -429,7 +429,7 @@ class UserTest extends FeatureBaseCase
 
         $response->assertStatus(200);
         $response->assertSee([$userWithRole->username, $user->username]);
-        $response->assertDontSee($usersWithoutRole->filter(fn($user) => $user->username != null)
+        $response->assertDontSee($usersWithoutRole->filter(fn($user) => $user->username !== null)
             ->pluck('username')->toArray()
         );
 
