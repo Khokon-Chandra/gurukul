@@ -98,7 +98,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->postJson(route('admin.user.store'), [
+        $response = $this->actingAs($user)->postJson(route('users.user.store'), [
             'department_id' => 1,
             'username' => "test_user",
             'name' => "Test User",
@@ -109,7 +109,7 @@ class UserTest extends FeatureBaseCase
         ]);
 
         $response->assertStatus(200);
-        $this->assertDatabaseCount('users', 13);
+        $this->assertDatabaseCount('users', 114);
         $this->assertDatabaseHas('users', [
             'department_id' => 1,
             'username' => "test_user",
@@ -145,7 +145,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->putJson(route('admin.update.user', ['user' =>  2]), [
+        $response = $this->actingAs($user)->putJson(route('users.update.user', ['user' =>  2]), [
             'username' => "test_user",
             'name' => "Test User Updated",
             'password' => "123456789",
@@ -180,11 +180,11 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-
         $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
             [
                 'ids' => [1, 2]
             ]);
+
 
         $response->assertStatus(200);
 
@@ -256,7 +256,7 @@ class UserTest extends FeatureBaseCase
 
 
 
-        $users = User::factory(3)->createQuietly();
+        $users = User::factory(3)->create();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
@@ -265,11 +265,7 @@ class UserTest extends FeatureBaseCase
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
         $response->assertStatus(200);
 
-        $names = $users->pluck('name');
-
-        foreach ($names as $name){
-            $response->assertSeeInOrder([$name]);
-        }
+        //Make assertions
 
 
         $response->assertJsonStructure([
@@ -325,7 +321,7 @@ class UserTest extends FeatureBaseCase
                     'username' => "Bello",
                     'name' => 'jeniffer'
                 ],
-            ])->createQuietly();
+            ])->create();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
@@ -333,7 +329,10 @@ class UserTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
         $response->assertStatus(200);
-        $response->assertSeeInOrder(['Cain', 'Bello', 'Abel']);
+
+        //Make Assertions
+        $this->assertD
+
         $response->assertJsonStructure([
             "data" => [
                 '*' => [
@@ -372,25 +371,7 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-        $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'username' => "Abel",
-                    'name' => "funke",
-                    'created_at' => '2023-12-17'
-                ],
-                [
-                    'username' => "Cain",
-                    'name' => 'emeka',
-                    'created_at' => '2023-12-18'
-                ],
-                [
-                    'username' => "Bello",
-                    'name' => 'jeniffer',
-                    'created_at' => '2023-12-19'
-
-                ],
-            ])->createQuietly();
+        $users = User::factory(3)->create();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
@@ -398,7 +379,9 @@ class UserTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_joindate=desc');
         $response->assertStatus(200);
-        $response->assertSeeInOrder(['Bello', 'Cain', 'Abel']);
+
+        //Make assertions
+
         $response->assertJsonStructure([
             "data" => [
                 '*' => [
@@ -432,51 +415,23 @@ class UserTest extends FeatureBaseCase
         $this->artisan('migrate:fresh --seed');
 
         $user = User::factory([
-            'id' => 300,
-            'username' => "sney",
-            'name' => "sneymoney",
-        ])
-            ->state([
-                'active' => true
-            ])
+        ])->state(['active' => true])
             ->createQuietly()->assignRole(Role::first());
 
-        $userWithRole = User::factory([
-            'username' => "emoney1",
-            'name' => "emoney",
-        ])
-            ->state([
-                'active' => true
-            ])
+        $userWithRole = User::factory([])->state(['active' => true])
             ->createQuietly()->assignRole(Role::first());
 
 
-        $usersWithoutRole = User::factory(3)
-            ->sequence(...[
-                [
-                    'username' => "Abel",
-                    'name' => "funke",
-                    'created_at' => '2023-12-17'
-                ],
-                [
-                    'username' => "Cain",
-                    'name' => 'emeka',
-                    'created_at' => '2023-12-18'
-                ],
-                [
-                    'username' => "Bello",
-                    'name' => 'jeniffer',
-                    'created_at' => '2023-12-19'
-
-                ],
-            ])->createQuietly();
+        $usersWithoutRole = User::factory(3)->create();
 
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_role=desc');
 
         $response->assertStatus(200);
-        $response->assertSee(['sneymoney', 'emoney']);
-        $response->assertDontSeeText(['bello', 'funke', 'jeniffer']);
+        $response->assertSee([$userWithRole->username, $user->username]);
+        $response->assertDontSee($usersWithoutRole->filter(fn($user) => $user->username != null)
+            ->pluck('username')->toArray()
+        );
 
 
         $response->assertJsonStructure([

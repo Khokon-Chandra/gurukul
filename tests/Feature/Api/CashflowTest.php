@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\Cashflow;
 use App\Models\User;
+use Illuminate\Support\Facades\Notification;
 use Tests\FeatureBaseCase;
 
 class CashflowTest extends FeatureBaseCase
@@ -21,13 +22,13 @@ class CashflowTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'data' => [
                 '*' => [
-                    'id',                                                                                                                                                                                                
+                    'id',
                     'name',
                     'amount',
                     'date',
                     'department',
                     'created_by' => [],
-                ]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                ]
             ],
             'links',
             'meta',
@@ -61,7 +62,7 @@ class CashflowTest extends FeatureBaseCase
             ]
         ]);
 
-        
+
     }
 
 
@@ -128,9 +129,9 @@ class CashflowTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user         = User::where('username','administrator')->first();
+        $user = User::where('username','administrator')->first();
 
-
+        Notification::fake();
         $response = $this->actingAs($user)->patchJson(route('finance.cashflows.update_multiple'), [
             "cashflows" => [
                 [
@@ -254,7 +255,7 @@ class CashflowTest extends FeatureBaseCase
                     'department_id'
                 ]
             ],
-           
+
         ];
     }
 

@@ -15,10 +15,11 @@ class AnnouncementResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'message' => $this->message,
-            'status' => $this->status,
-            'date' => $this->created_at->format('d-M-Y h:i A'),
+            'id'         => $this->id,
+            'message'    => $this->message,
+            'status'     => $this->status,
+            'date'       => $this->created_at->format('d-M-Y h:i A'),
+            'department' => $this->department->name,
             'created_by' => new UserResource($this->createdBy),
         ];
 

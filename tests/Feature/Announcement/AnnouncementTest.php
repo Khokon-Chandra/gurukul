@@ -22,12 +22,13 @@ class AnnouncementTest extends FeatureBaseCase
         $user = User::where('username','administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('social.announcements.store'), [
-            'message' => 'Dummy text for announcement message',
-            'status' => rand(0, 1)
+            'department_id' => 1,
+            'message'       => 'Dummy text for announcement message',
+            'status'        => rand(0, 1)
         ]);
 
-
         $response->assertStatus(200);
+
         $response->assertJsonStructure([
             "status",
             "message",
@@ -36,6 +37,7 @@ class AnnouncementTest extends FeatureBaseCase
                 "message",
                 "status",
                 "date",
+                'department',
                 "created_by",
             ]
         ]);
@@ -46,9 +48,7 @@ class AnnouncementTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-
         $user = User::where('username','administrator')->first();
-
 
         $response = $this->actingAs($user)->getJson(route('social.announcements.index'));
 
@@ -63,6 +63,7 @@ class AnnouncementTest extends FeatureBaseCase
                         'message',
                         'status',
                         'date',
+                        'department',
                         'created_by',
                     ]
                 ],
@@ -106,8 +107,9 @@ class AnnouncementTest extends FeatureBaseCase
         $announcement = Announcement::first();
 
         $response = $this->actingAs($user)->putJson(route('social.announcements.update', $announcement->id), [
-            'message' => 'update message',
-            'status'  => false,
+            'department_id' => 1,
+            'message'       => 'update message',
+            'status'        => false,
         ]);
 
         $response->assertStatus(200);
@@ -138,9 +140,9 @@ class AnnouncementTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)->putJson(route('social.announcements.update_multiple'), [
             "announcements" => [
-                ['id' => 1,'message' => 'update1','status'=>true],
-                ['id' => 2,'message' => 'update2','status'=>false],
-                ['id' => 3,'message' => 'update3','status'=>false],
+                ['id' => 1,'department_id' => 1,'message' => 'update1','status'=>true],
+                ['id' => 2,'department_id' => 2,'message' => 'update2','status'=>false],
+                ['id' => 3,'department_id' => 3,'message' => 'update3','status'=>false],
             ]
         ]);
 
@@ -155,6 +157,7 @@ class AnnouncementTest extends FeatureBaseCase
                     "message",
                     "status",
                     "date",
+                    "department",
                     "created_by",
                 ]
             ]
@@ -224,6 +227,7 @@ class AnnouncementTest extends FeatureBaseCase
         ]);
 
         $payload = [
+            'department_id' => 1,
             'message' => 'test message',
             'status' => 1,
         ];
@@ -270,6 +274,7 @@ class AnnouncementTest extends FeatureBaseCase
                         "message",
                         "status",
                         "date",
+                        "department",
                         "created_by",
                     ]
                 ],
@@ -321,6 +326,7 @@ class AnnouncementTest extends FeatureBaseCase
                 "message",
                 "status",
                 "date",
+                "department",
                 "created_by",
             ]
         ]);

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Department;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,10 +20,11 @@ class AnnouncementFactory extends Factory
     public function definition(): array
     {
         return [
-            'message'    => $this->faker->sentence(6),
-            'status'     => false,
-            'created_at' => $this->faker->dateTime(),
-            'created_by' => rand(1,5),
+            'department_id' => Department::inRandomOrder()->first()->id,
+            'message'       => $this->faker->sentence(6),
+            'status'        => false,
+            'created_at'    => $this->faker->dateTime(),
+            'created_by'    => User::factory(),
         ];
     }
 }

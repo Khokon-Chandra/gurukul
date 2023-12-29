@@ -40,16 +40,18 @@ class AnnouncementRequest extends BaseFormRequest
     public function storeMethodRule(): void
     {
         $this->rules = [
-            'message' => ["required", "string", "max:255"],
-            'status' => ["required", "boolean"],
+            'department_id' => ["required","exists:departments,id"],
+            'message'       => ["required", "string", "max:255"],
+            'status'        => ["required", "boolean"],
         ];
     }
 
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'message' => 'required|max:255',
-            'status'  => 'required|boolean'
+            'department_id' => 'required|exists:departments,id',
+            'message'       => 'required|max:255',
+            'status'        => 'required|boolean'
         ];
     }
 
@@ -57,10 +59,11 @@ class AnnouncementRequest extends BaseFormRequest
     public function updateMultipleMethodRule(): void
     {
         $this->rules = [
-            'announcements' => ['required', 'array', 'min:1'],
-            'announcements.*.id' => ['required', 'exists:announcements,id'],
-            'announcements.*.message' => ['required', 'string', 'max:255'],
-            'announcements.*.status' => ['required', 'boolean',new MultipleActiveStatusNotAllow($this->announcements)],
+            'announcements'                 => ['required', 'array', 'min:1'],
+            'announcements.*.department_id' => ['required', 'exists:departments,id'],
+            'announcements.*.id'            => ['required', 'exists:announcements,id'],
+            'announcements.*.message'       => ['required', 'string', 'max:255'],
+            'announcements.*.status'        => ['required', 'boolean',new MultipleActiveStatusNotAllow($this->announcements)],
         ];
     }
 
@@ -84,6 +87,7 @@ class AnnouncementRequest extends BaseFormRequest
     public function indexMethodRule(): void
     {
         $this->rules = [
+            'department_id'         => 'nullable|exists:departments,id',
             'message'               => 'nullable',
             'status'                => 'nullable|boolean',
             'from_date'             => 'nullable|date',
@@ -91,7 +95,7 @@ class AnnouncementRequest extends BaseFormRequest
             'date_range'            => 'nullable|string|max:50',
             'sort_by'               => [
                 'nullable',
-                Rule::in(['message', 'status', 'created_at']),
+                Rule::in(['message', 'status', 'created_at','department_id']),
             ],
             'sort_type'             => [
                 'nullable',

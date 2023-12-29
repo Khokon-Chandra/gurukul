@@ -45,6 +45,7 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->name('attendances.delete_multiple');
     });
 
+
     /**
      * Service module routes
      */
@@ -61,8 +62,6 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::put('change-password/{user}', [UserController::class, 'changePassword'])
             ->name('change.password');
     });
-
-
 
 
     /**
@@ -84,6 +83,9 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('attendances-delete-many', [AttendanceController::class, 'deleteMultiple'])
             ->name('attendances.delete_multiple');
 
+
+        Route::put('user-update/{user}', [UserController::class, 'updateUser'])->name('update.user');
+        Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store');
     });
 
     Route::name('user.')->group(function(){

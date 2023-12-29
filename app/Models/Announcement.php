@@ -2,20 +2,21 @@
 
 namespace App\Models;
 
+use App\Trait\BelongsToDepartment;
+use App\Trait\ParrentBoot;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 
 class Announcement extends Model
 {
-    use HasFactory;
+    use HasFactory, ParrentBoot, BelongsToDepartment;
 
     protected $fillable = [
         'message',
         'status',
         'created_by',
+        'department_id',
     ];
 
 
@@ -24,15 +25,7 @@ class Announcement extends Model
     ];
 
 
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::saving(function ($model) {
-            $model->created_by = Auth::check() ? Auth::id() : null;
-        });
-    }
-
+    
 
     public function scopeFilter(Builder $query, $request)
     {
@@ -44,8 +37,5 @@ class Announcement extends Model
     }
 
 
-    public function createdBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by', 'id');
-    }
+   
 }
