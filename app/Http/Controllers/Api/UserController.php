@@ -101,7 +101,6 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'username' => $request->username,
-            'password' => $request->password,
             'role' => $request->role,
             'updated_by' => Auth::user()->id
         ]);
