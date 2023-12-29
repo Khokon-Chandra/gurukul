@@ -31,6 +31,7 @@ class CashflowRequest extends BaseFormRequest
     public function indexMethodRule(): void
     {
         $this->rules = [
+            'department_id'         => 'nullable',
             'name'                  => 'nullable',
             'amount'                => 'nullable|numeric',
             'from_date'             => 'nullable|date',
@@ -38,7 +39,7 @@ class CashflowRequest extends BaseFormRequest
             'date_range'            => 'nullable|string|max:50',
             'sort_by'               => [
                 'nullable',
-                Rule::in(['name', 'amount', 'created_at']),
+                Rule::in(['department_id','name', 'amount', 'created_at']),
             ],
             'sort_type'             => [
                 'nullable',
@@ -51,26 +52,29 @@ class CashflowRequest extends BaseFormRequest
     public function storeMethodRule(): void
     {
         $this->rules = [
-            'name'       => 'required|min:1|max:255|string',
-            'amount'     => 'required|numeric|decimal:0,8',
+            'department_id' => 'required|exists:departments,id',
+            'name'          => 'required|min:1|max:255|string',
+            'amount'        => 'required|numeric|decimal:0,8',
         ];
     }
 
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'name'       => 'required|min:1|max:255|string',
-            'amount'     => 'required|numeric|decimal:0,8',
+            'department_id' => 'required|exists:departments,id',
+            'name'          => 'required|min:1|max:255|string',
+            'amount'        => 'required|numeric|decimal:0,8',
         ];
     }
 
     public function updateMultipleMethodRule(): void
     {
         $this->rules = [
-            'cashflows'          => 'required|array|min:1',
-            'cashflows.*.id'     => 'required|exists:cashflows,id',
-            'cashflows.*.name'   => 'required|min:1|max:255|string',
-            'cashflows.*.amount' => 'required|numeric|decimal:0,8',
+            'cashflows'                 => 'required|array|min:1',
+            'cashflows.*.id'            => 'required|exists:cashflows,id',
+            'cashflows.*.department_id' => 'required|exists:departments,id',
+            'cashflows.*.name'          => 'required|min:1|max:255|string',
+            'cashflows.*.amount'        => 'required|numeric|decimal:0,8',
         ];
     }
 

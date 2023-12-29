@@ -2,29 +2,17 @@
 
 namespace App\Models;
 
+use App\Trait\BelongsToDepartment;
+use App\Trait\ParrentBoot;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 
 class Cashflow extends Model
 {
-    use HasFactory,
-        SoftDeletes;
+    use HasFactory,SoftDeletes, ParrentBoot, BelongsToDepartment;
 
     protected $guarded = ['id'];
-
-
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::saving(function ($model) {
-            $model->created_by = Auth::check() ? Auth::id() : null;
-        });
-    }
-
 
 
     public function scopeFilter($query, $request)
@@ -37,8 +25,6 @@ class Cashflow extends Model
     }
 
 
-    public function createdBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by', 'id');
-    }
+
+    
 }

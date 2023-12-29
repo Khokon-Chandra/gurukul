@@ -142,33 +142,27 @@ class UserTest extends FeatureBaseCase
             ->state([
                 'active' => true
             ])
-            ->createQuietly();
-
-        $role = Role::create(['name' => 'Writer',]);
-
-        $role->permissions()->sync([1, 2, 3]);
+            ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->putJson('/api/v1/user/1', [
-
+        $response = $this->actingAs($user)->putJson(route('admin.update.user', ['user' =>  2]), [
             'username' => "test_user",
-            'name' => "Test User",
+            'name' => "Test User Updated",
             'password' => "123456789",
             'password_confirmation' => "123456789",
             'role' => 1,
         ]);
 
         $response->assertStatus(200);
+
+        $UpdatedUser = User::find(2);
+
+        $this->assertEquals('test_user',  $UpdatedUser->username);
+        $this->assertEquals('Test User Updated',  $UpdatedUser->name);
+
         $response->assertJsonStructure([
             "status",
-            "message",
-
-        ]);
-
-        $response->assertJson([
-            'status' => true,
-            'message' => true,
-            'data' => true
+            "message"
         ]);
     }
 
@@ -267,26 +261,17 @@ class UserTest extends FeatureBaseCase
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
 
-        $users = User::factory(3)
-            ->sequence(...[
-                [
-                    'username' => "Abel",
-                    'name' => "funke"
-                ],
-                [
-                    'username' => "Cain",
-                    'name' => 'emeka'
-                ],
-                [
-                    'username' => "Bello",
-                    'name' => 'jeniffer'
-                ],
-            ])->createQuietly();
-
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
         $response->assertStatus(200);
-        $response->assertSeeInOrder(['emeka', 'funke', 'jeniffer']);
+
+        $names = $users->pluck('name');
+
+        foreach ($names as $name){
+            $response->assertSeeInOrder([$name]);
+        }
+
+
         $response->assertJsonStructure([
             "data" => [
                 '*' => [

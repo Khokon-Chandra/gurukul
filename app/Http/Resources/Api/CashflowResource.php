@@ -20,6 +20,7 @@ class CashflowResource extends JsonResource
             'name'       => $this->name,
             'amount'     => number_format($this->amount,2),
             'date'       => $this->created_at->format('d-M-Y h:i A'),
+            'department' => $this->department->name,
             'created_by' => new UserResource($this->createdBy),
         ];
     }
