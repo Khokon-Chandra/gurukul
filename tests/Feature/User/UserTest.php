@@ -265,9 +265,6 @@ class UserTest extends FeatureBaseCase
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
         $response->assertStatus(200);
 
-        //Make assertions
-
-
         $response->assertJsonStructure([
             "data" => [
                 '*' => [
@@ -307,17 +304,18 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $users = User::factory(3)->create();
+        $users = User::factory(3)
+            ->create();
+
+        $usersFilters = $users->pluck('username')
+            ->sort()
+            ->toArray();
 
         $role = Role::create(['name' => 'Admin']);
         $role->permissions()->sync([1, 2, 3]);
 
-
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
         $response->assertStatus(200);
-
-        //Make Assertions
-
 
         $response->assertJsonStructure([
             "data" => [
