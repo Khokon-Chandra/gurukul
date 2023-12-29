@@ -62,6 +62,7 @@ class UserIpController extends Controller
 
             // Insert to Database
             $payload = [
+                'department_id' => $request->department_id,
                 'ip'  => $ip,
                 'description' => $request->description,
                 'created_by'  => Auth::id(),
@@ -133,7 +134,9 @@ class UserIpController extends Controller
 
             // Update on Database
             $description = $request->description ?? $userIp->description;
+            $department_id = $request->department_id ?? $userIp->department_id;
             $payload = [
+                'department_id' => $department_id,
                 'ip' => $ip,
                 'whitelisted' => $request->whitelisted,
                 'description' => $description,
@@ -142,6 +145,9 @@ class UserIpController extends Controller
             ];
 
             $dataUpdate = [];
+            if ($userIp->department_id != $department_id) {
+                $dataUpdate['department_id'] = 'Department ID : ' . $userIp->department_id . ' -> ' . $department_id;
+            }
             if ($userIp->ip != $ip) {
                 $dataUpdate['ip'] = 'IP Address : ' . $userIp->ip . ' -> ' . $ip;
             }
@@ -228,7 +234,9 @@ class UserIpController extends Controller
 
                 // Update on Database
                 $description = $item['item']['description'] ?? $UserIp->description;
+                $department_id = $item['item']['department_id'] ?? $UserIp->department_id;
                 $payload = [
+                    'department_id' => $department_id,
                     'ip' => $ip,
                     'whitelisted' => $item['item']['whitelisted'],
                     'description' => $description,
@@ -237,6 +245,9 @@ class UserIpController extends Controller
                 ];
 
                 $dataUpdate = [];
+                if ($UserIp->department_id != $department_id) {
+                    $dataUpdate['department_id'] = 'Department ID : ' . $UserIp->department_id . ' -> ' . $department_id;
+                }
                 if ($UserIp->ip != $ip) {
                     $dataUpdate['ip'] = 'IP Address : ' . $UserIp->ip . ' -> ' . $ip;
                 }

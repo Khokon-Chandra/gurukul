@@ -27,6 +27,7 @@ class UserIp extends Model
 
 
     protected $fillable = [
+        'department_id',
         'ip',
         'description',
         'whitelisted',
@@ -50,8 +51,8 @@ class UserIp extends Model
 
     public function scopeFilter($query, $request): void
     {
-        $query->when($request->ip ?? false, fn ($query, $ip) => $query
-            ->where('ip', 'like', "%$ip%"))
+        $query->when($request->department_id ?? false, fn ($query, $department_id) => $query->where('department_id', $department_id))
+            ->when($request->ip ?? false, fn ($query, $ip) => $query->where('ip', 'like', "%$ip%"))
             ->when($request->whitelisted ?? false, fn ($query, $whitelisted) => $query->where('whitelisted', $whitelisted))
             ->when($request->description ?? false, fn ($query, $description) => $query->where('description', 'like', "%$description%"))
             ->when($request->sort_by ?? false, function ($query, $column) use ($request) {
@@ -124,5 +125,10 @@ class UserIp extends Model
                 return $ipAddress[3] === '*' ? null : $ipAddress[3];
             },
         );
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'id');
     }
 }
