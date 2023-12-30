@@ -344,7 +344,8 @@ class AnnouncementTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'data' =>[
                 'message',
-                'status'
+                'status',
+                'department' => []
             ]
         ]);
     }
