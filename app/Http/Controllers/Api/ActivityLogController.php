@@ -21,7 +21,7 @@ class ActivityLogController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Activity::with('causer');
+        $query = Activity::with('subject');
 
         $data = $this->filter($query, $request)
             ->latest()
@@ -34,8 +34,8 @@ class ActivityLogController extends Controller
 
     public function download(Request $request): AnonymousResourceCollection
     {
-        $query = Activity::with('causer');
-        
+        $query = Activity::with('subject');
+
         $data  = $this->filter($query, $request)
             ->latest()
             ->get()->map(function($item, $index){

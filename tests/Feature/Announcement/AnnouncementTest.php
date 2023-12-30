@@ -26,6 +26,7 @@ class AnnouncementTest extends FeatureBaseCase
             'message'       => 'Dummy text for announcement message',
             'status'        => rand(0, 1)
         ]);
+        
 
         $response->assertStatus(200);
 
@@ -344,7 +345,8 @@ class AnnouncementTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'data' =>[
                 'message',
-                'status'
+                'status',
+                'department' => []
             ]
         ]);
     }
