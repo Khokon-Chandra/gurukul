@@ -154,9 +154,8 @@ class AnnouncementController extends Controller
             foreach ($request->announcements as $attribute) {
                 $announcement = Announcement::find($attribute['id']);
                 $announcement->update([
-                    'department_id' => $attribute['department_id'],
-                    'message'       => $attribute['message'],
-                    'status'        => $attribute['status'],
+                    'message' => $attribute['message'],
+                    'status' => $attribute['status'],
                 ]);
 
                 $this->updatedInstance[] = $announcement;
@@ -167,9 +166,9 @@ class AnnouncementController extends Controller
                     ->causedBy(auth()->user())
                     ->performedOn($announcement)
                     ->withProperties([
-                        'ip'       => Auth::user()->last_login_ip,
+                        'ip' => Auth::user()->last_login_ip,
                         'activity' => "Announcement updated successfully",
-                        'target'   => "{$announcement->message}",
+                        'target' => "{$announcement->message}",
                     ])
                     ->log(":causer.name updated Announcement {$announcement->message}.");
             }
@@ -178,9 +177,9 @@ class AnnouncementController extends Controller
             DB::commit();
 
             return response()->json([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => 'Successfully Announcement Updated!!',
-                'data'    => AnnouncementResource::collection($this->updatedInstance) //use Resource
+                'data' => AnnouncementResource::collection($this->updatedInstance) //use Resource
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
@@ -255,9 +254,11 @@ class AnnouncementController extends Controller
                 ->causedBy(auth()->user())
                 ->performedOn($announcement)
                 ->withProperties([
-                    'ip'       => Auth::user()->last_login_ip,
+                    'ip' => Auth::user()->last_login_ip,
                     'activity' => "Announcement deleted successfully",
-                    'target'   => "{$announcement->message}"
+
+                    'target' => "{$announcement->message}"
+
                 ])
                 ->log(":causer.name deleted multiple Announcements {$announcement->message}.");
 
