@@ -58,9 +58,10 @@ class AnnouncementController extends Controller
         try {
 
             $announcement = Announcement::create([
-                'message' => $request->message,
-                'status' => $request->status,
-                'created_by' => Auth::id(),
+                'department_id' => $request->department_id,
+                'message'       => $request->message,
+                'status'        => $request->status,
+                'created_by'    => Auth::id(),
             ]);
 
             if ($announcement->status) {
