@@ -68,7 +68,7 @@ class ActivityLogTest extends FeatureBaseCase
     }
 
 
-    public function testUserCanNotDownloadActivityLogList(): void
+    public function testThatNormalUserCanNotDownloadActivityLogList(): void
     {
         $this->artisan("migrate:fresh --seed");
 
@@ -105,6 +105,7 @@ class ActivityLogTest extends FeatureBaseCase
                     'ACTIVITY',
                     'TARGET',
                     'DESCRIPTION',
+                    'DEPARTMENT',
                 ],
             ]
         ]);

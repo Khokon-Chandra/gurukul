@@ -34,7 +34,7 @@ class ActivityLogController extends Controller
 
     public function download(Request $request): AnonymousResourceCollection
     {
-        $query = Activity::with('causer');
+        $query = Activity::with('subject');
 
         $data  = $this->filter($query, $request)
             ->latest()
