@@ -20,6 +20,8 @@ class GroupMemberResource extends JsonResource
             'username'      => $this->username,
             'last_login_at' => $this->last_login_at,
             'status'        => $this->status,
+            'department_id' => $this->department_id,
+            'department'    => $this->department->name ?? 'N/A',
         ];
     }
 }
