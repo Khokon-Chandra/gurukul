@@ -15,6 +15,7 @@ class ActivityLogSeeder extends Seeder
     public function run(): void
     {
         $user = User::first();
+
         activity('User Login')->causedBy($user->id)
             ->performedOn($user)
             ->withProperties([
@@ -23,5 +24,6 @@ class ActivityLogSeeder extends Seeder
                 'activity' => 'Dummy test activity',
             ])
             ->log('Dummy test activity');
+
     }
 }
