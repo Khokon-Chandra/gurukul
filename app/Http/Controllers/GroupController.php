@@ -33,7 +33,12 @@ class GroupController extends Controller
     {
         $group = Group::with([
             'chats' => function ($query) {
-                $query->with('user');
+                $query->with('user.department')
+                ->when(request('department_id') ?? false, function($query){
+                    $query->whereHas('user',function($query){
+                        $query->where('department_id',request('department_id'));
+                    });
+                });
             }
         ])->findOrFail($id);
 
@@ -43,7 +48,18 @@ class GroupController extends Controller
 
     public function members($id)
     {
-        $group = Group::with('users')->findOrFail($id);
+        $group = Group::with([
+            'users' => function($query){
+                $query->with('department')
+                ->when(request('department_id') ?? false, function($query){
+                    
+                $query->where('department_id',request('department_id'));
+                    
+                });
+            }
+        ])
+        
+        ->findOrFail($id);
 
         return GroupMemberResource::collection($group->users);
     }

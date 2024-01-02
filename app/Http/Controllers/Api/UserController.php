@@ -43,7 +43,11 @@ class UserController extends Controller
 
     public function allUser(): AnonymousResourceCollection
     {
-        $users = User::select('id','name','username','last_login_at','status')->get();
+        $users = User::with('department')
+        ->when(request('department_id') ?? false, function($query, $id){
+            $query->where('department_id',$id);
+        })
+        ->select('id','department_id','name','username','last_login_at','status')->get();
         return GroupMemberResource::collection($users);
     }
 
