@@ -237,11 +237,7 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-                        'id',
-                        'name',
-                        'created_at',
-                    ]
+                    'role' => []
                 ]
             ],
             'meta' => [
