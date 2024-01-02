@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Resources\Api\UserResource;
 use App\Http\Requests\Api\UserRequest;
-use App\Http\Resources\Api\PermissionChildResource;
-use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\GroupMemberResource;
 use App\Models\User;
 use App\Trait\CanSort;
@@ -21,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {

@@ -32,7 +32,7 @@ class UserResource extends JsonResource
             'last_login_at' => $this->last_login_at,
             'department_id' => $this->department_id,
             'department'    => $this->department->name ?? 'N/A',
-            'role' => $this->loadMissing('roles')
+            'role' => $this->roles,
         ];
     }
 }
