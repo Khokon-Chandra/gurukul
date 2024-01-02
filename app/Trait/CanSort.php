@@ -30,5 +30,9 @@ trait CanSort
 
             $data->orderBy('name', $request->sort_role);
         }
+
+        if($request->filled('sort_department')){
+            return $query->orderBy('department_id', $request->sort_department);
+        }
     }
 }

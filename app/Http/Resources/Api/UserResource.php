@@ -31,6 +31,7 @@ class UserResource extends JsonResource
             'created_by' => $this->created_by,
             'last_login_at' => $this->last_login_at,
             'department_id' => $this->department_id,
+            'department'    => $this->department->name ?? 'N/A',
             'role' => $this->loadMissing('roles')
         ];
     }

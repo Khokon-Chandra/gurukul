@@ -146,6 +146,7 @@ class UserTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)->putJson(route('users.update.user', ['user' =>  2]), [
+            'department_id' => 1,
             'username' => "test_user",
             'name' => "Test User Updated",
             'password' => "123456789",

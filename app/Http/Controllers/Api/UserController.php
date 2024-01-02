@@ -31,7 +31,7 @@ class UserController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = User::with('roles')->filter($request);
+        $query = User::with('roles','department')->filter($request);
         $this->sortUserData($request, $query);
         $users = $query->latest()->paginate(AppConstant::PAGINATION);
 
@@ -99,6 +99,7 @@ class UserController extends Controller
     {
 
         $user->update([
+            'department_id' => $request->department_id,
             'name' => $request->name,
             'username' => $request->username,
             'role' => $request->role,
