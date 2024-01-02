@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Resources\Api\UserResource;
 use App\Http\Requests\Api\UserRequest;
-use App\Http\Resources\Api\PermissionChildResource;
-use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\GroupMemberResource;
 use App\Models\User;
 use App\Trait\CanSort;
@@ -21,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -31,7 +28,7 @@ class UserController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = User::with('roles')->filter($request);
+        $query = User::with('roles','department')->filter($request);
         $this->sortUserData($request, $query);
         $users = $query->latest()->paginate(AppConstant::PAGINATION);
 
@@ -103,6 +100,7 @@ class UserController extends Controller
     {
 
         $user->update([
+            'department_id' => $request->department_id,
             'name' => $request->name,
             'username' => $request->username,
             'role' => $request->role,

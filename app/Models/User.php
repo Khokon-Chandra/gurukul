@@ -127,7 +127,12 @@ class User extends Authenticatable implements JWTSubject
                 ];
 
                 $query->whereBetween('created_at',$dates);
-            });
+            })
+
+            ->when(
+                $request->department_id ?? false, fn($query, $department_id) => $query
+                    ->where('department_id',$department_id)
+            );
 
     }
 

@@ -17,7 +17,7 @@ class ActivatedAnnouncementResource extends JsonResource
         return [
             'message'    => $this->message ?? '',
             'status'     => $this->status ?? '0',
-            'department' => new DepartmentResource($this->department),
+            'department' => new DepartmentResource($this->department ?? null),
         ];
     }
 }

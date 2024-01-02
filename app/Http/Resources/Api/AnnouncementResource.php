@@ -19,7 +19,7 @@ class AnnouncementResource extends JsonResource
             'message'    => $this->message,
             'status'     => $this->status,
             'date'       => $this->created_at->format('d-M-Y h:i A'),
-            'department' => $this->department->name,
+            'department' => $this->department->name ?? 'N/A',
             'created_by' => new UserResource($this->createdBy),
         ];
 
