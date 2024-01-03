@@ -12,7 +12,6 @@ use App\Models\Announcement;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -65,13 +64,14 @@ class AnnouncementController extends Controller
             ]);
 
             if ($announcement->status) {
-                Announcement::where('id', '!=', $announcement->id)->update([
+                Announcement::where('department_id', $announcement->department_id)
+                ->where('id', '!=', $announcement->id)
+                ->update([
                     'status' => false,
                 ]);
             }
 
             AnnouncementEvent::dispatchIf($announcement->status, $announcement);
-
 
             activity("Announcement created")
                 ->causedBy(auth()->user())
@@ -112,7 +112,9 @@ class AnnouncementController extends Controller
             AnnouncementEvent::dispatchIf($announcement->status, $announcement);
 
             if ($announcement->status) {
-                Announcement::where('id', '!=', $announcement->id)->update([
+                Announcement::where('department_id', $announcement->department_id)
+                ->where('id', '!=', $announcement->id)
+                ->update([
                     'status' => false,
                 ]);
             }
@@ -218,7 +220,8 @@ class AnnouncementController extends Controller
                 ->log(":causer.name updated Announcement {$announcement->message}.");
 
 
-            Announcement::where('id', '!=', $announcement->id)
+            Announcement::where('department_id', $announcement->department_id)
+                ->where('id', '!=', $announcement->id)
                 ->where('status', true)
                 ->update([
                     'status' => false
