@@ -30,7 +30,7 @@ class PermissionSeeder extends Seeder
         $role = Role::where('name', 'Administrator')->first();
 
         if (! $role) {
-            $role = Role::create(['name' => 'Administrator']);
+            $role = Role::create(['name' => 'Administrator', 'department_id' => 1]);
         }
 
         if ($role) {

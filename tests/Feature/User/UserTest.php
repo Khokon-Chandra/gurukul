@@ -28,7 +28,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly();
 
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
 
@@ -208,7 +208,7 @@ class UserTest extends FeatureBaseCase
 
         $users = User::factory(3)->createQuietly();
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
         $searchAbleString = $users->first()->username;

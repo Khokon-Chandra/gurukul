@@ -22,9 +22,9 @@ class RoleFeatureTest extends TestCase
 
         $user = User::where('username', 'administrator')->first();
 
-
         $response = $this->actingAs($user)->postJson(route('users.roles.store'), [
             'name' => Str::random(10),
+            'department_id' => 1,
             'permissions' => [1, 2, 3]
         ]);
 
@@ -34,6 +34,7 @@ class RoleFeatureTest extends TestCase
             "message",
             "data" => [
                 "guard_name",
+                "department_id",
                 "name",
                 "updated_at",
                 "created_at",
@@ -53,12 +54,14 @@ class RoleFeatureTest extends TestCase
         $user = User::where('username', 'administrator')->first();
 
         $role = Role::create([
-            'name' => 'Test_Role'
+            'name' => 'Test_Role',
+            'department_id' => 1
         ]);
 
 
         $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
             'name' => Str::random(10),
+            'department_id' => 1,
             'permissions' => [1, 2, 3]
         ]);
 
@@ -89,7 +92,8 @@ class RoleFeatureTest extends TestCase
         $user = User::where('username', 'administrator')->first();
 
         $role = Role::create([
-            'name' => 'Test_Role'
+            'name' => 'Test_Role',
+            'department_id' => 1
         ]);
 
 
@@ -114,7 +118,7 @@ class RoleFeatureTest extends TestCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
 
         $role->permissions()->sync([1, 2, 3]);
 

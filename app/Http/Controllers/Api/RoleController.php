@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Role\RoleRequest;
 use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\RoleResource;
 use App\Trait\Authorizable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
@@ -30,20 +32,15 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RoleRequest $request): JsonResponse
     {
-        $request->validate([
-            'name'          => 'required|string|unique:roles,name',
-            'permissions'   => 'required|array',
-            'permissions.*' => 'exists:permissions,id'
-        ]);
-
         DB::beginTransaction();
 
         try {
 
             $role = Role::create([
                 'name' => $request->name,
+                'department_id' => $request->department_id
             ]);
 
             $role->permissions()->sync($request->permissions ?? []);
@@ -62,7 +59,7 @@ class RoleController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Successfully Role Created!!',
+                'message' => 'Role Created Successfully!!',
                 'data' => $role,
             ], 200);
         } catch (\Exception $error) {
@@ -74,19 +71,11 @@ class RoleController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): JsonResponse
     {
 
         $request->validate([
@@ -147,7 +136,7 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         DB::beginTransaction();
         try {
