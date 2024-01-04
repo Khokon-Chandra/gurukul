@@ -73,10 +73,10 @@ class RoleFeatureTest extends TestCase
                 "id",
                 "name",
                 'users_count',
+                'department',
                 'permissions',
                 "updated_at",
                 "created_at",
-
             ]
         ]);
     }
