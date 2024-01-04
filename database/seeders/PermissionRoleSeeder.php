@@ -17,7 +17,7 @@ class PermissionRoleSeeder extends Seeder
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $role = Role::updateOrCreate(['name' => 'Administrator'], ['name' => 'Administrator']);
+        $role = Role::updateOrCreate(['name' => 'Administrator', 'department_id' => 1], ['name' => 'Administrator', 'department_id' => 1]);
 
         $role->syncPermissions(Permission::get()->pluck('id')->toArray());
     }
