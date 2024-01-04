@@ -293,14 +293,12 @@ class UserIpController extends Controller
     /**
      * @throws ValidationException
      */
-    public function destroy(UserIp $userIp): JsonResponse
+    public function destroy($id): JsonResponse
     {
-
+        $userIp = UserIp::findOrFail($id);
+        
         DB::beginTransaction();
         try {
-
-
-
 
             activity('user_ip')->causedBy(Auth::id())
                 ->performedOn($userIp)
