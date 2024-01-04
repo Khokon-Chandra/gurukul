@@ -251,14 +251,14 @@ class AnnouncementTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)->patchJson(route('social.announcements.update_status'), [
-            'announcement_id' =>    $CreateAnnouncements->first()->id,
+            'announcement_id' => $CreateAnnouncements->first()->id,
         ]);
 
         $response->assertStatus(200);
 
-        $updatedAnnouncement = Announcement::find(($CreateAnnouncements->first())->id);
-        $allOtherAnnouncements = Announcement::where('id', '!=', ($CreateAnnouncements->first())->id)->get();
-
+        $updatedAnnouncement   = Announcement::find(($CreateAnnouncements->first())->id);
+        $allOtherAnnouncements = Announcement::where('department_id',$CreateAnnouncements->first()->department_id)
+        ->where('id', '!=', ($CreateAnnouncements->first())->id)->get();
 
         $this->assertTrue($updatedAnnouncement->status);
 
