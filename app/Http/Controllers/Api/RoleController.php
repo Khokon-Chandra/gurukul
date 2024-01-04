@@ -75,19 +75,8 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(RoleRequest $request, $id): JsonResponse
     {
-
-        $request->validate([
-            'name'          => [
-                'required',
-                'string',
-                Rule::unique('roles')->ignore($id)
-            ],
-            'permissions'   => 'required|array',
-            'permissions.*' => 'exists:permissions,id'
-        ]);
-
         DB::beginTransaction();
 
         try {
@@ -100,6 +89,7 @@ class RoleController extends Controller
 
             $role->update([
                 'name' => $request->name,
+                'department_id' => $request->department_id,
             ]);
 
             $role->permissions()->detach();
@@ -114,13 +104,13 @@ class RoleController extends Controller
                     'activity' => "Role updated successfully",
                     'target' => "$role->name",
                 ])
-                ->log(":causer.name created Role $role->name.");
+                ->log(":causer.name updated Role $role->name.");
 
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Successfully Role Updated!!',
+                'message' => ' Role Successfully Updated!!',
                 'data' => new RoleResource($role),
 
             ], 200);
