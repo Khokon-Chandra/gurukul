@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Role;
 
+use App\Models\Department;
+use App\Models\Role as UserRole;
 use App\Models\User;
+use Database\Factories\RoleFactory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -13,6 +16,36 @@ use Illuminate\Testing\Fluent\AssertableJson;
 
 class RoleFeatureTest extends TestCase
 {
+    public static function roleData(): array
+    {
+        return [
+            [
+                [
+                    "name" => "",
+                    "permissions" => [1, 2, 3]
+                ],
+                [
+                    "name" => "The name field is required."
+                ],
+                [
+                    "name"
+                ]
+            ],
+            [
+                [
+                    "name" => "Moderator",
+                    "permissions" => '1,2,3',
+                ],
+                [
+                    "permissions" => "The permissions field must be an array."
+                ],
+                [
+                    "permissions"
+                ]
+            ]
+        ];
+    }
+
     /**
      * A basic feature test example.
      */
@@ -42,7 +75,6 @@ class RoleFeatureTest extends TestCase
             ]
         ]);
     }
-
 
     /**
      * Update Role
@@ -146,13 +178,13 @@ class RoleFeatureTest extends TestCase
      *
      * @dataProvider roleData
      */
-    public function testRoleInputValidation($credentials, $errors, $errorKeys)
+    public function testRoleInputValidation($credentials, $errors, $errorKeys): void
     {
         Notification::fake();
 
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::where('username','administrator')->first();
+        $user = User::where('username', 'administrator')->first();
 
         $response = $this->actingAs($user)->postJson(route('users.roles.store'), $credentials);
 
@@ -165,33 +197,51 @@ class RoleFeatureTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public static function roleData()
+    public function testThatUserCanFilterRoleListBasedOnDepartmentId(): void
     {
-        return [
-            [
-                [
-                    "name" => "",
-                    "permissions" => [1, 2, 3]
-                ],
-                [
-                    "name" => "The name field is required."
-                ],
-                [
-                    "name"
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username', 'administrator')->first();
+
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
+
+        $role->permissions()->sync([1, 2, 3]);
+
+        $testRoles = UserRole::factory(3)->create();
+
+        $firstRole = $testRoles->first();
+
+        $allOtherRolesDeptIds = $testRoles->where('department_id', '!==',  $firstRole->department_id)
+            ->pluck('department_id')
+            ->toArray();
+
+
+        $response = $this->actingAs($user)->getJson(route('users.roles.index', ['department_id' => $firstRole->department_id]));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonFragment([
+            'department' => Department::findOrFail($firstRole->department_id)->name
+        ]);
+
+        foreach ($allOtherRolesDeptIds as $deptId){
+            $response->assertJsonMissing([
+                'department' => Department::findOrFail($deptId)->name
+            ]);
+        }
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'users_count',
+                    'permissions',
+                    'created_at',
+                    'updated_at'
                 ]
             ],
-            [
-                [
-                    "name" => "Moderator",
-                    "permissions" => '1,2,3',
-                ],
-                [
-                    "permissions" => "The permissions field must be an array."
-                ],
-                [
-                    "permissions"
-                ]
-            ]
-        ];
+        ]);
+
     }
 }

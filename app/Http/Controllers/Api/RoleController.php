@@ -24,7 +24,11 @@ class RoleController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $data = Role::latest()->get();
+        $query = Role::query();
+
+        $this->filterRoles($query, $request);
+
+        $data = $query->latest()->get();
 
         return RoleResource::collection($data);
     }
@@ -165,6 +169,13 @@ class RoleController extends Controller
                 'status' => 'error',
                 'message' => $error->getMessage(),
             ], 500);
+        }
+    }
+
+    private function filterRoles($query, $request): void
+    {
+        if($request->filled('department_id')){
+            $query->where('department_id', $request->department_id);
         }
     }
 }
