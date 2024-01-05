@@ -101,6 +101,7 @@ class UserController extends Controller
 
         $user->update([
             'name' => $request->name,
+            'email' => $request->email,
             'username' => $request->username,
             'role' => $request->role,
             'updated_by' => Auth::user()->id

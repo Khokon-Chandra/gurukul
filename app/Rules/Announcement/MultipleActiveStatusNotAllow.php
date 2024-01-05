@@ -2,6 +2,7 @@
 
 namespace App\Rules\Announcement;
 
+use App\Models\Announcement;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -23,10 +24,10 @@ class MultipleActiveStatusNotAllow implements ValidationRule
         $count = [];
 
         foreach($this->announcements as $item){   
-                   
+            $announcement = Announcement::find($item['id']);
             if($item['status'] ?? 1 == 1){
                 $count[
-                    $item['department_id'] ?? 1
+                    $announcement->department_id ?? 1
                 ][] = 1;
             }
         }

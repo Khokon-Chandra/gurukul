@@ -108,7 +108,6 @@ class AnnouncementTest extends FeatureBaseCase
         $announcement = Announcement::first();
 
         $response = $this->actingAs($user)->putJson(route('social.announcements.update', $announcement->id), [
-            'department_id' => 1,
             'message'       => 'update message',
             'status'        => false,
         ]);
@@ -141,9 +140,9 @@ class AnnouncementTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)->putJson(route('social.announcements.update_multiple'), [
             "announcements" => [
-                ['id' => 1,'department_id' => 1,'message' => 'update1','status'=>true],
-                ['id' => 2,'department_id' => 2,'message' => 'update2','status'=>false],
-                ['id' => 3,'department_id' => 3,'message' => 'update3','status'=>false],
+                ['id' => 1,'message' => 'update1','status'=>true],
+                ['id' => 2,'message' => 'update2','status'=>false],
+                ['id' => 3,'message' => 'update3','status'=>false],
             ]
         ]);
 
