@@ -103,7 +103,6 @@ class CashflowTest extends FeatureBaseCase
         $cashflow = Cashflow::first();
 
         $response = $this->actingAs($user)->putJson(route('finance.cashflows.update', $cashflow->id), [
-            'department_id' => 1,
             'name'          => 'Dummy text for update',
             'amount'        => 20000,
         ]);
@@ -136,13 +135,11 @@ class CashflowTest extends FeatureBaseCase
             "cashflows" => [
                 [
                     'id' => 1,
-                    'department_id' => 1,
                     'name' => 'update 1',
                     'amount' => 10000,
                 ],
                 [
                     'id' => 2,
-                    'department_id' => 1,
                     'name' => 'update 2',
                     'amount' => 20000,
                 ]
