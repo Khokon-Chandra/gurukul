@@ -100,7 +100,6 @@ class UserController extends Controller
     {
 
         $user->update([
-            'department_id' => $request->department_id,
             'name' => $request->name,
             'username' => $request->username,
             'role' => $request->role,

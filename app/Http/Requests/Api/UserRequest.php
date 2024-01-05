@@ -52,7 +52,6 @@ class UserRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'department_id' => 'required|exists:departments,id',
             'name'     => 'required|string|max:255',
             'username' => [
                 'required',
