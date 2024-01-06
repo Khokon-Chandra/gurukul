@@ -102,8 +102,7 @@ class NotificationTest extends FeatureBaseCase
         $notification = Notification::factory()->createQuietly();
 
         $response = $this->actingAs($user)->putJson(route('social.notifications.update', $notification->id), [
-            'department_id' => 1,
-            'name' => 'Dummy text for update',
+            'name'      => 'Dummy text for update',
             'amount'    => 20000,
         ]);
 
@@ -135,13 +134,11 @@ class NotificationTest extends FeatureBaseCase
             "notifications" => [
                 [
                     'id' => 1,
-                    'department_id' => 1,
                     'name' => 'update 1',
                     'amount' => 10000,
                 ],
                 [
                     'id' => 2,
-                    'department_id' => 2,
                     'name' => 'update 2',
                     'amount' => 20000,
                 ]
