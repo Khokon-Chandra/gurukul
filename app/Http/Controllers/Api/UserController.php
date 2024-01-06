@@ -100,8 +100,8 @@ class UserController extends Controller
     {
 
         $user->update([
-            'department_id' => $request->department_id,
             'name' => $request->name,
+            'email' => $request->email,
             'username' => $request->username,
             'role' => $request->role,
             'updated_by' => Auth::user()->id

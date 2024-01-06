@@ -61,7 +61,6 @@ class CashflowRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'department_id' => 'required|exists:departments,id',
             'name'          => 'required|min:1|max:255|string',
             'amount'        => 'required|numeric|decimal:0,8',
         ];
@@ -72,7 +71,6 @@ class CashflowRequest extends BaseFormRequest
         $this->rules = [
             'cashflows'                 => 'required|array|min:1',
             'cashflows.*.id'            => 'required|exists:cashflows,id',
-            'cashflows.*.department_id' => 'required|exists:departments,id',
             'cashflows.*.name'          => 'required|min:1|max:255|string',
             'cashflows.*.amount'        => 'required|numeric|decimal:0,8',
         ];
