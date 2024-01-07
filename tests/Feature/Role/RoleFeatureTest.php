@@ -93,7 +93,6 @@ class RoleFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
             'name' => Str::random(10),
-            'department_id' => 1,
             'permissions' => [1, 2, 3]
         ]);
 
