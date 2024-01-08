@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api;
 
+use App\Enum\UserTypeEnum;
 use App\Http\Requests\BaseFormRequest;
 use Illuminate\Validation\Rule;
 
@@ -33,18 +34,22 @@ class UserRequest extends BaseFormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users','username')
+                Rule::unique('users', 'username')
             ],
 
             'email' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users','email')
+                Rule::unique('users', 'email')
             ],
             'password'      => 'required|string|min:8|confirmed',
             'role' => 'required|exists:roles,id',
             'timezone' => 'nullable|string|max:100',
+            'type'     => [
+                'nullable',
+                Rule::enum(UserTypeEnum::class)
+            ]
         ];
     }
 
@@ -57,15 +62,19 @@ class UserRequest extends BaseFormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users','username')->ignore($this->route('user'))
+                Rule::unique('users', 'username')->ignore($this->route('user'))
             ],
             'email' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users','email')->ignore($this->route('user'))
+                Rule::unique('users', 'email')->ignore($this->route('user'))
             ],
-            'role' => 'required|exists:roles,id'
+            'role' => 'required|exists:roles,id',
+            'type'     => [
+                'nullable',
+                Rule::enum(UserTypeEnum::class)
+            ]
         ];
     }
 
@@ -76,7 +85,8 @@ class UserRequest extends BaseFormRequest
         ];
     }
 
-    public function passwordUpdateMethodRule(): void {
+    public function passwordUpdateMethodRule(): void
+    {
         $this->rules = [
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];

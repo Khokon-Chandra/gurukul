@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enum\UserTypeEnum;
 
 return new class extends Migration
 {
@@ -14,7 +15,6 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('department_id')->constrained('departments');
-            $table->string('type')->default('User')->index();
             $table->string('name')->index();
             $table->string('username')->unique('username')->index();
             $table->string('email')->unique()->index();
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->timestamp('last_login_at')->useCurrent();
             $table->timestamp('last_performed_at')->nullable();
             $table->boolean('status')->default(0)->comment('0= offline, 1= online');
+            $table->enum('type',[UserTypeEnum::MANAGEMENT->value, UserTypeEnum::ADMIN->value, UserTypeEnum::USER->value])->default(UserTypeEnum::USER->value)->index();
             $table->softDeletes();
         });
     }
