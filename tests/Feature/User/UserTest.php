@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\User;
 
+use App\Enum\UserTypeEnum;
 use App\Models\User;
 
 use App\Models\UserIp;
@@ -152,6 +153,7 @@ class UserTest extends FeatureBaseCase
             'password' => "123456789",
             'password_confirmation' => "123456789",
             'role'     => 1,
+            'type'     => UserTypeEnum::MANAGEMENT,
         ]);
 
         $response->assertStatus(200);
