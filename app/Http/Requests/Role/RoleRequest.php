@@ -34,7 +34,6 @@ class RoleRequest extends BaseFormRequest
                'string',
              Rule::unique('roles')->ignore($this->route('role'))
            ],
-            'department_id' => ['required', 'exists:departments,id'],
             'permissions' => ['required', 'array'],
             'permissions.*' => ['exists:permissions,id']
         ];
