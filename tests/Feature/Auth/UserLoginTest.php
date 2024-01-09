@@ -106,7 +106,7 @@ class UserLoginTest extends FeatureBaseCase
 
         $response->assertJson([
             'status' => 'error',
-            'message' => "Username has been deactivate!."
+            'message' => "Username has been deactivated!."
         ]);
     }
 
