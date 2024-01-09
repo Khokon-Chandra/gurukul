@@ -14,6 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Enum\UserTypeEnum;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -41,7 +42,7 @@ class User extends Authenticatable implements JWTSubject
         'deleted_at',
         'last_performed_at',
         'status',
-
+        'type',
     ];
 
     /**
@@ -63,6 +64,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'status'   => 'boolean',
+        'type'     =>  UserTypeEnum::class
     ];
 
     /**
