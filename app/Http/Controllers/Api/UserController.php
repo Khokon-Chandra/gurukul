@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Resources\Api\UserResource;
 use App\Http\Requests\Api\UserRequest;
-use App\Http\Resources\Api\PermissionChildResource;
-use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\GroupMemberResource;
 use App\Models\User;
 use App\Trait\CanSort;
@@ -21,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -31,19 +28,22 @@ class UserController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = User::with('roles')->filter($request);
+        $query = User::with('roles', 'department')->filter($request);
         $this->sortUserData($request, $query);
         $users = $query->latest()->paginate(AppConstant::PAGINATION);
 
         return UserResource::collection($users);
-
     }
 
 
 
     public function allUser(): AnonymousResourceCollection
     {
-        $users = User::select('id','name','username','last_login_at','status')->get();
+        $users = User::with('department')
+            ->when(request('department_id') ?? false, function ($query, $id) {
+                $query->where('department_id', $id);
+            })
+            ->select('id', 'department_id', 'name', 'username', 'last_login_at', 'status')->get();
         return GroupMemberResource::collection($users);
     }
 
@@ -79,7 +79,6 @@ class UserController extends Controller
                 'message' => 'User Created Successfully',
                 'data' => $user->load('roles'),
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
@@ -100,10 +99,11 @@ class UserController extends Controller
 
         $user->update([
             'name' => $request->name,
+            'email' => $request->email,
             'username' => $request->username,
-            'password' => $request->password,
             'role' => $request->role,
-            'updated_by' => Auth::user()->id
+            'updated_by' => Auth::user()->id,
+            'type'       => $request->type,
         ]);
         $user->roles()->sync([$request->role]);
 
@@ -184,9 +184,9 @@ class UserController extends Controller
             ])
             ->log(":causer.name updated Password");
 
-       return response()->json([
-           'status' => "successful",
-           'message' => "Password Update Successful"
-       ]);
+        return response()->json([
+            'status' => "successful",
+            'message' => "Password Update Successful"
+        ]);
     }
 }

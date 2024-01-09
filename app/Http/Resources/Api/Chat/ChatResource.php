@@ -16,13 +16,15 @@ class ChatResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'message'    => $this->message,
-            'date'       => $this->date,
-            'time'       => $this->time,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'user'       => new UserResource($this->user),
+            'id'            => $this->id,
+            'message'       => $this->message,
+            'date'          => $this->date,
+            'time'          => $this->time,
+            'created_at'    => $this->created_at,
+            'updated_at'    => $this->updated_at,
+            'user'          => new UserResource($this->user),
+            'department'    => $this->user->department->name ?? 'N/A',
+            'department_id' => $this->user->department_id ?? null,
         ];
     }
 }

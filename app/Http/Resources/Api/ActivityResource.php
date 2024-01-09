@@ -18,9 +18,10 @@ class ActivityResource extends JsonResource
             'id'            => $this->id,
             'log_name'      => $this->log_name,
             'description'   => $this->description,
-            'ip'            => json_decode($this->properties)->ip,
-            'target'        => json_decode($this->properties)->target,
-            'activity'      => json_decode($this->properties)->activity,
+            'ip'            => $this->properties['ip'] ?? null,
+            'target'        => $this->properties['target'] ?? null,
+            'department' => is_null($this->subject) ? null :  $this->subject->department?->name,
+            'activity'      => $this->properties['activity'] ?? null,
             'cause_by'      => [
                 'id' => $this->causer->id,
                 'name' => $this->causer->name,
@@ -30,7 +31,8 @@ class ActivityResource extends JsonResource
             ],
             'created_at'    => $this->created_at->format('d-F-Y h:i'),
             'human_diff'    => $this->created_at->diffForHumans(),
-            
+
+
         ];
     }
 }

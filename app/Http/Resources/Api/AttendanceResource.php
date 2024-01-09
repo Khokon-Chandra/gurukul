@@ -21,7 +21,7 @@ class AttendanceResource extends JsonResource
             'name'       => $this->name,
             'amount'     => number_format($this->amount,2),
             'date'       => $this->created_at->format('d-M-Y h:i A'),
-            'department' => $this->department->name,
+            'department' => $this->department->name ?? 'N/A',
             'created_by' => new UserResource($this->createdBy),
         ];
     }

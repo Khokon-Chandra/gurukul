@@ -61,7 +61,6 @@ class AttendanceRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'department_id' => 'required|exists:departments,id',
             'name'          => 'required|min:1|max:255|string',
             'amount'        => 'required|numeric|decimal:0,8',
         ];
@@ -74,7 +73,6 @@ class AttendanceRequest extends BaseFormRequest
             'attendances.*.id'     => 'required|exists:attendances,id',
             'attendances.*.name'   => 'required|min:1|max:255|string',
             'attendances.*.amount' => 'required|numeric|decimal:0,8',
-            'attendances.*.department_id' => 'required|exists:departments,id',
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\User;
 
+use App\Enum\UserTypeEnum;
 use App\Models\User;
 
 use App\Models\UserIp;
@@ -28,7 +29,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly();
 
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
 
@@ -147,10 +148,12 @@ class UserTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)->putJson(route('users.update.user', ['user' =>  2]), [
             'username' => "test_user",
-            'name' => "Test User Updated",
+            'name'     => "Test User Updated",
+            'email'    => "info123@example.com",
             'password' => "123456789",
             'password_confirmation' => "123456789",
-            'role' => 1,
+            'role'     => 1,
+            'type'     => UserTypeEnum::MANAGEMENT,
         ]);
 
         $response->assertStatus(200);
@@ -257,7 +260,7 @@ class UserTest extends FeatureBaseCase
         $users = User::factory(3)->create();
 
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
         $usersFilters = $users->pluck('name')
@@ -433,11 +436,7 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-                        'id',
-                        'name',
-                        'created_at',
-                    ]
+                    'role' => []
                 ]
             ],
             'meta' => [

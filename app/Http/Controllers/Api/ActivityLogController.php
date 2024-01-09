@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Spatie\Activitylog\Models\Activity;
+use function Clue\StreamFilter\fun;
 
 class ActivityLogController extends Controller
 {
@@ -21,7 +22,7 @@ class ActivityLogController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Activity::with('causer');
+        $query = Activity::with('subject');
 
         $data = $this->filter($query, $request)
             ->latest()
@@ -34,8 +35,9 @@ class ActivityLogController extends Controller
 
     public function download(Request $request): AnonymousResourceCollection
     {
-        $query = Activity::with('causer');
-        
+
+        $query = Activity::with('subject');
+
         $data  = $this->filter($query, $request)
             ->latest()
             ->get()->map(function($item, $index){
@@ -55,6 +57,11 @@ class ActivityLogController extends Controller
         return $query
             ->when($request->description ?? false, function ($query, $description) {
                 $query->where('description', 'like', "%{$description}%");
+            })
+            ->when($request->department_id, function($query, $departmentId){
+                $query->whereHas('subject', function($query) use($departmentId) {
+                    $query->where('department_id', $departmentId);
+                });
             })
             ->when($request->log_name ?? false, function ($query, $logName) {
                 $query->where('log_name', 'like', "%{$logName}%");

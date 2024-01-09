@@ -190,7 +190,6 @@ class UserIpTest extends FeatureBaseCase
         $userIp = UserIp::factory()->create();
 
         $response = $this->actingAs($user)->putJson(route('users.ip.update',$userIp->id), [
-            'department_id' => 1,
             'number1' => 103,
             'number2' => 15,
             'number3' => 245,
@@ -247,7 +246,6 @@ class UserIpTest extends FeatureBaseCase
                 [
                     "id" => 1,
                     "item" => [
-                        'department_id' => 1,
                         "number1" => "103",
                         "number2" => "15",
                         "number3" => "245",
@@ -259,7 +257,6 @@ class UserIpTest extends FeatureBaseCase
                 [
                     "id" => 2,
                     "item" => [
-                        'department_id' => 1,
                         "number1" => "103",
                         "number2" => "15",
                         "number3" => "245",

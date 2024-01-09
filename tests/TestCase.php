@@ -9,10 +9,5 @@ use Spatie\Permission\Models\Role;
 
 abstract class TestCase extends BaseTestCase
 {
-
     use CreatesApplication;
-
-
-
-
 }

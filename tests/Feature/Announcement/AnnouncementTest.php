@@ -26,6 +26,7 @@ class AnnouncementTest extends FeatureBaseCase
             'message'       => 'Dummy text for announcement message',
             'status'        => rand(0, 1)
         ]);
+        
 
         $response->assertStatus(200);
 
@@ -107,7 +108,6 @@ class AnnouncementTest extends FeatureBaseCase
         $announcement = Announcement::first();
 
         $response = $this->actingAs($user)->putJson(route('social.announcements.update', $announcement->id), [
-            'department_id' => 1,
             'message'       => 'update message',
             'status'        => false,
         ]);
@@ -140,9 +140,9 @@ class AnnouncementTest extends FeatureBaseCase
 
         $response = $this->actingAs($user)->putJson(route('social.announcements.update_multiple'), [
             "announcements" => [
-                ['id' => 1,'department_id' => 1,'message' => 'update1','status'=>true],
-                ['id' => 2,'department_id' => 2,'message' => 'update2','status'=>false],
-                ['id' => 3,'department_id' => 3,'message' => 'update3','status'=>false],
+                ['id' => 1,'message' => 'update1','status'=>true],
+                ['id' => 2,'message' => 'update2','status'=>false],
+                ['id' => 3,'message' => 'update3','status'=>false],
             ]
         ]);
 
@@ -250,14 +250,14 @@ class AnnouncementTest extends FeatureBaseCase
 
 
         $response = $this->actingAs($user)->patchJson(route('social.announcements.update_status'), [
-            'announcement_id' =>    $CreateAnnouncements->first()->id,
+            'announcement_id' => $CreateAnnouncements->first()->id,
         ]);
 
         $response->assertStatus(200);
 
-        $updatedAnnouncement = Announcement::find(($CreateAnnouncements->first())->id);
-        $allOtherAnnouncements = Announcement::where('id', '!=', ($CreateAnnouncements->first())->id)->get();
-
+        $updatedAnnouncement   = Announcement::find(($CreateAnnouncements->first())->id);
+        $allOtherAnnouncements = Announcement::where('department_id',$CreateAnnouncements->first()->department_id)
+        ->where('id', '!=', ($CreateAnnouncements->first())->id)->get();
 
         $this->assertTrue($updatedAnnouncement->status);
 
@@ -344,7 +344,8 @@ class AnnouncementTest extends FeatureBaseCase
         $response->assertJsonStructure([
             'data' =>[
                 'message',
-                'status'
+                'status',
+                'department' => []
             ]
         ]);
     }

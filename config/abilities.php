@@ -15,7 +15,6 @@ return [
     ],
 
     'route_permissions' => [
-
         'users.user.index' => [
             'module_name' => 'user.access.users.user_list',
             'name' => 'user.access.users.user_list',
@@ -189,21 +188,21 @@ return [
             'name' => 'user.access.users.attendance.delete-multiple-attendance',
             'display_name' => 'Delete Multiple Attendance',
             'group_by' => 'attendance',
-            'sort' => 3,
+            'sort' => 4,
         ],
         'users.attendances.update' => [
-            'module_name' => 'user.access.attendance.update-attendance',
-            'name' => 'user.access.attendance.update-attendance',
+            'module_name' => 'user.access.users.attendance.update-attendance',
+            'name' => 'user.access.users.attendance.update-attendance',
             'display_name' => 'Update Attendance',
             'group_by' => 'attendance',
-            'sort' => 4,
+            'sort' => 5,
         ],
         'users.attendances.update_multiple' => [
-            'module_name' => 'user.access.attendance.update_multiple',
-            'name' => 'user.access.attendance.update_multiple',
+            'module_name' => 'user.access.users.attendance.update_multiple',
+            'name' => 'user.access.users.attendance.update_multiple',
             'display_name' => 'Update Multiple Attendance',
             'group_by' => 'attendance',
-            'sort' => 4,
+            'sort' => 6,
         ],
         'finance.cashflows.index' => [
             'module_name' => 'user.access.finance.cash_flow',
@@ -347,7 +346,6 @@ return [
             'sort' => 1,
         ],
         'social.announcements.show' => [
-
             'module_name' => 'user.access.social.announcement',
             'name' => 'user.access.social.announcement',
             'display_name' => 'Announcement List',

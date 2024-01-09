@@ -10,4 +10,6 @@ class Role extends ModelsRole
 {
     use HasFactory;
 
+
+
 }

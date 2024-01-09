@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Role;
 
+use App\Models\Department;
+use App\Models\Role as UserRole;
 use App\Models\User;
+use Database\Factories\RoleFactory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -13,155 +16,7 @@ use Illuminate\Testing\Fluent\AssertableJson;
 
 class RoleFeatureTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function testUserRoleCreation(): void
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username', 'administrator')->first();
-
-
-        $response = $this->actingAs($user)->postJson(route('users.roles.store'), [
-            'name' => Str::random(10),
-            'permissions' => [1, 2, 3]
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            "status",
-            "message",
-            "data" => [
-                "guard_name",
-                "name",
-                "updated_at",
-                "created_at",
-                "id",
-            ]
-        ]);
-    }
-
-
-    /**
-     * Update Role
-     */
-    public function testUserRoleUpdate(): void
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username', 'administrator')->first();
-
-        $role = Role::create([
-            'name' => 'Test_Role'
-        ]);
-
-
-        $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
-            'name' => Str::random(10),
-            'permissions' => [1, 2, 3]
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            "status",
-            "message",
-            "data" => [
-                "id",
-                "name",
-                'users_count',
-                'permissions',
-                "updated_at",
-                "created_at",
-
-            ]
-        ]);
-    }
-
-    /**
-     * Delete Role
-     */
-
-    public function testUserRoleDelete(): void
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username', 'administrator')->first();
-
-        $role = Role::create([
-            'name' => 'Test_Role'
-        ]);
-
-
-        $response = $this->actingAs($user)->deleteJson(route('users.roles.destroy', $role->id));
-
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            "status",
-            "message",
-            "data"
-        ]);
-    }
-
-    /**
-     * Role List
-     */
-    public function testUserRoleList(): void
-    {
-        $this->artisan('migrate:fresh --seed');
-
-
-        $user = User::where('username', 'administrator')->first();
-
-        $role = Role::create(['name' => 'Admin']);
-
-        $role->permissions()->sync([1, 2, 3]);
-
-
-        $response = $this->actingAs($user)->getJson(route('users.roles.index'));
-
-        $response->assertStatus(200);
-
-        $response->assertJsonStructure([
-            'data' => [
-                '*' => [
-                    'id',
-                    'name',
-                    'users_count',
-                    'permissions',
-                    'created_at',
-                    'updated_at'
-                ]
-            ],
-        ]);
-    }
-
-    /**
-     * @test
-     *
-     * @dataProvider roleData
-     */
-    public function testRoleInputValidation($credentials, $errors, $errorKeys)
-    {
-        Notification::fake();
-
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username','administrator')->first();
-
-        $response = $this->actingAs($user)->postJson(route('users.roles.store'), $credentials);
-
-        $response->assertJsonValidationErrors($errorKeys);
-
-        foreach ($errorKeys as $errorKey) {
-            $response->assertJsonValidationErrorFor($errorKey);
-        }
-
-        $response->assertStatus(422);
-    }
-
-    public static function roleData()
+    public static function roleData(): array
     {
         return [
             [
@@ -189,5 +44,203 @@ class RoleFeatureTest extends TestCase
                 ]
             ]
         ];
+    }
+
+    /**
+     * A basic feature test example.
+     */
+    public function testUserRoleCreation(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username', 'administrator')->first();
+
+        $response = $this->actingAs($user)->postJson(route('users.roles.store'), [
+            'name' => Str::random(10),
+            'department_id' => 1,
+            'permissions' => [1, 2, 3]
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            "status",
+            "message",
+            "data" => [
+                "guard_name",
+                "department_id",
+                "name",
+                "updated_at",
+                "created_at",
+                "id",
+            ]
+        ]);
+    }
+
+    /**
+     * Update Role
+     */
+    public function testUserRoleUpdate(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username', 'administrator')->first();
+
+        $role = Role::create([
+            'name' => 'Test_Role',
+            'department_id' => 1
+        ]);
+
+
+        $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
+            'name' => Str::random(10),
+            'permissions' => [1, 2, 3]
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            "status",
+            "message",
+            "data" => [
+                "id",
+                "name",
+                'users_count',
+                'department',
+                'permissions',
+                "updated_at",
+                "created_at",
+            ]
+        ]);
+    }
+
+    /**
+     * Delete Role
+     */
+
+    public function testUserRoleDelete(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username', 'administrator')->first();
+
+        $role = Role::create([
+            'name' => 'Test_Role',
+            'department_id' => 1
+        ]);
+
+
+        $response = $this->actingAs($user)->deleteJson(route('users.roles.destroy', $role->id));
+
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            "status",
+            "message",
+            "data"
+        ]);
+    }
+
+    /**
+     * Role List
+     */
+    public function testUserRoleList(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+
+        $user = User::where('username', 'administrator')->first();
+
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
+
+        $role->permissions()->sync([1, 2, 3]);
+
+
+        $response = $this->actingAs($user)->getJson(route('users.roles.index'));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'users_count',
+                    'permissions',
+                    'created_at',
+                    'updated_at'
+                ]
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider roleData
+     */
+    public function testRoleInputValidation($credentials, $errors, $errorKeys): void
+    {
+        Notification::fake();
+
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username', 'administrator')->first();
+
+        $response = $this->actingAs($user)->postJson(route('users.roles.store'), $credentials);
+
+        $response->assertJsonValidationErrors($errorKeys);
+
+        foreach ($errorKeys as $errorKey) {
+            $response->assertJsonValidationErrorFor($errorKey);
+        }
+
+        $response->assertStatus(422);
+    }
+
+    public function testThatUserCanFilterRoleListBasedOnDepartmentId(): void
+    {
+        $this->artisan('migrate:fresh --seed');
+
+        $user = User::where('username', 'administrator')->first();
+
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
+
+        $role->permissions()->sync([1, 2, 3]);
+
+        $testRoles = UserRole::factory(3)->create();
+
+        $firstRole = $testRoles->first();
+
+        $allOtherRolesDeptIds = $testRoles->where('department_id', '!==',  $firstRole->department_id)
+            ->pluck('department_id')
+            ->toArray();
+
+
+        $response = $this->actingAs($user)->getJson(route('users.roles.index', ['department_id' => $firstRole->department_id]));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonFragment([
+            'department' => Department::findOrFail($firstRole->department_id)->name
+        ]);
+
+        foreach ($allOtherRolesDeptIds as $deptId){
+            $response->assertJsonMissing([
+                'department' => Department::findOrFail($deptId)->name
+            ]);
+        }
+
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'users_count',
+                    'permissions',
+                    'created_at',
+                    'updated_at'
+                ]
+            ],
+        ]);
+
     }
 }

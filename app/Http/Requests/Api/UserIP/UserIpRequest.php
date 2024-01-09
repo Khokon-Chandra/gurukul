@@ -66,7 +66,6 @@ class UserIpRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'department_id' => 'required|numeric',
             'number1' => 'required|min:1|max:255|numeric',
             'number2' => 'required|min:0|max:255|numeric',
             'number3' => 'required|min:0|max:255|numeric',
@@ -82,7 +81,6 @@ class UserIpRequest extends BaseFormRequest
             'items' => 'required|array',
             'items.*.id' => 'required|integer',
             'items.*.item' => 'required|array',
-            'items.*.item.department_id' => 'required|numeric',
             'items.*.item.number1' => 'required|integer',
             'items.*.item.number2' => 'required|integer',
             'items.*.item.number3' => 'required|integer',

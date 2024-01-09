@@ -103,7 +103,6 @@ class AttendanceTest extends FeatureBaseCase
         $attendance = Attendance::factory()->createQuietly();
 
         $response = $this->actingAs($user)->putJson(route('users.attendances.update', $attendance->id), [
-            'department_id' => 1,
             'name' => 'Dummy text for update',
             'amount'    => 20000,
         ]);
@@ -134,13 +133,11 @@ class AttendanceTest extends FeatureBaseCase
         $response = $this->actingAs($user)->patchJson(route('users.attendances.update_multiple'), [
             "attendances" => [
                 [
-                    'department_id' => 1,
                     'id' => 1,
                     'name' => 'update 1',
                     'amount' => 10000,
                 ],
                 [
-                    'department_id' => 2,
                     'id' => 2,
                     'name' => 'update 2',
                     'amount' => 20000,

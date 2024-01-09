@@ -49,7 +49,6 @@ class AnnouncementRequest extends BaseFormRequest
     public function updateMethodRule(): void
     {
         $this->rules = [
-            'department_id' => 'required|exists:departments,id',
             'message'       => 'required|max:255',
             'status'        => 'required|boolean'
         ];
@@ -60,7 +59,6 @@ class AnnouncementRequest extends BaseFormRequest
     {
         $this->rules = [
             'announcements'                 => ['required', 'array', 'min:1'],
-            'announcements.*.department_id' => ['required', 'exists:departments,id'],
             'announcements.*.id'            => ['required', 'exists:announcements,id'],
             'announcements.*.message'       => ['required', 'string', 'max:255'],
             'announcements.*.status'        => ['required', 'boolean',new MultipleActiveStatusNotAllow($this->announcements)],

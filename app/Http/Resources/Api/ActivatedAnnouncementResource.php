@@ -15,8 +15,9 @@ class ActivatedAnnouncementResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'message' => $this->message ?? '',
-            'status'  => $this->status ?? '0'
+            'message'    => $this->message ?? '',
+            'status'     => $this->status ?? '0',
+            'department' => new DepartmentResource($this->department ?? null),
         ];
     }
 }
