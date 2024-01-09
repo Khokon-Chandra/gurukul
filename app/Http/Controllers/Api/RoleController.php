@@ -93,7 +93,6 @@ class RoleController extends Controller
 
             $role->update([
                 'name' => $request->name,
-                'department_id' => $request->department_id,
             ]);
 
             $role->permissions()->detach();
