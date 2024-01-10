@@ -29,6 +29,7 @@ class UserFactory extends Factory
             'username' => fake()->unique()->userName(),
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
+            'avatar'         => 'https://i.pravatar.cc/150?img='.rand(1,150),
         ];
     }
 
