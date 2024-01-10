@@ -21,7 +21,7 @@ class AuthController extends Controller
     {
         $this->validate($request, [
             'username' => ['required', 'min:2', 'exists:users'],
-            'password' => 'required|min:5',
+            'password' => ['required', 'min:5'],
         ]);
 
         $user = User::where('username', $request->username)
@@ -31,7 +31,7 @@ class AuthController extends Controller
         if (!$user->active) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Username has been deactivate!.',
+                'message' => 'Username has been deactivated!.',
                 'permission_access' => false,
             ], 400);
         }
