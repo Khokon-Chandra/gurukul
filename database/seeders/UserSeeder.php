@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enum\UserTypeEnum;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -23,6 +24,8 @@ class UserSeeder extends Seeder
             'email'             => 'test@example.com',
             'password'          => Hash::make('password'),
             'email_verified_at' => now(),
+            'type'              => UserTypeEnum::ADMIN,
+            'avatar'            => 'https://i.pravatar.cc/150?img=11'
         ]);
 
         $user->assignRole('Administrator');

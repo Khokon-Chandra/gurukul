@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\CashflowController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
@@ -22,6 +23,7 @@ Route::group(['middleware' => ['auth:api']], function () {
      * Service module routes
      */
     Route::name('service.')->group(function () {
+        Route::get('dashboard',[DashboardController::class,'index'])->name('dashboard.index');
         Route::get('departments', [DepartmentController::class, 'index'])
             ->name('departments.index');
     });
@@ -62,10 +64,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::delete('delete-user', [UserController::class, 'deleteUser'])->name('delete.user');
     });
 
-    Route::name('user.')->group(function(){
-        Route::put('change-password/{user}', [UserController::class, 'changePassword'])
-            ->name('change.password');
-    });
+
 
     /**
      * Finance routes

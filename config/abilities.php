@@ -415,6 +415,13 @@ return [
             'group_by' => 'departments',
             'sort' => 1,
         ],
+        'service.dashboard.index' =>[
+            'module_name' => 'user.access.social.dashboard',
+            'name' => 'user.access.social.dashboard',
+            'display_name' => 'User Can View Dashboard',
+            'group_by' => 'dashboard',
+            'sort' => 2,
+        ],
         'users.permissions.index' =>[
             'module_name' => 'user.access.users.permissions',
             'name' => 'user.access.users.permissions',
