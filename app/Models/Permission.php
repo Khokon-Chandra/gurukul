@@ -23,7 +23,9 @@ class Permission extends \Spatie\Permission\Models\Permission
                     $level[0] === 'user' &&
                     $level[1] === 'access';
 
-                return $item->type === 'user' && $condition2;
+                $condition3  = $item->group_by != 'permissions';
+
+                return $item->type === 'user' && $condition2 && $condition3;
             } catch (\Exception $e) {
                 Log::error($e);
                 return false;
