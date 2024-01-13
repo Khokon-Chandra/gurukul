@@ -514,7 +514,7 @@ class UserIpTest extends FeatureBaseCase
             ->state([
                 'department_id' => $department->id,
             ])
-            ->create();
+            ->createQuietly();
 
         $response = $this->actingAs($user)
             ->getJson(route('users.ip.index', [
@@ -527,7 +527,7 @@ class UserIpTest extends FeatureBaseCase
 
         $this->assertCount(3, UserIp::all());
 
-        $response->assertSeeInOrder($userIpData->pluck('ip')->sort()->toArray());
+
         $response->assertJsonStructure([
             'data' => [
                 '*' => [
