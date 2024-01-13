@@ -95,7 +95,6 @@ Route::name('social.')->group(function () {
     Route::apiResource('announcements', AnnouncementController::class)->except('show');
     Route::put('announcements-update-multiple', [AnnouncementController::class, 'updateMultiple'])->name('announcements.update_multiple');
     Route::patch('update-announcement-status', [AnnouncementController::class, 'updateStatus'])->name('announcements.update_status');
-    Route::get('get-announcement-data', [AnnouncementController::class, 'getData'])->name('announcements.data');
     Route::delete('/announcements-delete-multiple', [AnnouncementController::class, 'deleteMultiple'])->name('announcements.delete_multiple');
     Route::get('activated-announcement', [AnnouncementController::class, 'activated'])->name('announcements.activated');
 });

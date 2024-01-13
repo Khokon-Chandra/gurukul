@@ -329,12 +329,5 @@ class AnnouncementController extends Controller
     }
 
 
-    public function getData(Request $request): JsonResponse
-    {
-        $announcement = Announcement::where('status', true)->firstOrFail();
-        return response()->json([
-            'status' => 'success',
-            'data' =>  new AnnouncementResource($announcement)
-        ], 200);
-    }
+
 }
