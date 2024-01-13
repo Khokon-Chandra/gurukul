@@ -263,6 +263,7 @@ class UserTest extends FeatureBaseCase
 
         $response->assertStatus(200);
 
+
         $descPattern = '/^[zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA]+/';
 
 
@@ -273,6 +274,7 @@ class UserTest extends FeatureBaseCase
         $firstName =   $firstNameParts[0];
 
         $this->assertMatchesRegularExpression($descPattern,   $firstName);
+
 
         $response->assertJsonStructure([
             "data" => [
@@ -311,14 +313,15 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
+
         $users = User::all();
 
         $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
-
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
         $response->assertStatus(200);
+
 
         $descPattern = '/^[zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA]+/';
 
@@ -327,6 +330,7 @@ class UserTest extends FeatureBaseCase
 
 
         $this->assertMatchesRegularExpression($descPattern,   $firstUserName);
+
 
 
         $response->assertJsonStructure([
@@ -448,3 +452,4 @@ class UserTest extends FeatureBaseCase
         ]);
     }
 }
+
