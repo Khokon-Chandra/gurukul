@@ -324,11 +324,11 @@ return [
             'sort' => 2,
         ],
         'social.announcements.update_status' =>[
-            'module_name' => 'user.access.social.announcement.update-announcement-status',
-            'name' => 'user.access.social.announcement.update-announcement-status',
-            'display_name' => 'User Can Update Announcement Status',
+            'module_name' => 'user.access.social.announcement.update-announcement',
+            'name' => 'user.access.social.announcement.update-announcement',
+            'display_name' => 'User Can Update Announcement',
             'group_by' => 'announcement',
-            'sort' => 3,
+            'sort' => 2,
         ],
         'social.announcements.activated' =>[
             'module_name' => 'user.access.social.announcement.update-announcement-status',
