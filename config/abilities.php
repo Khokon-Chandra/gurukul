@@ -103,18 +103,18 @@ return [
         ],
         
         'users.ip.delete-multiple' => [
-            'module_name' => 'user.access.users.ip.perform-ip-tasks',
-            'name' => 'user.access.users.perform-ip-tasks',
-            'display_name' => 'Perform User Ip Related Tasks',
+            'module_name' => 'user.access.users.ip.delete',
+            'name' => 'user.access.users.ip.delete',
+            'display_name' => 'Delete User IP',
             'group_by' => 'ip',
-            'sort' => 2,
+            'sort' => 5,
         ],
         'users.ip.multi_update' => [
-            'module_name' => 'user.access.users.ip.perform-ip-tasks',
-            'name' => 'user.access.users.perform-ip-tasks',
-            'display_name' => 'Perform User Ip Related Tasks',
+            'module_name' => 'user.access.users.ip.update',
+            'name' => 'user.access.users.ip.update',
+            'display_name' => 'Update User IP',
             'group_by' => 'ip',
-            'sort' => 2,
+            'sort' => 4,
         ],
         'users.ip.store' => [
             'module_name' => 'user.access.users.ip.create',
@@ -223,6 +223,13 @@ return [
             'group_by' => 'cash_flow',
             'sort' => 4,
         ],
+        'social.users.all' => [
+            'module_name' => 'user.access.social.chat',
+            'name' => 'user.access.social.chat',
+            'display_name' => 'Users Chat',
+            'group_by' => 'group',
+            'sort' => 1,
+        ],
         'social.groups.index' => [
             'module_name' => 'user.access.social.chat',
             'name' => 'user.access.social.chat',
@@ -231,8 +238,8 @@ return [
             'sort' => 1,
         ],
         'social.groups.members' => [
-            'module_name' => 'user.access.social.group.members',
-            'name' => 'user.access.social.group.members',
+            'module_name' => 'user.access.social.chat.members',
+            'name' => 'user.access.social.chat.members',
             'display_name' => 'Users Group',
             'group_by' => 'group',
             'sort' => 1,
@@ -251,13 +258,7 @@ return [
             'group_by' => 'group',
             'sort' => 3,
         ],
-        'social.users.all' => [
-            'module_name' => 'user.access.users.contact',
-            'name' => 'user.access.users.contact',
-            'display_name' => 'Display User user_list',
-            'group_by' => 'user_list',
-            'sort' => 4,
-        ],
+        
         'social.notifications.index' => [
             'module_name' => 'user.access.social.notification',
             'name' => 'user.access.social.notification',
@@ -351,11 +352,11 @@ return [
             'sort' => 6,
         ],
         'social.announcements.data' =>[
-            'module_name' => 'user.access.social.announcement.view-announcement-data',
-            'name' => 'user.access.social.announcement.view-announcement-data',
-            'display_name' => 'User Can View Announcement Data',
+            'module_name' => 'user.access.social.announcement',
+            'name' => 'user.access.social.announcement',
+            'display_name' => 'Announcement List',
             'group_by' => 'announcement',
-            'sort' => 7,
+            'sort' => 1,
         ],
         'social.announcements.delete_multiple' =>[
             'module_name' => 'user.access.social.announcement.delete-announcement',
@@ -363,13 +364,6 @@ return [
             'display_name' => 'User Can Delete Announcement',
             'group_by' => 'announcement',
             'sort' => 6,
-        ],
-        'service.departments.index' =>[
-            'module_name' => 'user.access.social.departments.list',
-            'name' => 'user.access.social.departments.list',
-            'display_name' => 'User Can View Departments',
-            'group_by' => 'departments',
-            'sort' => 1,
         ],
         'service.dashboard.index' =>[
             'module_name' => 'user.access.social.dashboard',

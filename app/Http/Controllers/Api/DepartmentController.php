@@ -12,7 +12,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class DepartmentController extends Controller
 {
-    use Authorizable;
     /**
      * Display a listing of the resource.
      */
