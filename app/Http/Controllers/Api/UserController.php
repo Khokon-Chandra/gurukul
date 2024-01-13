@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -62,6 +63,8 @@ class UserController extends Controller
             $input['password'] = Hash::make($request->password);
             $user = User::create($input);
             $user->roles()->sync([$request->role]);
+
+            Cache::forget('dashboard');
 
             activity('create_user')->causedBy(Auth::user()->id ?? 1)
                 ->performedOn($user)
@@ -153,6 +156,8 @@ class UserController extends Controller
 
                 $user->delete();
             }
+
+            Cache::forget('dashboard');
 
             return response()->json([
                 'status' => 'successful',

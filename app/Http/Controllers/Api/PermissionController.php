@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\PermissionChildResource;
-use App\Http\Resources\Api\PermissionResource;
-use App\Models\UserPermission;
 use App\Trait\Authorizable;
 use App\Trait\HasPermissionsStructure;
 use Illuminate\Http\Request;

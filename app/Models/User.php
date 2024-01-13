@@ -133,7 +133,7 @@ class User extends Authenticatable implements JWTSubject
 
             ->when(
                 $request->department_id ?? false, fn($query, $department_id) => $query
-                    ->where('department_id',$department_id)
+                    ->where('users.department_id',$department_id)
             );
 
     }

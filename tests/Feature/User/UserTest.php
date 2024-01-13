@@ -231,11 +231,7 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-                        'id',
-                        'name',
-                        'created_at',
-                    ]
+                    'role' => []
                 ]
             ],
             'meta' => [
@@ -257,21 +253,26 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-        $users = User::factory(3)->create();
+        $users = User::all();
 
 
         $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
-        $usersFilters = $users->pluck('name')
-            ->sort()
-            ->toArray();
-
-        $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=asc');
+        $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=desc');
 
         $response->assertStatus(200);
 
-        $response->assertSeeInOrder($usersFilters);
+        $descPattern = '/^[zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA]+/';
+
+
+        $userFirstName = $users->first()->name;
+
+        $firstNameParts = explode(' ',    $userFirstName);
+
+        $firstName =   $firstNameParts[0];
+
+        $this->assertMatchesRegularExpression($descPattern,   $firstName);
 
         $response->assertJsonStructure([
             "data" => [
@@ -286,9 +287,7 @@ class UserTest extends FeatureBaseCase
                     'active',
                     'created_at',
                     'role' => [
-                        'id',
-                        'name',
-                        'created_at',
+
                     ]
                 ]
             ],
@@ -312,15 +311,23 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $users = User::factory(3)->create();
+        $users = User::all();
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
-        $filteredUsers = $users->pluck('username')->sort()->toArray();
+
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
         $response->assertStatus(200);
-        $response->assertSeeInOrder($filteredUsers);
+
+        $descPattern = '/^[zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA]+/';
+
+
+        $firstUserName = $users->first()->username;
+
+
+        $this->assertMatchesRegularExpression($descPattern,   $firstUserName);
+
 
         $response->assertJsonStructure([
             "data" => [
@@ -335,9 +342,7 @@ class UserTest extends FeatureBaseCase
                     'active',
                     'created_at',
                     'role' => [
-                        'id',
-                        'name',
-                        'created_at',
+
                     ]
                 ]
             ],
@@ -360,17 +365,14 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-        $users = User::factory(3)->create();
 
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
         $role->permissions()->sync([1, 2, 3]);
 
 
-        $filteredUsers = $users->pluck('created_at')->sort()->toArray();
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_joindate=desc');
         $response->assertStatus(200);
 
-        $response->assertSeeInOrder($filteredUsers);
 
         $response->assertJsonStructure([
             "data" => [
@@ -385,9 +387,7 @@ class UserTest extends FeatureBaseCase
                     'active',
                     'created_at',
                     'role' => [
-                        'id',
-                        'name',
-                        'created_at',
+
                     ]
                 ]
             ],

@@ -22,13 +22,7 @@ return [
             'group_by' => 'user_list',
             'sort' => 1,
         ],
-        'users.user.show' => [
-            'module_name' => 'user.access.users.view',
-            'name' => 'user.access.users.view',
-            'display_name' => 'Display User user_list',
-            'group_by' => 'user_list',
-            'sort' => 1,
-        ],
+       
         'user.change.password' => [
             'module_name' => 'user.access.users.user_list.change-password',
             'name' => 'user.access.users.user_list.change-password',
@@ -78,13 +72,7 @@ return [
             'group_by' => 'role',
             'sort' => 1,
         ],
-        'users.roles.show' => [
-            'module_name' => 'user.access.users.role.view',
-            'name' => 'user.access.users.role.view',
-            'display_name' => 'Can View User Role List',
-            'group_by' => 'role',
-            'sort' => 1,
-        ],
+        
         'users.roles.store' => [
             'module_name' => 'user.access.users.role.create',
             'name' => 'user.access.users.role.create',
@@ -113,13 +101,7 @@ return [
             'group_by' => 'ip',
             'sort' => 1,
         ],
-        'users.ip.show' => [
-            'module_name' => 'user.access.users.ip',
-            'name' => 'user.access.users.ip',
-            'display_name' => 'Can View User IP list',
-            'group_by' => 'ip',
-            'sort' => 1,
-        ],
+        
         'users.ip.delete-multiple' => [
             'module_name' => 'user.access.users.ip.perform-ip-tasks',
             'name' => 'user.access.users.perform-ip-tasks',
@@ -162,13 +144,7 @@ return [
             'group_by' => 'attendance',
             'sort' => 1,
         ],
-        'users.attendances.show' => [
-            'module_name' => 'user.access.users.attendance',
-            'name' => 'user.access.users.attendance',
-            'display_name' => 'List Attendance',
-            'group_by' => 'attendance',
-            'sort' => 1,
-        ],
+        
         'users.attendances.store' => [
             'module_name' => 'user.access.users.attendance.create-attendance',
             'name' => 'user.access.users.attendance.create-attendance',
@@ -184,11 +160,11 @@ return [
             'sort' => 3,
         ],
         'users.attendances.delete_multiple' => [
-            'module_name' => 'user.access.users.attendance.delete-multiple-attendance',
-            'name' => 'user.access.users.attendance.delete-multiple-attendance',
-            'display_name' => 'Delete Multiple Attendance',
+            'module_name' => 'user.access.users.attendance.delete-attendance',
+            'name' => 'user.access.users.attendance.delete-attendance',
+            'display_name' => 'Delete Attendance',
             'group_by' => 'attendance',
-            'sort' => 4,
+            'sort' => 3,
         ],
         'users.attendances.update' => [
             'module_name' => 'user.access.users.attendance.update-attendance',
@@ -198,11 +174,11 @@ return [
             'sort' => 5,
         ],
         'users.attendances.update_multiple' => [
-            'module_name' => 'user.access.users.attendance.update_multiple',
-            'name' => 'user.access.users.attendance.update_multiple',
-            'display_name' => 'Update Multiple Attendance',
+            'module_name' => 'user.access.users.attendance.update-attendance',
+            'name' => 'user.access.users.attendance.update-attendance',
+            'display_name' => 'Update Attendance',
             'group_by' => 'attendance',
-            'sort' => 6,
+            'sort' => 5,
         ],
         'finance.cashflows.index' => [
             'module_name' => 'user.access.finance.cash_flow',
@@ -211,13 +187,7 @@ return [
             'group_by' => 'cash_flow',
             'sort' => 1,
         ],
-        'finance.cashflows.show' => [
-            'module_name' => 'user.access.finance.cash_flow',
-            'name' => 'user.access.finance.cash_flow',
-            'display_name' => 'See Cash Flow List',
-            'group_by' => 'cash_flow',
-            'sort' => 1,
-        ],
+        
         'finance.cashflows.store' =>[
             'module_name' => 'user.access.finance.cash_flow.create',
             'name' => 'user.access.finance.cash_flow.create',
@@ -233,9 +203,9 @@ return [
             'sort' => 3,
         ],
         'finance.cashflows.update_multiple' => [
-            'module_name' => 'user.access.finance.cash_flow.update_multiple',
-            'name' => 'user.access.finance.cash_flow.update_multiple',
-            'display_name' => 'Can Update Multiple Cash Flow',
+            'module_name' => 'user.access.finance.cash_flow.update',
+            'name' => 'user.access.finance.cash_flow.update',
+            'display_name' => 'Can Update Cash Flow',
             'group_by' => 'cash_flow',
             'sort' => 3,
         ],
@@ -247,9 +217,9 @@ return [
             'sort' => 4,
         ],
         'finance.cashflows.delete_multiple' => [
-            'module_name' => 'user.access.finance.cash_flow.delete_multiple',
-            'name' => 'user.access.finance.cash_flow.delete_multiple',
-            'display_name' => 'Can Delete Multiple Cashflow',
+            'module_name' => 'user.access.finance.cash_flow.delete',
+            'name' => 'user.access.finance.cash_flow.delete',
+            'display_name' => 'Can Delete Cashflow',
             'group_by' => 'cash_flow',
             'sort' => 4,
         ],
@@ -295,15 +265,8 @@ return [
             'group_by' => 'notification',
             'sort' => 1,
         ],
-        'social.notifications.show' => [
-            'module_name' => 'user.access.social.notification',
-            'name' => 'user.access.social.notification',
-            'display_name' => 'Notification List',
-            'group_by' => 'notification',
-            'sort' => 1,
-        ],
+        
         'social.notifications.store' => [
-
             'module_name' => 'user.access.social.notification.create',
             'name' => 'user.access.social.notification.create',
             'display_name' => 'User Can Create Notification',
@@ -318,8 +281,8 @@ return [
             'sort' => 3,
         ],
         'social.notifications.updateMultiple' => [
-            'module_name' => 'user.access.social.notification.edit_multiple',
-            'name' => 'user.access.social.notification.edit_multiple',
+            'module_name' => 'user.access.social.notification.edit',
+            'name' => 'user.access.social.notification.edit',
             'display_name' => 'User Can Edit Notification',
             'group_by' => 'notification',
             'sort' => 3,
@@ -332,8 +295,8 @@ return [
             'sort' => 3,
         ],
         'social.notifications.delete_multiple' => [
-            'module_name' => 'user.access.social.notification.delete_multiple',
-            'name' => 'user.access.social.notification.delete_multiple',
+            'module_name' => 'user.access.social.notification.delete-notification',
+            'name' => 'user.access.social.notification.delete-notification',
             'display_name' => 'User Can Delete Notification',
             'group_by' => 'notification',
             'sort' => 3,
@@ -345,17 +308,10 @@ return [
             'group_by' => 'announcement',
             'sort' => 1,
         ],
-        'social.announcements.show' => [
-            'module_name' => 'user.access.social.announcement',
-            'name' => 'user.access.social.announcement',
-            'display_name' => 'Announcement List',
-            'group_by' => 'announcement',
-            'sort' => 1,
-        ],
         'social.announcements.update_multiple' =>[
-            'module_name' => 'user.access.social.announcement.update_multiple',
-            'name' => 'user.access.social.announcement.update_multiple',
-            'display_name' => 'User Can Update Multiple Announcement',
+            'module_name' => 'user.access.social.announcement.update-announcement',
+            'name' => 'user.access.social.announcement.update-announcement',
+            'display_name' => 'User Can Update Announcement',
             'group_by' => 'announcement',
             'sort' => 2,
         ],
@@ -402,9 +358,9 @@ return [
             'sort' => 7,
         ],
         'social.announcements.delete_multiple' =>[
-            'module_name' => 'user.access.social.announcement.delete_multiple',
-            'name' => 'user.access.social.announcement.delete_multiple',
-            'display_name' => 'User Can Delete Multiple Announcement',
+            'module_name' => 'user.access.social.announcement.delete-announcement',
+            'name' => 'user.access.social.announcement.delete-announcement',
+            'display_name' => 'User Can Delete Announcement',
             'group_by' => 'announcement',
             'sort' => 6,
         ],
@@ -415,6 +371,13 @@ return [
             'group_by' => 'departments',
             'sort' => 1,
         ],
+        'service.dashboard.index' =>[
+            'module_name' => 'user.access.social.dashboard',
+            'name' => 'user.access.social.dashboard',
+            'display_name' => 'User Can View Dashboard',
+            'group_by' => 'dashboard',
+            'sort' => 2,
+        ],
         'users.permissions.index' =>[
             'module_name' => 'user.access.users.permissions',
             'name' => 'user.access.users.permissions',
@@ -422,13 +385,7 @@ return [
             'group_by' => 'permissions',
             'sort' => 1,
         ],
-        'users.permissions.show' =>[
-            'module_name' => 'user.access.users.permissions',
-            'name' => 'user.access.users.permissions',
-            'display_name' => 'User Can View Permissions',
-            'group_by' => 'permissions',
-            'sort' => 1,
-        ],
+        
         'users.permissions.store' => [
             'module_name' => 'user.access.users.permissions.store',
             'name' => 'user.access.users.permissions.store',

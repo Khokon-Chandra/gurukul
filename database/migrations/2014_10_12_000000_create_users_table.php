@@ -32,6 +32,7 @@ return new class extends Migration
             $table->timestamp('last_performed_at')->nullable();
             $table->boolean('status')->default(0)->comment('0= offline, 1= online');
             $table->enum('type',[UserTypeEnum::MANAGEMENT->value, UserTypeEnum::ADMIN->value, UserTypeEnum::USER->value])->default(UserTypeEnum::USER->value)->index();
+            $table->string('avatar')->nullable();
             $table->softDeletes();
         });
     }

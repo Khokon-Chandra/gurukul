@@ -10,7 +10,6 @@ trait CanSort
 {
     public function sortUserData(Request $request, $query)
     {
-
         if ($request->filled('sort_name')) {
             return $query->orderBy('name', $request->sort_name);
         }
@@ -32,12 +31,6 @@ trait CanSort
                 ->join('roles', 'model_has_roles.role_id', 'roles.id')
                 ->orderBy('role_created_at', $request->sort_role);
         }
-
-        if ($request->filled('sort_department'))
-        {
-            return $query->orderBy('department_id', $request->sort_department);
-        }
-
     }
 
 }
