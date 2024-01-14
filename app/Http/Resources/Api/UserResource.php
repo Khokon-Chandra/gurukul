@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Http\Controllers\Api\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,6 +27,7 @@ class UserResource extends JsonResource
             'last_login_ip' => $this->last_login_ip,
             'join_date' => $this->created_at,
             'timezone' => $this->timezone,
+            'join_date' => $this->created_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'created_by' => $this->created_by,
