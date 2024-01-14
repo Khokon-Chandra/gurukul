@@ -15,7 +15,6 @@ use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
 
 
-
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
 /**
@@ -96,4 +95,82 @@ Route::name('social.')->group(function () {
     Route::patch('update-announcement-status', [AnnouncementController::class, 'updateStatus'])->name('announcements.update_status');
     Route::delete('/announcements-delete-multiple', [AnnouncementController::class, 'deleteMultiple'])->name('announcements.delete_multiple');
     Route::get('activated-announcement', [AnnouncementController::class, 'activated'])->name('announcements.activated');
+
+    /**
+     * Service module routes
+     */
+    Route::name('service.')->group(function () {
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('departments', [DepartmentController::class, 'index'])
+            ->name('departments.index');
+    });
+
+
+    /**
+     * User Routes
+     */
+    Route::name('user.')->group(function () {
+        Route::put('change-password/{user}', [UserController::class, 'changePassword'])
+            ->name('change.password');
+    });
+
+
+    /**
+     * user module routes
+     */
+    Route::name('users.')->group(function () {
+        Route::apiResource('ip', UserIpController::class)->except('show');
+        Route::delete('user-ip-delete-multiple', [UserIpController::class, 'deleteMultiple'])->name('ip.delete-multiple');
+        Route::put('/user-ips', [UserIpController::class, 'multiUpdate'])
+            ->name('ip.multi_update');
+        Route::apiResource('roles', RoleController::class)->except('show');
+        Route::get('activities', [ActivityLogController::class, 'index'])->name('activities.index');
+        Route::get('activities/download', [ActivityLogController::class, 'download'])->name('activities.download');
+        Route::apiResource('permissions', PermissionController::class)
+            ->only('index', 'update');
+        Route::apiResource('attendances', AttendanceController::class)->except('show');
+        Route::patch('attendances', [AttendanceController::class, 'updateMultiple'])
+            ->name('attendances.update_multiple');
+        Route::delete('attendances-delete-many', [AttendanceController::class, 'deleteMultiple'])
+            ->name('attendances.delete_multiple');
+
+        Route::put('user-update/{user}', [UserController::class, 'updateUser'])->name('update.user');
+        Route::post('create-user', [UserController::class, 'storeUser'])->name('user.store');
+    });
+
+
+    /**
+     * Finance routes
+     */
+    Route::name('finance.')->group(function () {
+        Route::apiResource('cashflows', CashflowController::class)->except('show');
+        Route::patch('cashflows', [CashflowController::class, 'updateMultiple'])->name('cashflows.update_multiple');
+        Route::delete('cashflows-delete-many', [CashflowController::class, 'deleteMultiple'])->name('cashflows.delete_multiple');
+    });
+
+
+    /**
+     * Social module routes
+     */
+    Route::name('social.')->group(function () {
+        // group chat route
+        Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
+        Route::get('groups/{group}', [GroupController::class, 'show'])->name('groups.show');
+        Route::get('groups/{group}/members', [GroupController::class, 'members'])->name('groups.members');
+        Route::post('groups/{group}', [GroupController::class, 'storeChat'])->name('groups.storeChat');
+        Route::get('all-users', [UserController::class, 'allUser'])->name('users.all');
+
+        // notification routes
+        Route::apiResource('notifications', NotificationController::class)->except('show');
+        Route::patch('notifications', [NotificationController::class, 'updateMultiple'])->name('notifications.updateMultiple');
+        Route::delete('notifications-delete-many', [NotificationController::class, 'deleteMultiple'])->name('notifications.delete_multiple');
+
+        // announcements
+        Route::apiResource('announcements', AnnouncementController::class)->except('show');
+        Route::put('announcements-update-multiple', [AnnouncementController::class, 'updateMultiple'])->name('announcements.update_multiple');
+        Route::patch('update-announcement-status', [AnnouncementController::class, 'updateStatus'])->name('announcements.update_status');
+        Route::delete('/announcements-delete-multiple', [AnnouncementController::class, 'deleteMultiple'])->name('announcements.delete_multiple');
+        Route::get('activated-announcement', [AnnouncementController::class, 'activated'])->name('announcements.activated');
+
+    });
 });
