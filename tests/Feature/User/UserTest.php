@@ -51,12 +51,8 @@ class UserTest extends FeatureBaseCase
                     'created_at',
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -183,10 +179,12 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
+        $response = $this->actingAs($user)->DeleteJson(
+            route('users.delete.user'),
             [
                 'ids' => [1, 2]
-            ]);
+            ]
+        );
 
 
         $response->assertStatus(200);
@@ -211,11 +209,12 @@ class UserTest extends FeatureBaseCase
 
         $searchableString = $users->first()->username;
 
-        $response = $this->actingAs($user)->getJson(route('admin.user.index', ['username' => $searchableString]));
+        $response = $this->actingAs($user)->getJson(route('users.user.index', ['username' => $searchableString]));
         $response->assertStatus(200);
         $response->assertSeeInOrder([$searchableString]);
-        $response->assertDontSee($users->filter(fn($user) => $user->username !== $searchableString)
-            ->pluck('username')->toArray()
+        $response->assertDontSee(
+            $users->filter(fn ($user) => $user->username !== $searchableString)
+                ->pluck('username')->toArray()
         );
 
 
@@ -234,12 +233,8 @@ class UserTest extends FeatureBaseCase
                     'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -288,17 +283,11 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-
-                    ]
+                    'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -345,17 +334,11 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-
-                    ]
+                    'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -390,17 +373,11 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-
-                    ]
+                    'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -408,8 +385,7 @@ class UserTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory([
-        ])->state(['active' => true])
+        $user = User::factory([])->state(['active' => true])
             ->createQuietly()->assignRole(Role::first());
 
         $userWithRole = User::factory([])->state(['active' => true])
@@ -423,8 +399,9 @@ class UserTest extends FeatureBaseCase
 
         $response->assertStatus(200);
         $response->assertSee([$userWithRole->username, $user->username]);
-        $response->assertDontSee($usersWithoutRole->filter(fn($user) => $user->username !== null)
-            ->pluck('username')->toArray()
+        $response->assertDontSee(
+            $usersWithoutRole->filter(fn ($user) => $user->username !== null)
+                ->pluck('username')->toArray()
         );
 
 
@@ -443,13 +420,8 @@ class UserTest extends FeatureBaseCase
                     'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 }
-
