@@ -16,13 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
+Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
 /**
  * Service module routes
  */
 Route::name('service.')->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('departments', [DepartmentController::class, 'index'])
         ->name('departments.index');
 });

@@ -15,6 +15,18 @@ return [
     ],
 
     'route_permissions' => [
+
+
+        // Epic Name: Dashboard
+        'dashboard.index' =>[
+            'module_name' => 'user.access.dashboards.dashboard_list',
+            'name' => 'user.access.dashboards.dashboard_list',
+            'display_name' => 'User Can View Dashboard',
+            'group_by' => 'dashboard',
+            'sort' => 1,
+        ],
+
+        // Epic Name: Users
         'users.user.index' => [
             'module_name' => 'user.access.users.user_list',
             'name' => 'user.access.users.user_list',
@@ -51,20 +63,7 @@ return [
             'group_by' => 'user_list',
             'sort' => 5,
         ],
-        'users.activities.index' => [
-            'module_name' => 'user.access.users.activity',
-            'name' => 'user.access.users.activity',
-            'display_name' => 'User Can See Activities',
-            'group_by' => 'activity',
-            'sort' => 1,
-        ],
-        'users.activities.download' => [
-            'module_name' => 'user.access.users.activity.export',
-            'name' => 'user.access.users.activity.export',
-            'display_name' => 'User Can Export Activity in Excel Format',
-            'group_by' => 'activity',
-            'sort' => 2,
-        ],
+        
         'users.roles.index' => [
             'module_name' => 'user.access.users.role',
             'name' => 'user.access.users.role',
@@ -137,6 +136,8 @@ return [
             'group_by' => 'ip',
             'sort' => 5,
         ],
+
+        
         'users.attendances.index' => [
             'module_name' => 'user.access.users.attendance',
             'name' => 'user.access.users.attendance',
@@ -180,6 +181,22 @@ return [
             'group_by' => 'attendance',
             'sort' => 5,
         ],
+        'users.activities.index' => [
+            'module_name' => 'user.access.users.activity',
+            'name' => 'user.access.users.activity',
+            'display_name' => 'User Can See Activities',
+            'group_by' => 'activity',
+            'sort' => 1,
+        ],
+        'users.activities.download' => [
+            'module_name' => 'user.access.users.activity.export',
+            'name' => 'user.access.users.activity.export',
+            'display_name' => 'User Can Export Activity in Excel Format',
+            'group_by' => 'activity',
+            'sort' => 2,
+        ],
+
+        // Epic Name: Finance
         'finance.cashflows.index' => [
             'module_name' => 'user.access.finance.cash_flow',
             'name' => 'user.access.finance.cash_flow',
@@ -223,6 +240,8 @@ return [
             'group_by' => 'cash_flow',
             'sort' => 4,
         ],
+
+        // Epic Name: Social
         'social.users.all' => [
             'module_name' => 'user.access.social.chat',
             'name' => 'user.access.social.chat',
@@ -359,13 +378,7 @@ return [
             'group_by' => 'announcement',
             'sort' => 4,
         ],
-        'service.dashboard.index' =>[
-            'module_name' => 'user.access.social.dashboard',
-            'name' => 'user.access.social.dashboard',
-            'display_name' => 'User Can View Dashboard',
-            'group_by' => 'dashboard',
-            'sort' => 2,
-        ],
+        
         'users.permissions.index' =>[
             'module_name' => 'user.access.users.permissions',
             'name' => 'user.access.users.permissions',
