@@ -2,16 +2,11 @@
 
 namespace Tests\Feature\Role;
 
-use App\Models\Department;
-use App\Models\Role as UserRole;
+use App\Models\Role;
 use App\Models\User;
-use Database\Factories\RoleFactory;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
-use Illuminate\Testing\Fluent\AssertableJson;
 
 
 class RoleFeatureTest extends TestCase
@@ -66,8 +61,7 @@ class RoleFeatureTest extends TestCase
             "status",
             "message",
             "data" => [
-                "guard_name",
-                "department_id",
+                "department",
                 "name",
                 "updated_at",
                 "created_at",
@@ -87,8 +81,9 @@ class RoleFeatureTest extends TestCase
 
         $role = Role::create([
             'name' => 'Test_Role',
-            'department_id' => 1
         ]);
+
+        $role->departments()->sync([1]);
 
 
         $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
@@ -124,12 +119,11 @@ class RoleFeatureTest extends TestCase
 
         $role = Role::create([
             'name' => 'Test_Role',
-            'department_id' => 1
         ]);
 
+        $role->departments()->sync([1]);
 
         $response = $this->actingAs($user)->deleteJson(route('users.roles.destroy', $role->id));
-
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -146,13 +140,13 @@ class RoleFeatureTest extends TestCase
     {
         $this->artisan('migrate:fresh --seed');
 
-
         $user = User::where('username', 'administrator')->first();
 
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
+        $role = Role::create(['name' => 'Admin']);
+
+        $role->departments()->sync([1]);
 
         $role->permissions()->sync([1, 2, 3]);
-
 
         $response = $this->actingAs($user)->getJson(route('users.roles.index'));
 
@@ -163,6 +157,7 @@ class RoleFeatureTest extends TestCase
                 '*' => [
                     'id',
                     'name',
+                    'department',
                     'users_count',
                     'permissions',
                     'created_at',
@@ -196,51 +191,5 @@ class RoleFeatureTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function testThatUserCanFilterRoleListBasedOnDepartmentId(): void
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::where('username', 'administrator')->first();
-
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
-
-        $role->permissions()->sync([1, 2, 3]);
-
-        $testRoles = UserRole::factory(3)->create();
-
-        $firstRole = $testRoles->first();
-
-        $allOtherRolesDeptIds = $testRoles->where('department_id', '!==',  $firstRole->department_id)
-            ->pluck('department_id')
-            ->toArray();
-
-
-        $response = $this->actingAs($user)->getJson(route('users.roles.index', ['department_id' => $firstRole->department_id]));
-
-        $response->assertStatus(200);
-
-        $response->assertJsonFragment([
-            'department' => Department::findOrFail($firstRole->department_id)->name
-        ]);
-
-        foreach ($allOtherRolesDeptIds as $deptId){
-            $response->assertJsonMissing([
-                'department' => Department::findOrFail($deptId)->name
-            ]);
-        }
-
-        $response->assertJsonStructure([
-            'data' => [
-                '*' => [
-                    'id',
-                    'name',
-                    'users_count',
-                    'permissions',
-                    'created_at',
-                    'updated_at'
-                ]
-            ],
-        ]);
-
-    }
+   
 }

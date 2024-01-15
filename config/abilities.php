@@ -15,6 +15,18 @@ return [
     ],
 
     'route_permissions' => [
+
+
+        // Epic Name: Dashboard
+        'dashboard.index' =>[
+            'module_name' => 'user.access.dashboards.dashboard_list',
+            'name' => 'user.access.dashboards.dashboard_list',
+            'display_name' => 'User Can View Dashboard',
+            'group_by' => 'dashboard',
+            'sort' => 1,
+        ],
+
+        // Epic Name: Users
         'users.user.index' => [
             'module_name' => 'user.access.users.user_list',
             'name' => 'user.access.users.user_list',
@@ -51,20 +63,7 @@ return [
             'group_by' => 'user_list',
             'sort' => 5,
         ],
-        'users.activities.index' => [
-            'module_name' => 'user.access.users.activity',
-            'name' => 'user.access.users.activity',
-            'display_name' => 'User Can See Activities',
-            'group_by' => 'activity',
-            'sort' => 1,
-        ],
-        'users.activities.download' => [
-            'module_name' => 'user.access.users.activity.export',
-            'name' => 'user.access.users.activity.export',
-            'display_name' => 'User Can Export Activity in Excel Format',
-            'group_by' => 'activity',
-            'sort' => 2,
-        ],
+        
         'users.roles.index' => [
             'module_name' => 'user.access.users.role',
             'name' => 'user.access.users.role',
@@ -103,18 +102,18 @@ return [
         ],
         
         'users.ip.delete-multiple' => [
-            'module_name' => 'user.access.users.ip.perform-ip-tasks',
-            'name' => 'user.access.users.perform-ip-tasks',
-            'display_name' => 'Perform User Ip Related Tasks',
+            'module_name' => 'user.access.users.ip.delete',
+            'name' => 'user.access.users.ip.delete',
+            'display_name' => 'Delete User IP',
             'group_by' => 'ip',
-            'sort' => 2,
+            'sort' => 5,
         ],
         'users.ip.multi_update' => [
-            'module_name' => 'user.access.users.ip.perform-ip-tasks',
-            'name' => 'user.access.users.perform-ip-tasks',
-            'display_name' => 'Perform User Ip Related Tasks',
+            'module_name' => 'user.access.users.ip.update',
+            'name' => 'user.access.users.ip.update',
+            'display_name' => 'Update User IP',
             'group_by' => 'ip',
-            'sort' => 2,
+            'sort' => 4,
         ],
         'users.ip.store' => [
             'module_name' => 'user.access.users.ip.create',
@@ -137,6 +136,8 @@ return [
             'group_by' => 'ip',
             'sort' => 5,
         ],
+
+        
         'users.attendances.index' => [
             'module_name' => 'user.access.users.attendance',
             'name' => 'user.access.users.attendance',
@@ -180,6 +181,22 @@ return [
             'group_by' => 'attendance',
             'sort' => 5,
         ],
+        'users.activities.index' => [
+            'module_name' => 'user.access.users.activity',
+            'name' => 'user.access.users.activity',
+            'display_name' => 'User Can See Activities',
+            'group_by' => 'activity',
+            'sort' => 1,
+        ],
+        'users.activities.download' => [
+            'module_name' => 'user.access.users.activity.export',
+            'name' => 'user.access.users.activity.export',
+            'display_name' => 'User Can Export Activity in Excel Format',
+            'group_by' => 'activity',
+            'sort' => 2,
+        ],
+
+        // Epic Name: Finance
         'finance.cashflows.index' => [
             'module_name' => 'user.access.finance.cash_flow',
             'name' => 'user.access.finance.cash_flow',
@@ -223,6 +240,15 @@ return [
             'group_by' => 'cash_flow',
             'sort' => 4,
         ],
+
+        // Epic Name: Social
+        'social.users.all' => [
+            'module_name' => 'user.access.social.chat',
+            'name' => 'user.access.social.chat',
+            'display_name' => 'Users Chat',
+            'group_by' => 'group',
+            'sort' => 1,
+        ],
         'social.groups.index' => [
             'module_name' => 'user.access.social.chat',
             'name' => 'user.access.social.chat',
@@ -231,8 +257,8 @@ return [
             'sort' => 1,
         ],
         'social.groups.members' => [
-            'module_name' => 'user.access.social.group.members',
-            'name' => 'user.access.social.group.members',
+            'module_name' => 'user.access.social.chat.members',
+            'name' => 'user.access.social.chat.members',
             'display_name' => 'Users Group',
             'group_by' => 'group',
             'sort' => 1,
@@ -251,13 +277,7 @@ return [
             'group_by' => 'group',
             'sort' => 3,
         ],
-        'social.users.all' => [
-            'module_name' => 'user.access.users.contact',
-            'name' => 'user.access.users.contact',
-            'display_name' => 'Display User user_list',
-            'group_by' => 'user_list',
-            'sort' => 4,
-        ],
+        
         'social.notifications.index' => [
             'module_name' => 'user.access.social.notification',
             'name' => 'user.access.social.notification',
@@ -313,71 +333,52 @@ return [
             'name' => 'user.access.social.announcement.update-announcement',
             'display_name' => 'User Can Update Announcement',
             'group_by' => 'announcement',
-            'sort' => 2,
+            'sort' => 3,
         ],
         'social.announcements.update' =>[
             'module_name' => 'user.access.social.announcement.update-announcement',
             'name' => 'user.access.social.announcement.update-announcement',
             'display_name' => 'User Can Update Announcement',
             'group_by' => 'announcement',
-            'sort' => 2,
+            'sort' => 3,
         ],
         'social.announcements.update_status' =>[
-            'module_name' => 'user.access.social.announcement.update-announcement-status',
-            'name' => 'user.access.social.announcement.update-announcement-status',
-            'display_name' => 'User Can Update Announcement Status',
+            'module_name' => 'user.access.social.announcement.update-announcement',
+            'name' => 'user.access.social.announcement.update-announcement',
+            'display_name' => 'User Can Update Announcement',
             'group_by' => 'announcement',
             'sort' => 3,
         ],
         'social.announcements.activated' =>[
-            'module_name' => 'user.access.social.announcement.update-announcement-status',
-            'name' => 'user.access.social.announcement.update-announcement-status',
-            'display_name' => 'User Can Update Announcement Status',
+            'module_name' => 'user.access.social.announcement',
+            'name' => 'user.access.social.announcement',
+            'display_name' => 'Announcement List',
             'group_by' => 'announcement',
-            'sort' => 3,
+            'sort' => 1,
         ],
         'social.announcements.store' =>[
             'module_name' => 'user.access.social.announcement.create-announcement',
             'name' => 'user.access.social.announcement.create-announcement',
             'display_name' => 'User Can Create Announcement',
             'group_by' => 'announcement',
-            'sort' => 5,
-        ],
-        'social.announcements.destroy' =>[
-            'module_name' => 'user.access.social.announcement.delete-announcement',
-            'name' => 'user.access.social.announcement.delete-announcement',
-            'display_name' => 'User Can Delete Announcement',
-            'group_by' => 'announcement',
-            'sort' => 6,
-        ],
-        'social.announcements.data' =>[
-            'module_name' => 'user.access.social.announcement.view-announcement-data',
-            'name' => 'user.access.social.announcement.view-announcement-data',
-            'display_name' => 'User Can View Announcement Data',
-            'group_by' => 'announcement',
-            'sort' => 7,
-        ],
-        'social.announcements.delete_multiple' =>[
-            'module_name' => 'user.access.social.announcement.delete-announcement',
-            'name' => 'user.access.social.announcement.delete-announcement',
-            'display_name' => 'User Can Delete Announcement',
-            'group_by' => 'announcement',
-            'sort' => 6,
-        ],
-        'service.departments.index' =>[
-            'module_name' => 'user.access.social.departments.list',
-            'name' => 'user.access.social.departments.list',
-            'display_name' => 'User Can View Departments',
-            'group_by' => 'departments',
-            'sort' => 1,
-        ],
-        'service.dashboard.index' =>[
-            'module_name' => 'user.access.social.dashboard',
-            'name' => 'user.access.social.dashboard',
-            'display_name' => 'User Can View Dashboard',
-            'group_by' => 'dashboard',
             'sort' => 2,
         ],
+        'social.announcements.destroy' =>[
+            'module_name' => 'user.access.social.announcement.delete',
+            'name' => 'user.access.social.announcement.delete',
+            'display_name' => 'User Can Delete Announcement',
+            'group_by' => 'announcement',
+            'sort' => 4,
+        ],
+       
+        'social.announcements.delete_multiple' =>[
+            'module_name' => 'user.access.social.announcement.delete',
+            'name' => 'user.access.social.announcement.delete',
+            'display_name' => 'User Can Delete Announcement',
+            'group_by' => 'announcement',
+            'sort' => 4,
+        ],
+        
         'users.permissions.index' =>[
             'module_name' => 'user.access.users.permissions',
             'name' => 'user.access.users.permissions',

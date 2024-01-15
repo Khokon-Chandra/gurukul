@@ -21,7 +21,6 @@ class RoleFactory extends Factory
         return [
             'name'  => $this->faker->unique()->jobTitle(),
             'guard_name' => 'api',
-            'department_id' =>  Department::all()->random()->id,
         ];
     }
 }

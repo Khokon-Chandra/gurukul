@@ -4,12 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Enum\UserTypeEnum;
 use App\Models\User;
-
-use App\Models\UserIp;
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 use Tests\FeatureBaseCase;
 
 class UserTest extends FeatureBaseCase
@@ -21,7 +16,6 @@ class UserTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-
         $user = User::factory()
             ->state([
                 'active' => true
@@ -29,9 +23,11 @@ class UserTest extends FeatureBaseCase
             ->createQuietly();
 
 
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
+        $role = Role::create(['name' => 'Admin']);
+        $role->departments()->sync([1]);
         $role->permissions()->sync([1, 2, 3]);
-
+        
+        $user->assignRole($role);
 
         $response = $this->actingAs($user)->getJson('/api/v1/user');
 
@@ -51,12 +47,8 @@ class UserTest extends FeatureBaseCase
                     'created_at',
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -183,10 +175,12 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
 
-        $response = $this->actingAs($user)->DeleteJson(route('admin.delete.user'),
+        $response = $this->actingAs($user)->DeleteJson(
+            route('users.delete.user'),
             [
                 'ids' => [1, 2]
-            ]);
+            ]
+        );
 
 
         $response->assertStatus(200);
@@ -211,11 +205,12 @@ class UserTest extends FeatureBaseCase
 
         $searchableString = $users->first()->username;
 
-        $response = $this->actingAs($user)->getJson(route('admin.user.index', ['username' => $searchableString]));
+        $response = $this->actingAs($user)->getJson(route('users.user.index', ['username' => $searchableString]));
         $response->assertStatus(200);
         $response->assertSeeInOrder([$searchableString]);
-        $response->assertDontSee($users->filter(fn($user) => $user->username !== $searchableString)
-            ->pluck('username')->toArray()
+        $response->assertDontSee(
+            $users->filter(fn ($user) => $user->username !== $searchableString)
+                ->pluck('username')->toArray()
         );
 
 
@@ -234,12 +229,8 @@ class UserTest extends FeatureBaseCase
                     'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -254,10 +245,6 @@ class UserTest extends FeatureBaseCase
             ->createQuietly()->assignRole(Role::first());
 
         $users = User::all();
-
-
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
-        $role->permissions()->sync([1, 2, 3]);
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=desc');
 
@@ -288,17 +275,11 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-
-                    ]
+                    'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -312,26 +293,15 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-
-
         $users = User::all();
-
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
-        $role->permissions()->sync([1, 2, 3]);
-
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
         $response->assertStatus(200);
 
-
         $descPattern = '/^[zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA]+/';
-
 
         $firstUserName = $users->first()->username;
 
-
         $this->assertMatchesRegularExpression($descPattern,   $firstUserName);
-
-
 
         $response->assertJsonStructure([
             "data" => [
@@ -345,17 +315,11 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-
-                    ]
+                    'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -368,11 +332,6 @@ class UserTest extends FeatureBaseCase
                 'active' => true
             ])
             ->createQuietly()->assignRole(Role::first());
-
-
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
-        $role->permissions()->sync([1, 2, 3]);
-
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_joindate=desc');
         $response->assertStatus(200);
@@ -390,17 +349,11 @@ class UserTest extends FeatureBaseCase
                     'join_date',
                     'active',
                     'created_at',
-                    'role' => [
-
-                    ]
+                    'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 
@@ -408,8 +361,7 @@ class UserTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-        $user = User::factory([
-        ])->state(['active' => true])
+        $user = User::factory([])->state(['active' => true])
             ->createQuietly()->assignRole(Role::first());
 
         $userWithRole = User::factory([])->state(['active' => true])
@@ -423,8 +375,9 @@ class UserTest extends FeatureBaseCase
 
         $response->assertStatus(200);
         $response->assertSee([$userWithRole->username, $user->username]);
-        $response->assertDontSee($usersWithoutRole->filter(fn($user) => $user->username !== null)
-            ->pluck('username')->toArray()
+        $response->assertDontSee(
+            $usersWithoutRole->filter(fn ($user) => $user->username !== null)
+                ->pluck('username')->toArray()
         );
 
 
@@ -443,13 +396,8 @@ class UserTest extends FeatureBaseCase
                     'role' => []
                 ]
             ],
-            'meta' => [
-
-            ],
-            'links' => [
-
-            ],
+            'meta' => [],
+            'links' => [],
         ]);
     }
 }
-

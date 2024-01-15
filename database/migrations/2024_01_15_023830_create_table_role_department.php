@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->foreignId('department_id')->constrained()->index();
+        Schema::create('role_department', function (Blueprint $table) {
+            $table->foreignId('role_id')->index();
+            $table->foreignId('department_id')->index();
+            $table->primary(['role_id','department_id']);
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->dropColumn('department_id')->constrained()->index();
-        });
+        Schema::dropIfExists('role_department');
     }
 };

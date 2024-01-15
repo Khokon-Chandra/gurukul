@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\RoleRequest;
-use App\Http\Resources\Api\PermissionResource;
 use App\Http\Resources\Api\RoleResource;
+use App\Models\Role;
 use App\Trait\Authorizable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
@@ -24,13 +21,14 @@ class RoleController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Role::query();
+        $roles = Role::with(['departments' => function ($query) use ($request) {
+            $query->withCount('users')
+                ->when($request->department_id ?? false, function ($query, $department) {
+                    $query->where('id', $department);
+                });
+        }, 'permissions'])->filter($request)->get();
 
-        $this->filterRoles($query, $request);
-
-        $data = $query->latest()->get();
-
-        return RoleResource::collection($data);
+        return RoleResource::collection($roles);
     }
 
     /**
@@ -42,10 +40,9 @@ class RoleController extends Controller
 
         try {
 
-            $role = Role::create([
-                'name' => $request->name,
-                'department_id' => $request->department_id
-            ]);
+            $role = Role::updateOrCreate(['name' => $request->name], ['name' => $request->name]);
+
+            $role->departments()->sync([$request->department_id]);
 
             $role->permissions()->sync($request->permissions ?? []);
 
@@ -62,9 +59,9 @@ class RoleController extends Controller
             DB::commit();
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Role Created Successfully!!',
-                'data' => $role,
+                'data'    => new RoleResource($role),
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
@@ -85,12 +82,8 @@ class RoleController extends Controller
 
         try {
 
-            $role = Role::find($id);
-
-            if(!$role){
-                throw new \Exception('No role found',404);
-            }
-
+            $role = Role::findOrFail($id);
+           
             $role->update([
                 'name' => $request->name,
             ]);
@@ -139,6 +132,8 @@ class RoleController extends Controller
 
             $role->permissions()->detach();
 
+            $role->departments()->detach();
+
 
             activity("Role deleted")
                 ->causedBy(auth()->user())
@@ -171,10 +166,4 @@ class RoleController extends Controller
         }
     }
 
-    private function filterRoles($query, $request): void
-    {
-        if($request->filled('department_id')){
-            $query->where('department_id', $request->department_id);
-        }
-    }
 }

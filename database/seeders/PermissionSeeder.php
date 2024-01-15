@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Department;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Route;
 
 //use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 
 /**
  * @todo Refactor all this to match the module permissions in agent
@@ -30,11 +30,13 @@ class PermissionSeeder extends Seeder
         $role = Role::where('name', 'Administrator')->first();
 
         if (! $role) {
-            $role = Role::create(['name' => 'Administrator', 'department_id' => 1]);
+            $role = Role::create(['name' => 'Administrator']);
+            $role->departments()->sync(Department::pluck('id')->all());
         }
 
         if ($role) {
             $role->syncPermissions(\Spatie\Permission\Models\Permission::get()->pluck('id')->toArray());
         }
+        
     }
 }
