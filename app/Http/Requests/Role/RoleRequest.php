@@ -20,7 +20,7 @@ class RoleRequest extends BaseFormRequest
     public function storeMethodRule(): void
     {
         $this->rules = [
-            'name' => ['required', 'string', 'unique:roles,name'],
+            'name' => ['required', 'string'],
             'department_id' => ['required', 'exists:departments,id'],
             'permissions' => ['required', 'array'],
             'permissions.*' => ['exists:permissions,id']

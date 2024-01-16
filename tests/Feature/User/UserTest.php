@@ -4,12 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Enum\UserTypeEnum;
 use App\Models\User;
-
-use App\Models\UserIp;
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 use Tests\FeatureBaseCase;
 
 class UserTest extends FeatureBaseCase
@@ -21,7 +16,6 @@ class UserTest extends FeatureBaseCase
     {
         $this->artisan('migrate:fresh --seed');
 
-
         $user = User::factory()
             ->state([
                 'active' => true
@@ -29,9 +23,11 @@ class UserTest extends FeatureBaseCase
             ->createQuietly();
 
 
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
+        $role = Role::create(['name' => 'Admin']);
+        $role->departments()->sync([1]);
         $role->permissions()->sync([1, 2, 3]);
-
+        
+        $user->assignRole($role);
 
         $response = $this->actingAs($user)->getJson('/api/v1/user');
 
@@ -250,10 +246,6 @@ class UserTest extends FeatureBaseCase
 
         $users = User::all();
 
-
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
-        $role->permissions()->sync([1, 2, 3]);
-
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_name=desc');
 
         $response->assertStatus(200);
@@ -301,26 +293,15 @@ class UserTest extends FeatureBaseCase
             ])
             ->createQuietly()->assignRole(Role::first());
 
-
-
         $users = User::all();
-
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
-        $role->permissions()->sync([1, 2, 3]);
-
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_username=desc');
         $response->assertStatus(200);
 
-
         $descPattern = '/^[zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA]+/';
-
 
         $firstUserName = $users->first()->username;
 
-
         $this->assertMatchesRegularExpression($descPattern,   $firstUserName);
-
-
 
         $response->assertJsonStructure([
             "data" => [
@@ -351,11 +332,6 @@ class UserTest extends FeatureBaseCase
                 'active' => true
             ])
             ->createQuietly()->assignRole(Role::first());
-
-
-        $role = Role::create(['name' => 'Admin', 'department_id' => 1]);
-        $role->permissions()->sync([1, 2, 3]);
-
 
         $response = $this->actingAs($user)->getJson('/api/v1/user?sort_joindate=desc');
         $response->assertStatus(200);

@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role as ModelsRole;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Department;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 
 class PermissionRoleSeeder extends Seeder
 {
@@ -17,7 +16,9 @@ class PermissionRoleSeeder extends Seeder
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $role = Role::updateOrCreate(['name' => 'Administrator', 'department_id' => 1], ['name' => 'Administrator', 'department_id' => 1]);
+        $role = Role::updateOrCreate(['name' => 'Administrator'], ['name' => 'Administrator']);
+
+        $role->departments()->sync(Department::pluck('id')->all());
 
         $role->syncPermissions(Permission::get()->pluck('id')->toArray());
     }
