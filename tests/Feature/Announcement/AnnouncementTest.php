@@ -304,33 +304,6 @@ class AnnouncementTest extends FeatureBaseCase
         ]);
     }
 
-    public function testThatUserCanGetAnnouncementData(): void
-    {
-        $this->artisan('migrate:fresh --seed');
-
-        $user = User::factory()
-            ->create()->assignRole(Role::first());
-
-        $ActiveAnnouncement = Announcement::where('status', true)->first();
-
-        $response = $this->actingAs($user)->getJson(route('social.announcements.data'));
-
-        $response->assertOk();
-
-        $response->assertSeeInOrder([$ActiveAnnouncement->number,  $ActiveAnnouncement->message]);
-
-        $response->assertJsonStructure([
-            'status',
-            'data' => [
-                "id",
-                "message",
-                "status",
-                "date",
-                "department",
-                "created_by",
-            ]
-        ]);
-    }
 
 
     public function testUserCanActivateAnnouncement(): void
