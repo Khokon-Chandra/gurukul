@@ -22,11 +22,19 @@ class RoleController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $roles = Role::with(['departments' => function ($query) use ($request) {
-            $query->withCount('users')
+            $query
                 ->when($request->department_id ?? false, function ($query, $department) {
                     $query->where('id', $department);
                 });
-        }, 'permissions'])->filter($request)->get();
+        }, 'permissions'])
+        
+        ->withCount(['users' => function($query) use($request){
+            $query
+            ->when($request->department_id ?? false, function ($query, $department) {
+                $query->where('department_id', $department);
+            });
+        }])
+        ->filter($request)->get();
 
         return RoleResource::collection($roles);
     }

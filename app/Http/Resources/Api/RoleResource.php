@@ -19,7 +19,7 @@ class RoleResource extends JsonResource
         return [
             'id'          => $this->id,
             'name'        => $this->name,
-            'users_count' => $this->departments->first()->users_count ?? 0,
+            'users_count' => $this->users_count,
             'department'  => $this->departments->first()->name,
             'permissions' => PermissionChildResource::collection($this->permissions),
             'created_at'  => $this->created_at->format('d-M-Y h:i A'),
