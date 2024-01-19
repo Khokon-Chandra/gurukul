@@ -7,6 +7,7 @@ use App\Http\Requests\Role\RoleRequest;
 use App\Http\Resources\Api\RoleResource;
 use App\Models\Role;
 use App\Trait\Authorizable;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -48,10 +49,12 @@ class RoleController extends Controller
         DB::beginTransaction();
 
         try {
-
             $role = Role::updateOrCreate(['name' => $request->name], ['name' => $request->name]);
-
-            $role->departments()->sync([$request->department_id]);
+            $exists = $role->departments()->where('id',$request->department_id)->count();
+            if($exists){
+                throw new Exception("Already this roll has been created under department id {$request->department_id}",422);
+            }
+            $role->departments()->attach($request->department_id);
 
             $role->permissions()->sync($request->permissions ?? []);
 
