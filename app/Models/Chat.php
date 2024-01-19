@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use \Znck\Eloquent\Traits\BelongsToThrough;
+
 
 class Chat extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToThrough;
 
     protected $fillable = [
         'user_id',
@@ -32,5 +34,9 @@ class Chat extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function department()
+    {
+        return $this->belongsToThrough(Department::class,User::class);
+    }
 
 }

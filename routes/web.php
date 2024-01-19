@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityLogController;
+use App\Models\Chat;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,9 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Hello, Welcome!'
-    ]);
-});
+Route::get('/',[ActivityLogController::class,'index']);

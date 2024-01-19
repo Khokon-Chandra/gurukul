@@ -20,7 +20,8 @@ class ActivityResource extends JsonResource
             'description'   => $this->description,
             'ip'            => $this->properties['ip'] ?? null,
             'target'        => $this->properties['target'] ?? null,
-            'department' => is_null($this->subject) ? null :  $this->subject->department?->name,
+            'department_id' => is_null($this->subject) ? null :  $this->subject->department?->id,
+            'department'    => is_null($this->subject) ? null :  $this->subject->department?->name,
             'activity'      => $this->properties['activity'] ?? null,
             'cause_by'      => [
                 'id' => $this->causer->id,
