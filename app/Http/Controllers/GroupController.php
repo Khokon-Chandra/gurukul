@@ -78,7 +78,7 @@ class GroupController extends Controller
 
         activity("group chat created")
             ->causedBy(auth()->user())
-            ->performedOn($group)
+            ->performedOn($chat)
             ->withProperties([
                 'ip'       => Auth::user()->last_login_ip,
                 'activity' => "Group chat created",
