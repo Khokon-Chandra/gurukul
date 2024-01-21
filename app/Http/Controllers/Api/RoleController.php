@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\RoleRequest;
 use App\Http\Resources\Api\RoleResource;
@@ -95,6 +96,10 @@ class RoleController extends Controller
         try {
 
             $role = Role::findOrFail($id);
+
+            if($role->name == AppConstant::ADMINISTRATOR){
+                throw new Exception("Cann't update Administrator",422);
+            }
            
             $role->update([
                 'name' => $request->name,
