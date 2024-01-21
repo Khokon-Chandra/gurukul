@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role as ModelsRole;
-use \Znck\Eloquent\Traits\BelongsToThrough;
+use Znck\Eloquent\Traits\BelongsToThrough;
 
 
 class Role extends ModelsRole
