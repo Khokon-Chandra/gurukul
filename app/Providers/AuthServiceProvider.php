@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
+use App\Constants\AppConstant;
 use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -27,6 +28,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Gate::before(function (User $user, $permission) {
+            if($user->hasRole(AppConstant::ADMINISTRATOR)){
+                return true;
+            }
             return $user->hasPermissionTo($permission);
         });
     }
