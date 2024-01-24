@@ -14,10 +14,11 @@ class ActivityExportableResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
         return [
             'NO' => $this->no,
             'DATE' => $this->created_at->format('d-F-Y h:i A'),
-            'USERNAME' => $this->causer->username,
+            'USERNAME' => $this->causer?->username,
             'IP' => $this->properties['ip'] ?? null,
             'ACTIVITY' => $this->properties['activity'] ?? null,
             'TARGET' => $this->properties['target'] ?? null,
