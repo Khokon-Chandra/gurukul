@@ -9,7 +9,6 @@ use App\Http\Resources\Api\ActivityResource;
 use App\Models\Role;
 use App\Trait\Authorizable;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,7 +17,7 @@ use function Clue\StreamFilter\fun;
 
 class ActivityLogController extends Controller
 {
-    use Authorizable, SoftDeletes;
+    use Authorizable;
     /**
      * Handle the incoming request.
      */
