@@ -29,7 +29,7 @@ class RoleController extends Controller
                     $query->where('id', $department);
                 });
         }, 'permissions'])
-        
+
         ->withCount(['users' => function($query) use($request){
             $query
             ->when($request->department_id ?? false, function ($query, $department) {
@@ -44,7 +44,7 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    
+
     public function store(RoleRequest $request): JsonResponse
     {
         DB::beginTransaction();
@@ -100,7 +100,7 @@ class RoleController extends Controller
             if($role->name == AppConstant::ADMINISTRATOR){
                 throw new Exception("Cann't update Administrator",422);
             }
-           
+
             $role->update([
                 'name' => $request->name,
             ]);
@@ -147,10 +147,9 @@ class RoleController extends Controller
 
             $role = Role::findOrFail($id);
 
+            $role->delete();
+
             $role->permissions()->detach();
-
-            $role->departments()->detach();
-
 
             activity("Role deleted")
                 ->causedBy(auth()->user())
@@ -161,10 +160,6 @@ class RoleController extends Controller
                     'target' => "$role->name",
                 ])
                 ->log(":causer.name deleted Role $role->name.");
-
-
-
-            Role::where('id', $id)->delete();
 
 
             DB::commit();

@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Models\Role as ModelsRole;
 use Znck\Eloquent\Traits\BelongsToThrough;
 
 
 class Role extends ModelsRole
 {
-    use HasFactory, BelongsToThrough;
+    use HasFactory, BelongsToThrough, SoftDeletes;
 
 
     public function scopeFilter($query, $request)

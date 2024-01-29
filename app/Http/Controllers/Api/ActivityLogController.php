@@ -6,8 +6,10 @@ use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityExportableResource;
 use App\Http\Resources\Api\ActivityResource;
+use App\Models\Role;
 use App\Trait\Authorizable;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,16 +18,18 @@ use function Clue\StreamFilter\fun;
 
 class ActivityLogController extends Controller
 {
-    use Authorizable;
+    use Authorizable, SoftDeletes;
     /**
      * Handle the incoming request.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
+
         $query = Activity::with('subject','causer');
 
         $data = $this->filter($query, $request)
             ->latest()
+
             ->paginate(AppConstant::PAGINATION);
 
         return ActivityResource::collection($data);
@@ -64,7 +68,8 @@ class ActivityLogController extends Controller
                     ->WhereHas('subject', function ($query) use ($departmentId) {
                         $query->whereHas('department', function ($query) use ($departmentId) {
                             $query->where('departments.id', $departmentId);
-                        });
+                        })
+                        ->withTrashed();
                     });
             })
             ->when($request->log_name ?? false, function ($query, $logName) {
