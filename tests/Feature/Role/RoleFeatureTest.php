@@ -125,6 +125,8 @@ class RoleFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->deleteJson(route('users.roles.destroy', $role->id));
 
+        $this->assertSoftDeleted($role);
+
         $response->assertStatus(200);
         $response->assertJsonStructure([
             "status",
@@ -191,5 +193,5 @@ class RoleFeatureTest extends TestCase
         $response->assertStatus(422);
     }
 
-   
+
 }

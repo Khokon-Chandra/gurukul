@@ -6,6 +6,7 @@ use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityExportableResource;
 use App\Http\Resources\Api\ActivityResource;
+use App\Models\Role;
 use App\Trait\Authorizable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,10 +23,12 @@ class ActivityLogController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
+
         $query = Activity::with('subject','causer');
 
         $data = $this->filter($query, $request)
             ->latest()
+
             ->paginate(AppConstant::PAGINATION);
 
         return ActivityResource::collection($data);
@@ -64,7 +67,8 @@ class ActivityLogController extends Controller
                     ->WhereHas('subject', function ($query) use ($departmentId) {
                         $query->whereHas('department', function ($query) use ($departmentId) {
                             $query->where('departments.id', $departmentId);
-                        });
+                        })
+                        ->withTrashed();
                     });
             })
             ->when($request->log_name ?? false, function ($query, $logName) {
