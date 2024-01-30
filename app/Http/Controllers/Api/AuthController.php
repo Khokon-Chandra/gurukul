@@ -25,7 +25,6 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('username', $request->username)
-            ->where('deleted_at', null)
             ->first();
 
         if (!$user->active) {

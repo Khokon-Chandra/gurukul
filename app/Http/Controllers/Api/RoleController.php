@@ -23,20 +23,9 @@ class RoleController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $roles = Role::with(['departments' => function ($query) use ($request) {
-            $query
-                ->when($request->department_id ?? false, function ($query, $department) {
-                    $query->where('id', $department);
-                });
-        }, 'permissions'])
-
-        ->withCount(['users' => function($query) use($request){
-            $query
-            ->when($request->department_id ?? false, function ($query, $department) {
-                $query->where('department_id', $department);
-            });
-        }])
-        ->filter($request)->get();
+        $roles = Role::with(['department', 'permissions'])
+            ->withCount('users')
+            ->filter($request)->get();
 
         return RoleResource::collection($roles);
     }
@@ -50,12 +39,22 @@ class RoleController extends Controller
         DB::beginTransaction();
 
         try {
-            $role = Role::updateOrCreate(['name' => $request->name], ['name' => $request->name]);
-            $exists = $role->departments()->where('id',$request->department_id)->count();
-            if($exists){
-                throw new Exception("Already this roll has been created under department id {$request->department_id}",422);
+
+            $role = Role::withTrashed()->where([
+                'name' => $request->name,
+                'department_id' => $request->department_id,
+            ])->first();
+
+            if ($role) {
+                $role->restore();
             }
-            $role->departments()->attach($request->department_id);
+
+            if (!$role) {
+                $role = Role::firstOrCreate([
+                    'name' => $request->name,
+                    'department_id' => $request->department_id,
+                ]);
+            }
 
             $role->permissions()->sync($request->permissions ?? []);
 
@@ -97,8 +96,8 @@ class RoleController extends Controller
 
             $role = Role::findOrFail($id);
 
-            if($role->name == AppConstant::ADMINISTRATOR){
-                throw new Exception("Cann't update Administrator",422);
+            if ($role->name == AppConstant::ADMINISTRATOR) {
+                throw new Exception("Cann't update Administrator", 422);
             }
 
             $role->update([
@@ -177,5 +176,4 @@ class RoleController extends Controller
             ], 500);
         }
     }
-
 }

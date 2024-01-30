@@ -6,14 +6,11 @@ use App\Constants\AppConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\ActivityExportableResource;
 use App\Http\Resources\Api\ActivityResource;
-use App\Models\Role;
 use App\Trait\Authorizable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Spatie\Activitylog\Models\Activity;
-use function Clue\StreamFilter\fun;
 
 class ActivityLogController extends Controller
 {
@@ -24,11 +21,10 @@ class ActivityLogController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
 
-        $query = Activity::with('subject','causer');
+        $query = Activity::with('subject.department','causer');
 
         $data = $this->filter($query, $request)
-            ->latest()
-
+            
             ->paginate(AppConstant::PAGINATION);
 
         return ActivityResource::collection($data);
@@ -39,10 +35,9 @@ class ActivityLogController extends Controller
     public function download(Request $request): AnonymousResourceCollection
     {
 
-        $query = Activity::with('subject','causer');
+        $query = Activity::with('subject.department','causer');
 
         $data  = $this->filter($query, $request)
-            ->latest()
             ->get()->map(function ($item, $index) {
                 $item->no = $index + 1;
                 return $item;
@@ -120,6 +115,13 @@ class ActivityLogController extends Controller
                 $query->orderBy('activity_log.log_name', $request->sort_type);
             })
 
+            ->when($request->sort_by == 'target', function ($query) use ($request) {
+                $query->orderBy('activity_log.properties->target', $request->sort_type);
+            })
+
+            ->when($request->sort_by == 'date', function ($query) use ($request) {
+                $query->orderBy('activity_log.created_at', $request->sort_type);
+            })
 
             ->when($request->sort_by == 'username', function ($query) use ($request) {
                 $query->whereHas('causer', function ($query) use ($request) {

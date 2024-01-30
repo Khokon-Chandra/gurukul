@@ -28,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Gate::before(function (User $user, $permission) {
-            if($user->hasRole(AppConstant::ADMINISTRATOR)){
+            if($user->hasRoleWithDepartment(AppConstant::ADMINISTRATOR, $user->department_id)){
                 return true;
             }
             return $user->hasPermissionTo($permission);

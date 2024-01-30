@@ -81,10 +81,8 @@ class RoleFeatureTest extends TestCase
 
         $role = Role::create([
             'name' => 'Test_Role',
+            'department_id' => $user->department_id,
         ]);
-
-        $role->departments()->sync([1]);
-
 
         $response = $this->actingAs($user)->putJson(route('users.roles.update', $role->id), [
             'name' => Str::random(10),
@@ -119,9 +117,8 @@ class RoleFeatureTest extends TestCase
 
         $role = Role::create([
             'name' => 'Test_Role',
+            'department_id' => $user->department_id,
         ]);
-
-        $role->departments()->sync([1]);
 
         $response = $this->actingAs($user)->deleteJson(route('users.roles.destroy', $role->id));
 
@@ -144,9 +141,7 @@ class RoleFeatureTest extends TestCase
 
         $user = User::where('username', 'administrator')->first();
 
-        $role = Role::create(['name' => 'Admin']);
-
-        $role->departments()->sync([1]);
+        $role = Role::create(['name' => 'Admin','department_id' => $user->department_id]);
 
         $role->permissions()->sync([1, 2, 3]);
 
