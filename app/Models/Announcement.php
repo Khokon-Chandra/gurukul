@@ -7,10 +7,11 @@ use App\Trait\ParrentBoot;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Announcement extends Model
 {
-    use HasFactory, ParrentBoot, BelongsToDepartment;
+    use HasFactory, ParrentBoot, BelongsToDepartment, SoftDeletes;
 
     protected $fillable = [
         'message',
