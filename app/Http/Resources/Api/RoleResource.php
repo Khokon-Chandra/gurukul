@@ -20,7 +20,7 @@ class RoleResource extends JsonResource
             'id'          => $this->id,
             'name'        => $this->name,
             'users_count' => $this->users_count,
-            'department'  => $this->departments->first()->name,
+            'department'  => $this->department->name,
             'permissions' => PermissionChildResource::collection($this->permissions),
             'created_at'  => $this->created_at->format('d-M-Y h:i A'),
             'updated_at'  => $this->updated_at->format('d-M-Y h:i A'),

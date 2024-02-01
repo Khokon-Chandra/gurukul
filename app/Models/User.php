@@ -111,31 +111,52 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+    public function assignRoleWithDepartment($roleName, $departmentId)
+    {
+        Role::firstOrCreate([
+            'name' => $roleName,
+            'department_id' => $departmentId
+        ]);
+
+        return $this;
+    }
+
+
+    public function hasRoleWithDepartment($roleName, $departmentId)
+    {
+        return $this->roles()
+            ->where('roles.name', $roleName)
+            ->where('roles.department_id', $departmentId)
+            ->exists();
+    }
+
+
 
     public function scopeFilter($query, $request)
     {
         $query->when(
-            $request->name ?? false, fn ($query, $name) => $query
-            ->where('name', 'like', "%{$name}%"))
+            $request->name ?? false,
+            fn ($query, $name) => $query
+                ->where('name', 'like', "%{$name}%")
+        )
             ->when($request->username ?? false, fn ($query, $username) => $query
                 ->where('username', 'like', "%{$username}%"))
             ->when($request->email ?? false, fn ($query, $email) => $query
                 ->where('email', 'like', "%{$email}%"))
             ->when($request->date_range ?? false, function ($query, $range) {
-                $dates = explode(' to ',$range);
+                $dates = explode(' to ', $range);
                 $dates = [
                     @Carbon::parse($dates[0])->startOfDay()->format('Y-m-d H:i:s'),
                     @Carbon::parse($dates[1])->endOfDay()->format('Y-m-d H:i:s'),
                 ];
 
-                $query->whereBetween('created_at',$dates);
+                $query->whereBetween('created_at', $dates);
             })
 
             ->when(
-                $request->department_id ?? false, fn($query, $department_id) => $query
-                    ->where('users.department_id',$department_id)
+                $request->department_id ?? false,
+                fn ($query, $department_id) => $query
+                    ->where('users.department_id', $department_id)
             );
-
     }
-
 }

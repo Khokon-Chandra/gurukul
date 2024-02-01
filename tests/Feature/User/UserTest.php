@@ -23,8 +23,7 @@ class UserTest extends FeatureBaseCase
             ->createQuietly();
 
 
-        $role = Role::create(['name' => 'Admin']);
-        $role->departments()->sync([1]);
+        $role = Role::create(['name' => 'Admin','department_id'=>$user->department_id]);
         $role->permissions()->sync([1, 2, 3]);
         
         $user->assignRole($role);

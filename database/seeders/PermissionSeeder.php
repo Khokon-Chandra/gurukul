@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Constants\AppConstant;
 use App\Models\Department;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
@@ -27,16 +28,13 @@ class PermissionSeeder extends Seeder
             Permission::updateOrCreate($permission, $permission);
         }
 
-        $role = Role::where('name', 'Administrator')->first();
+        foreach (Department::pluck('id')->all() as $departmentId) {
+            $role = Role::firstOrCreate([
+                'name' => AppConstant::ADMINISTRATOR,
+                'department_id' => $departmentId
+            ]);
 
-        if (! $role) {
-            $role = Role::create(['name' => 'Administrator']);
-            $role->departments()->sync(Department::pluck('id')->all());
-        }
-
-        if ($role) {
             $role->syncPermissions(\Spatie\Permission\Models\Permission::get()->pluck('id')->toArray());
         }
-        
     }
 }

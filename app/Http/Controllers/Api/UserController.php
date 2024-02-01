@@ -149,10 +149,10 @@ class UserController extends Controller
                     ->performedOn($user)
                     ->withProperties([
                         'user' => Auth::user()->last_login_ip,
-                        'target' => $user->ip_address,
+                        'target' => $user->username,
                         'activity' => 'Deleted user',
                     ])
-                    ->log('Successfully');
+                    ->log(":causer.username deleted a user $user->username");
 
                 $user->delete();
             }
