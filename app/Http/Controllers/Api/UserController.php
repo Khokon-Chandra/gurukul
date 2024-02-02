@@ -148,7 +148,7 @@ class UserController extends Controller
                 activity('user')->causedBy(Auth::user()->id)
                     ->performedOn($user)
                     ->withProperties([
-                        'user' => Auth::user()->last_login_ip,
+                        'ip' => Auth::user()->last_login_ip,
                         'target' => $user->username,
                         'activity' => 'Deleted user',
                     ])
