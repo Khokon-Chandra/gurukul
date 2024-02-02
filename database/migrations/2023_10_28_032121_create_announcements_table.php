@@ -20,6 +20,7 @@ return new class extends Migration
             $table->index('status','announcement_status');
             $table->index('created_at','announcement_created_at');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

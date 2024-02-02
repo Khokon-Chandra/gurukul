@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamp('time')->useCurrent()->index();
             $table->timestamp('date')->useCurrent()->index();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
