@@ -184,7 +184,7 @@ return [
         'users.activities.index' => [
             'module_name' => 'user.access.users.activity',
             'name' => 'user.access.users.activity',
-            'display_name' => 'Can Access Activities List',
+            'display_name' => 'Can Access Activity List',
             'group_by' => 'activity',
             'sort' => 1,
         ],
@@ -208,7 +208,7 @@ return [
         'finance.cashflows.store' =>[
             'module_name' => 'user.access.finance.cash_flow.create',
             'name' => 'user.access.finance.cash_flow.create',
-            'display_name' => 'Can Create Flow',
+            'display_name' => 'Can Create Cash Flow',
             'group_by' => 'cash_flow',
             'sort' => 2,
         ],
@@ -259,7 +259,7 @@ return [
         'social.groups.members' => [
             'module_name' => 'user.access.social.chat.members',
             'name' => 'user.access.social.chat.members',
-            'display_name' => 'Can Access Users Group',
+            'display_name' => 'Can Access Chat Group',
             'group_by' => 'group',
             'sort' => 1,
         ],
@@ -273,7 +273,7 @@ return [
         'social.groups.storeChat' => [
             'module_name' => 'user.access.social.chat.store',
             'name' => 'user.access.social.chat.store',
-            'display_name' => 'Can Store Chat',
+            'display_name' => 'Can Create Chat',
             'group_by' => 'group',
             'sort' => 3,
         ],
