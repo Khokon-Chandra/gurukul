@@ -67,7 +67,7 @@ return [
         'users.roles.index' => [
             'module_name' => 'user.access.users.role',
             'name' => 'user.access.users.role',
-            'display_name' => 'Can View User Role List',
+            'display_name' => 'Can Access User Role List',
             'group_by' => 'role',
             'sort' => 1,
         ],
@@ -382,7 +382,7 @@ return [
         'users.permissions.index' =>[
             'module_name' => 'user.access.users.permissions',
             'name' => 'user.access.users.permissions',
-            'display_name' => 'Can View Permissions',
+            'display_name' => 'Can Access Permission List',
             'group_by' => 'permissions',
             'sort' => 1,
         ],
